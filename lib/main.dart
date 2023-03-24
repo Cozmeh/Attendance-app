@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:ftest/Presentation/Authentication/Login.dart';
 import 'package:ftest/firebase_options.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -10,10 +11,21 @@ import 'package:share/share.dart';
 import 'helper.dart';
 
 Future<void> main() async {
-  runApp(const MaterialApp(home: MyHome()));
+  runApp(const MaterialApp(home: Home()));
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+}
+
+class Home extends StatelessWidget {
+  const Home({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Login()
+    );
+  }
 }
 
 class MyHome extends StatelessWidget {
