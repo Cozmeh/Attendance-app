@@ -11,7 +11,7 @@ import 'package:share/share.dart';
 import 'helper.dart';
 
 Future<void> main() async {
-  runApp(const MaterialApp(home: Home()));
+  runApp(const MaterialApp(home: MyHome()));
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
