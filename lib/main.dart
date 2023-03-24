@@ -1,15 +1,12 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:ftest/firebase_options.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-
 // firebase
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:share/share.dart';
-import 'firebase_options.dart';
 import 'helper.dart';
 
 Future<void> main() async {

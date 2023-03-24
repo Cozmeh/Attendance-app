@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,10 +25,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -49,21 +43,41 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDiGHXxdZmxp_XgcZhGK6H4dqtzpzFIXYk',
+    appId: '1:199120866837:web:7156ccaeafa706e0e4481c',
+    messagingSenderId: '199120866837',
+    projectId: 'attendance-app-729e7',
+    authDomain: 'attendance-app-729e7.firebaseapp.com',
+    storageBucket: 'attendance-app-729e7.appspot.com',
+    measurementId: 'G-MN5K0H92P6',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCa44OqVgP7I_mxsPOGhodCapbeRrHgfxA',
-    appId: '1:1060835797994:android:7a6937a64442b21d622093',
-    messagingSenderId: '1060835797994',
-    projectId: 'xactitude-attendance',
-    storageBucket: 'xactitude-attendance.appspot.com',
+    apiKey: 'AIzaSyBzG0nBe1DK1A2_2EBlhJCbq2wce5XuQAI',
+    appId: '1:199120866837:android:54b5998192e0b371e4481c',
+    messagingSenderId: '199120866837',
+    projectId: 'attendance-app-729e7',
+    storageBucket: 'attendance-app-729e7.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyC9QmKSPU1cJJw3QTKG4J3X2_wFjlcMVBA',
-    appId: '1:1060835797994:ios:26b6bdc7604e436b622093',
-    messagingSenderId: '1060835797994',
-    projectId: 'xactitude-attendance',
-    storageBucket: 'xactitude-attendance.appspot.com',
-    iosClientId: '1060835797994-d8ffn8pcjku7f7fmvq1ni698umogh1vo.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDR1K5DqMoh-SBcpAbnGnJQ0RlyX93oYwc',
+    appId: '1:199120866837:ios:ca9a9c7f01ae9715e4481c',
+    messagingSenderId: '199120866837',
+    projectId: 'attendance-app-729e7',
+    storageBucket: 'attendance-app-729e7.appspot.com',
+    iosClientId: '199120866837-9v7u91mc3jpum5s4dg757q5imsrio1gv.apps.googleusercontent.com',
+    iosBundleId: 'com.example.ftest',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyDR1K5DqMoh-SBcpAbnGnJQ0RlyX93oYwc',
+    appId: '1:199120866837:ios:ca9a9c7f01ae9715e4481c',
+    messagingSenderId: '199120866837',
+    projectId: 'attendance-app-729e7',
+    storageBucket: 'attendance-app-729e7.appspot.com',
+    iosClientId: '199120866837-9v7u91mc3jpum5s4dg757q5imsrio1gv.apps.googleusercontent.com',
     iosBundleId: 'com.example.ftest',
   );
 }

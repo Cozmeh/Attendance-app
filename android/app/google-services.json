@@ -1,41 +1,34 @@
 {
   "project_info": {
-    "project_number": "1060835797994",
-    "project_id": "xactitude-attendance",
-    "storage_bucket": "xactitude-attendance.appspot.com"
+    "project_number": "199120866837",
+    "project_id": "attendance-app-729e7",
+    "storage_bucket": "attendance-app-729e7.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1060835797994:android:7a6937a64442b21d622093",
+        "mobilesdk_app_id": "1:199120866837:android:54b5998192e0b371e4481c",
         "android_client_info": {
           "package_name": "com.example.ftest"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1060835797994-gbjhpdls4me8khqnekmu5bk98v26583a.apps.googleusercontent.com",
+          "client_id": "199120866837-6s9k9r8nphivl14h2qlddarbt589kvuj.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCa44OqVgP7I_mxsPOGhodCapbeRrHgfxA"
+          "current_key": "AIzaSyBzG0nBe1DK1A2_2EBlhJCbq2wce5XuQAI"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1060835797994-gbjhpdls4me8khqnekmu5bk98v26583a.apps.googleusercontent.com",
+              "client_id": "199120866837-6s9k9r8nphivl14h2qlddarbt589kvuj.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "1060835797994-d8ffn8pcjku7f7fmvq1ni698umogh1vo.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.ftest"
-              }
             }
           ]
         }
