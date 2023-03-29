@@ -1,7 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ftest/Presentation/Authentication/Login.dart';
+import 'package:ftest/Presentation/Home/HomePage.dart';
 import 'package:ftest/firebase_options.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -11,19 +13,50 @@ import 'package:share/share.dart';
 import 'helper.dart';
 
 Future<void> main() async {
-  runApp(const MaterialApp(home: MyHome()));
-  await Firebase.initializeApp(
+  WidgetsFlutterBinding.ensureInitialized();
+   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  runApp(
+    const MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: Home()));
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
 
   @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  var isLogin=false;
+
+  @override
+  void initState() {
+    isLogedin();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  isLogedin() async{
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if(user!=null && mounted){
+        setState(() {
+          isLogin=true;
+        });
+      }else{
+        setState(() {
+            isLogin=false;
+        });
+      }
+    });
+  }
+  @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Login()
+    return Scaffold(
+      body: isLogin==false? Login():HomePage(),
     );
   }
 }

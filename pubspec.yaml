@@ -43,6 +43,13 @@ dependencies:
   path_provider: ^2.0.12
   share: ^2.0.4
   prompt_dialog: ^1.0.9
+  google_sign_in: ^6.0.2
+  firebase_auth: ^4.3.0
+  cloud_firestore: ^4.4.5
+  fluttertoast: ^8.2.1
+  permission_handler: ^10.2.0
+  open_filex: ^4.3.2
+  path: ^1.8.2
 
 dev_dependencies:
   flutter_test:
