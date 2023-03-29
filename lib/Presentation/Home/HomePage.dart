@@ -20,7 +20,7 @@ class HomePage extends StatelessWidget {
         DrawerHeader(child: Column(children: [
          CircleAvatar(
           backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser!.photoURL.toString()),
-         radius: 25.0,
+         radius: 25,
         ),
         SizedBox(height: 10),
           Text(FirebaseAuth.instance.currentUser!.displayName.toString()),
