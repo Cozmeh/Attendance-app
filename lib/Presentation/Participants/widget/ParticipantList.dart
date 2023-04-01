@@ -57,42 +57,6 @@ class _ParticipantListState extends State<ParticipantList> {
                       return ListTile(
                         title: Text(e['participantID']),
                         subtitle: Text(time),
-                        trailing: GestureDetector(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: const Text("Are you sure you want to delete ?"),
-                                    //content: Text("Dialog Content"),
-                                    actions: [
-                                      TextButton(
-                                        child: const Text("Yes"),
-                                        onPressed: () {
-                                          participants
-                                              .doc(e['participantID'])
-                                              .delete()
-                                              .then((_) => print('Deleted'))
-                                              .catchError((error) => print(
-                                                  'Delete failed: $error'));
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      TextButton(
-                                        child: const Text("No"),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                            child: const Icon(
-                              Icons.delete,
-                              color: Colors.red,
-                            )),
                       );
                     } else if (e['participantID']
                         .toString().toUpperCase()
@@ -100,43 +64,6 @@ class _ParticipantListState extends State<ParticipantList> {
                       return ListTile(
                         title: Text(e['participantID']),
                         subtitle: Text(time),
-                        trailing: GestureDetector(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: const Text(
-                                        "Are you sure you want to delete ?"),
-                                    //content: Text("Dialog Content"),
-                                    actions: [
-                                      TextButton(
-                                        child: const Text("Yes"),
-                                        onPressed: () {
-                                          participants
-                                              .doc(e['participantID'])
-                                              .delete()
-                                              .then((_) => print('Deleted'))
-                                              .catchError((error) => print(
-                                                  'Delete failed: $error'));
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      TextButton(
-                                        child: const Text("No"),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                            child: const Icon(
-                              Icons.delete,
-                              color: Colors.red,
-                            )),
                       );
                     } else {
                       return Container();
