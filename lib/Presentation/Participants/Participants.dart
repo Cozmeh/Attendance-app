@@ -17,8 +17,9 @@ class Participants extends StatefulWidget {
 
 class _ParticipantsState extends State<Participants> {
   String number = "";
-
   List<List<String>> items = [];
+  bool showSearchBar = false;
+
   @override
   void initState() {
     items = [
@@ -35,9 +36,46 @@ class _ParticipantsState extends State<Participants> {
         .collection('Event')
         .doc(widget.eventID)
         .collection('Participants');
+
+    getCSV() async {
+      String csvData = const ListToCsvConverter().convert(items);
+      print(csvData);
+      try {
+        var status = await Permission.storage.status;
+        if (!status.isGranted) {
+          await Permission.storage.request();
+        }
+        final String directory = (await getApplicationDocumentsDirectory())
+            .path;
+        final String path = "$directory/ams${widget.eventID}.csv";
+        final File file = File(path);
+        dynamic data = await file.writeAsString(csvData);
+        print(data);
+        print(path);
+        try {
+          await OpenFilex.open(file.path);
+        } catch (e) {
+          print(e);
+        }
+      } catch (e) {
+        print(e);
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Participants"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              setState(() {
+                showSearchBar = !showSearchBar;
+                number = "";
+              });
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => getCSV(),
@@ -46,46 +84,63 @@ class _ParticipantsState extends State<Participants> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              elevation: 7,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                child: TextField(
-                  decoration: const InputDecoration(
+            Visibility(
+              visible : showSearchBar,
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                elevation: 7,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                  child: TextField(
+                    decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.search),
-                      labelText: 'Roll No.'
+                      labelText: 'Roll No.',
+                    ),
+                    onChanged: (roll) => setState(() => number = roll),
                   ),
-                  onChanged: (roll) =>
-                      setState(() {
-                        number = roll;
-                  }),
                 ),
               ),
             ),
             Container(
-              height: MediaQuery.of(context).size.height * 0.8,
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height * 0.8,
               child: Padding(
                 padding: const EdgeInsets.only(left: 21.0, right: 21.0),
                 child: StreamBuilder(
-                  stream: participants.orderBy('takenTime', descending: false).snapshots(),
+                  stream: participants.orderBy('takenTime', descending: false)
+                      .snapshots(),
                   builder: (context, snapshot) {
                     return (snapshot.connectionState == ConnectionState.waiting)
                         ? const Center(child: CircularProgressIndicator())
                         : ListView(
-                            children: snapshot.data!.docs.map((e) {
-                            var time = (e["takenTime"] as Timestamp).toDate().toString();
-                            items.add([e['participantID'], e["takenBy"], time, e["isPresent"].toString()]);
-                            if (number == "") {
-                              return ParticipantsTile(participantID: e['participantID'], takenTime: time);
-                            } else if (e['participantID'].toString().toUpperCase().contains(number.toString().toUpperCase())) {
-                              return ParticipantsTile(participantID: e['participantID'], takenTime: time);
-                            } else {
-                              return Container();
-                            }
-                          }).toList()
+                        children: snapshot.data!.docs.map((e) {
+                          var time = (e["takenTime"] as Timestamp)
+                              .toDate()
+                              .toString();
+                          items.add([
+                            e['participantID'],
+                            e["takenBy"],
+                            time,
+                            e["isPresent"].toString()
+                          ]);
+                          if (number == "") {
+                            return ParticipantsTile(
+                                participantID: e['participantID'],
+                                takenTime: time);
+                          } else if (e['participantID'].toString()
+                              .toUpperCase()
+                              .contains(number.toString().toUpperCase())) {
+                            return ParticipantsTile(
+                                participantID: e['participantID'],
+                                takenTime: time);
+                          } else {
+                            return Container();
+                          }
+                        }).toList()
                     );
                   },
                 ),
@@ -96,28 +151,5 @@ class _ParticipantsState extends State<Participants> {
       ),
     );
   }
-
-  getCSV() async {
-    String csvData = const ListToCsvConverter().convert(items);
-    print(csvData);
-    try {
-      var status = await Permission.storage.status;
-      if (!status.isGranted) {
-        await Permission.storage.request();
-      }
-      final String directory = (await getApplicationDocumentsDirectory()).path;
-      final String path = "$directory/ams${widget.eventID}.csv";
-      final File file = File(path);
-      dynamic data = await file.writeAsString(csvData);
-      print(data);
-      print(path);
-      try {
-        await OpenFilex.open(file.path);
-      } catch (e) {
-        print(e);
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
 }
+
