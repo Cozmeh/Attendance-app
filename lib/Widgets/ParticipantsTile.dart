@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:ftest/Data/Colour.dart';
 
 class ParticipantsTile extends StatefulWidget {
   String participantID, takenTime, eventID;
@@ -20,6 +21,7 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
       );
     } else {
       return ListTile(
+        tileColor: Colour.tileColor,
         title: Text(widget.participantID),
         subtitle: Text(widget.takenTime),
         trailing: GestureDetector(
