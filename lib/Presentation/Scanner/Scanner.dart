@@ -60,14 +60,14 @@ class _ScannerState extends State<Scanner> {
       builder: (context, child) {
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.black,
+            backgroundColor: Colors.white,
             centerTitle: true,
-            title: const Text('Scanner'),
+            //title: const Text('Scanner'),
           ),
           body: Column(
             children: [
               SizedBox(
-                height: 60.h,
+                height: 55.h,
               ),
               SizedBox(
                 height: 450.h,
@@ -137,8 +137,8 @@ class _ScannerState extends State<Scanner> {
                               return Card(
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(2)),
-                                shadowColor: Colors.transparent,
-                                color: Colors.grey.shade300,
+                                shadowColor: Color(0xff000000),
+                                color: Color(0xffffffff),
                                 child: ListTile(
                                   dense: true,
                                   subtitle: Text(itemTime),
@@ -147,8 +147,6 @@ class _ScannerState extends State<Scanner> {
                                     e['participantID'],
                                     style: TextStyle(fontSize: 16.sp),
                                   ),
-                                  leading: Icon(Icons.account_circle_outlined,
-                                      size: 40.h),
                                   trailing: GestureDetector(
                                     onTap: () {
                                       var item = e['participantID'];
@@ -218,7 +216,7 @@ class _ScannerState extends State<Scanner> {
                                       );
                                     },
                                     child: Icon(
-                                      Icons.remove_circle_outline,
+                                      Icons.delete,
                                       size: 30.h,
                                       color: Colors.red,
                                     ),
@@ -245,7 +243,7 @@ class _ScannerState extends State<Scanner> {
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
+                  backgroundColor: Colors.blue,
                   fixedSize: Size(450.w, 70.h),
                 ),
                 onPressed: () {
