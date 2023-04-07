@@ -21,9 +21,10 @@ class Scanner extends StatefulWidget {
 
 class _ScannerState extends State<Scanner> {
   final GlobalKey globalKey = GlobalKey();
-  late QRViewController qrViewController;
+  QRViewController? qrViewController;
   bool correctScan = false;
   bool vibrate = false;
+  bool isFlash = false;
   String? result;
   Color? scanStatus;
   int totalCount = 0;
@@ -69,23 +70,46 @@ class _ScannerState extends State<Scanner> {
               SizedBox(
                 height: 55.h,
               ),
-              SizedBox(
-                height: 450.h,
-                width: 450.w,
-                child: QRView(
-                  key: globalKey,
-                  onQRViewCreated: _onQRViewCreated,
-                  overlay: QrScannerOverlayShape(
-                    cutOutHeight: 350.h,
-                    cutOutWidth: 350.w,
-                    borderColor: scanStatus ?? Colors.red,
-                    borderRadius: 10,
-                    borderLength: min(350.h, 350.w) / 2 + 12.w * 2,
-                    borderWidth: 12.w,
+              Stack(
+                alignment: AlignmentDirectional.bottomEnd,
+                children: <Widget>[
+                  SizedBox(
+                    height: 450.h,
+                    width: 450.w,
+                    child: QRView(
+                      key: globalKey,
+                      onQRViewCreated: _onQRViewCreated,
+                      overlay: QrScannerOverlayShape(
+                        cutOutHeight: 350.h,
+                        cutOutWidth: 350.w,
+                        borderColor: scanStatus ?? Colors.red,
+                        borderRadius: 10,
+                        borderLength: min(350.h, 350.w) / 2 + 12.w * 2,
+                        borderWidth: 12.w,
+                      ),
+                      onPermissionSet: (ctrl, p) =>
+                          _onPermissionSet(context, ctrl, p),
+                    ),
                   ),
-                  onPermissionSet: (ctrl, p) =>
-                      _onPermissionSet(context, ctrl, p),
-                ),
+                  Positioned(
+                    bottom: 8.w,
+                    right: 8.w,
+                    child: SizedBox(
+                        child: IconButton(
+                      icon: isFlash
+                          ? Icon(Icons.flash_on_rounded,
+                              color: Colors.white, size: 35.w)
+                          : Icon(Icons.flash_off_rounded,
+                              color: Colors.white, size: 35.w),
+                      onPressed: () {
+                        setState(() {
+                          qrViewController?.toggleFlash();
+                          isFlash = !isFlash;
+                        });
+                      },
+                    )),
+                  )
+                ],
               ),
               SizedBox(
                 height: 10.h,
@@ -117,7 +141,7 @@ class _ScannerState extends State<Scanner> {
                         AsyncSnapshot<QuerySnapshot> snapshot) {
                       // Camera pausing ..
                       if (correctScan == true) {
-                        Vibration.vibrate(duration: 50);
+                        Vibration.vibrate(duration: 100);
                         correctScan = false;
                       } // Data Processing ..
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -252,7 +276,7 @@ class _ScannerState extends State<Scanner> {
                       builder: (context) => const HomePage(),
                     ),
                   );
-                  qrViewController.dispose();
+                  qrViewController?.dispose();
                 },
                 child: Text(
                   'Finish',
@@ -278,16 +302,13 @@ class _ScannerState extends State<Scanner> {
   }
 
   void _onQRViewCreated(QRViewController controller) {
-    qrViewController = controller;
+    setState(() => qrViewController = controller);
     controller.scannedDataStream.listen(
       (scanData) async {
         //print("ITs sancnning");
-        qrViewController.stopCamera();
+        qrViewController?.stopCamera();
         if (scanData.code != null) {
-          setState(() {
-            result = scanData.code;
-          });
-
+          setState(() => result = scanData.code);
           var a = await FirebaseFirestore.instance
               .collection("Event")
               .doc(widget.eventID)
@@ -306,7 +327,7 @@ class _ScannerState extends State<Scanner> {
               scanStatus = Colors.orange;
               status = "$result Attendance Marked already";
             });
-            qrViewController.resumeCamera();
+            qrViewController?.resumeCamera();
           } else {
             setState(() {
               status = "Some problem occured";
@@ -333,7 +354,7 @@ class _ScannerState extends State<Scanner> {
               status = "$result Attendance Marked";
               correctScan = true;
             });
-            qrViewController.resumeCamera();
+            qrViewController?.resumeCamera();
           }
           //
         }
