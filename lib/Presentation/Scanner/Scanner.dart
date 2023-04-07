@@ -48,6 +48,7 @@ class _ScannerState extends State<Scanner> {
 
   @override
   void initState() {
+    //qrViewController?.resumeCamera();
     //countProducts();
     // TODO: implement initState
     super.initState();
@@ -80,6 +81,7 @@ class _ScannerState extends State<Scanner> {
                       key: globalKey,
                       onQRViewCreated: _onQRViewCreated,
                       overlay: QrScannerOverlayShape(
+
                         cutOutHeight: 350.h,
                         cutOutWidth: 350.w,
                         borderColor: scanStatus ?? Colors.red,
@@ -265,6 +267,7 @@ class _ScannerState extends State<Scanner> {
               SizedBox(
                 height: 50.h,
               ),
+             // qrViewController.
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -291,6 +294,7 @@ class _ScannerState extends State<Scanner> {
   }
 
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
+    qrViewController!.resumeCamera();
     //print('${DateTime.now().toIso8601String()}_onPermissionSet $p');
     if (!p) {
       ScaffoldMessenger.of(context).showSnackBar(
