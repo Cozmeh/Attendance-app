@@ -13,9 +13,12 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Home'),
+          title: Text('Home',
+          style: TextStyle(color: Colors.black),),
+          iconTheme: IconThemeData(color: Colors.black),
         ),
         drawer: Drawer(
+          backgroundColor: Colors.black,
           child:  AppDrawer(fAuth: FirebaseAuth.instance),
         ),
         body: Scaffold(
@@ -59,11 +62,7 @@ class HomePage extends StatelessWidget {
                                       //e['startTime'] <= Timestamp.now() && e['endTime'] > Timestamp.now() ?
                                       ElevatedButton(
                                           onPressed: () {
-                                            Navigator.of(context)
-                                                .push(MaterialPageRoute(
-                                              builder: (context) => Scanner(
-                                                  eventID: e['eventID']),
-                                            ));
+                                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => Scanner(eventID: e['eventID']),));
                                           },
                                           child: const Text("Take Attendance"))
                                       : const SizedBox(width: 0),

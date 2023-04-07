@@ -43,7 +43,11 @@ class _ParticipantsState extends State<Participants> {
         child:  AppDrawer(fAuth: FirebaseAuth.instance),
       ),
       appBar: AppBar(
-        title: const Text("Participants"),
+        title: const Text(
+            "Participants",
+          style: TextStyle(color: Colors.black),
+        ),
+        iconTheme: IconThemeData(color: Colors.black),
         actions: [
           IconButton(
             icon: Icon(Icons.search),
