@@ -7,7 +7,6 @@ import 'package:ftest/Widgets/ParticipantsTile.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import '../../Widgets/AppDrawer.dart';
 
 class Participants extends StatefulWidget {
