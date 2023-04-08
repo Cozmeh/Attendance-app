@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:ftest/Presentation/History/History.dart';
 import '../InfraStructure/AuthRepo.dart';
 import '../Presentation/Authentication/Login.dart';
 
@@ -25,7 +26,7 @@ class _AppDrawerState extends State<AppDrawer> {
               width: double.infinity,
               color: Colors.blue,
               height: 300,
-              padding: EdgeInsets.only(top: 35.0, bottom: 5.0),
+              padding: const EdgeInsets.only(top: 35.0, bottom: 5.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -40,17 +41,24 @@ class _AppDrawerState extends State<AppDrawer> {
                 ],
               ),
             )),
-        SizedBox(height: 25.0),
+        const SizedBox(height: 25.0),
         Container(
             padding: EdgeInsets.all(5.0),
             color: Colors.grey,
-            child: const ListTile(
-              leading: Icon(Icons.history),
-              title: Text(
-                "History",
-                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.normal),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const History()));
+              },
+              child: const ListTile(
+                leading: Icon(Icons.history),
+                title: Text(
+                  "History",
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.normal),
+                ),
+                // onTap: , this will open the history page
               ),
-              // onTap: , this will open the history page
             )),
         SizedBox(height: MediaQuery.of(context).size.width * 0.7),
         Container(
