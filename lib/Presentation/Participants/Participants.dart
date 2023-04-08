@@ -4,6 +4,7 @@ import 'package:csv/csv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ftest/Widgets/ParticipantsTile.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -39,13 +40,14 @@ class _ParticipantsState extends State<Participants> {
         .doc(widget.eventID)
         .collection('Participants');
     return Scaffold(
+      backgroundColor: Color(0xffffffff),
       drawer: Drawer(
         child:  AppDrawer(fAuth: FirebaseAuth.instance),
       ),
       appBar: AppBar(
-        title: const Text(
+        title: Text(
             "Participants",
-          style: TextStyle(color: Colors.black),
+          style: GoogleFonts.inter(color: Color(0xff404040),fontWeight: FontWeight.w500),
         ),
         iconTheme: IconThemeData(color: Colors.black),
         actions: [

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../InfraStructure/AuthRepo.dart';
 import '../Presentation/Authentication/Login.dart';
 
@@ -31,8 +32,8 @@ class _AppDrawerState extends State<AppDrawer> {
                           widget.fAuth.currentUser!.photoURL.toString()),
                       maxRadius: 100,
                     ),
-                    Text(FirebaseAuth.instance.currentUser!.displayName.toString()),
-                    Text(FirebaseAuth.instance.currentUser!.email.toString(), style: const TextStyle(color: Color(0xff616161)),),
+                    Text(FirebaseAuth.instance.currentUser!.displayName.toString(),style: GoogleFonts.inter(),),
+                    Text(FirebaseAuth.instance.currentUser!.email.toString(), style: GoogleFonts.inter(color: Color(0xff616161)),),
                   ],
                 ),
               ),
@@ -49,9 +50,9 @@ class _AppDrawerState extends State<AppDrawer> {
             Container(
                 padding: const EdgeInsets.all(5.0),
                 color: const Color(0xffd9d9d9),
-                child: const ListTile(
+                child: ListTile(
                   leading: Icon(Icons.history),
-                  title: Text("History", style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w400),),
+                  title: Text("History", style: GoogleFonts.inter(fontSize: 20.0, fontWeight: FontWeight.w400),),
                   // onTap: , this will open the home page
                 )
             ),
@@ -59,15 +60,15 @@ class _AppDrawerState extends State<AppDrawer> {
             Container(
               margin: const EdgeInsets.only(bottom: 20.0),
               width: MediaQuery.of(context).size.width * 0.6,
-              decoration: BoxDecoration(border: Border.all(color: Colors.red)),
+              decoration: BoxDecoration(border: Border.all(color: Color(0xffb91c1c),)),
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: TextButton(
-                  child: const Text(
+                  child: Text(
                     "Sign Out",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.red,
+                    style: GoogleFonts.inter(
+                        color: Color(0xffb91c1c),
                         fontSize: 20.0,
                         fontWeight: FontWeight.normal),
                   ),

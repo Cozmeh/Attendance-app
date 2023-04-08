@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ftest/Data/Colour.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ParticipantsTile extends StatefulWidget {
   String participantID, takenTime, eventID;
@@ -17,13 +18,13 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(2)),
         shadowColor: const Color(0xff000000),
-        color: const Color(0xffffffff),
+        color: const Color(0xfff1f1f1)  ,
         child:ListTile(
           tileColor: Colour.tileColor,
           dense: true,
           title: Text(
             widget.participantID,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w400, ),
+            style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w400,color: Color(0xff404040)),
           ),
           trailing : Visibility(
             visible: (widget.eventID!=""),
@@ -69,7 +70,7 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
                 child: const Icon(
                   Icons.delete,
                   size: 30,
-                  color: Colors.red,
+                  color: Color(0xff838383),
                 )),
           ),
         ),

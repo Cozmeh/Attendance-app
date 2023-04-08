@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:ftest/Widgets/ParticipantsTile.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:vibration/vibration.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -62,6 +63,7 @@ class _ScannerState extends State<Scanner> {
       splitScreenMode: true,
       builder: (context, child) {
         return Scaffold(
+          backgroundColor: Color(0xffffffff),
           appBar: AppBar(
             backgroundColor: Colors.white,
             centerTitle: true,
@@ -195,7 +197,7 @@ class _ScannerState extends State<Scanner> {
                 },
                 child: Text(
                   'Finish',
-                  style: TextStyle(fontSize: 18.sp),
+                  style: GoogleFonts.inter(fontSize: 18.sp,fontWeight: FontWeight.w400),
                 ),
               ),
             ],
