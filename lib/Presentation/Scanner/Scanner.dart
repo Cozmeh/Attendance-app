@@ -184,7 +184,7 @@ class _ScannerState extends State<Scanner> {
               // qrViewController.
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: Color(0xff1D4ED8),
                   fixedSize: Size(450.w, 70.h),
                 ),
                 onPressed: () {

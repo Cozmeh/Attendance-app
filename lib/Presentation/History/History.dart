@@ -39,6 +39,7 @@ class History extends StatelessWidget {
                       itemBuilder: (ctx, index) =>
                       details[index]['endTime'].toDate().isBefore(DateTime.now())?
                           EventCard(
+                              endTime:details[index]['endTime'].toDate(),
                               imageUrl: details[index]['backDrop'],
                               eventName: details[index]['eventName'],
                               departName :details[index]['deptName'],
