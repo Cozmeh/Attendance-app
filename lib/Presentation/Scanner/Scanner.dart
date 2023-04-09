@@ -2,6 +2,8 @@
 
 import 'dart:async';
 import 'dart:math';
+import 'package:ftest/Widgets/ParticipantsTile.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:vibration/vibration.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -61,6 +63,7 @@ class _ScannerState extends State<Scanner> {
       splitScreenMode: true,
       builder: (context, child) {
         return Scaffold(
+          backgroundColor: Color(0xffffffff),
           appBar: AppBar(
             backgroundColor: Colors.white,
             centerTitle: true,
@@ -81,7 +84,6 @@ class _ScannerState extends State<Scanner> {
                       key: globalKey,
                       onQRViewCreated: _onQRViewCreated,
                       overlay: QrScannerOverlayShape(
-
                         cutOutHeight: 350.h,
                         cutOutWidth: 350.w,
                         borderColor: scanStatus ?? Colors.red,
@@ -160,95 +162,7 @@ class _ScannerState extends State<Scanner> {
                                   .toDate()
                                   .toString()
                                   .substring(0, 16);
-                              return Card(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(2)),
-                                shadowColor: Color(0xff000000),
-                                color: Color(0xffffffff),
-                                child: ListTile(
-                                  dense: true,
-                                  subtitle: Text(itemTime),
-                                  iconColor: Colors.black45,
-                                  title: Text(
-                                    e['participantID'],
-                                    style: TextStyle(fontSize: 16.sp),
-                                  ),
-                                  trailing: GestureDetector(
-                                    onTap: () {
-                                      var item = e['participantID'];
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: const Text("Delete Entry"),
-                                            content: Text(
-                                                "Do you want to Delete $item ?"),
-                                            actions: [
-                                              Center(
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  children: [
-                                                    TextButton(
-                                                      child: const Text(
-                                                        "Yes",
-                                                        style: TextStyle(
-                                                            color: Colors.red),
-                                                      ),
-                                                      onPressed: () {
-                                                        final collection =
-                                                            FirebaseFirestore
-                                                                .instance
-                                                                .collection(
-                                                                    'Event')
-                                                                .doc(widget
-                                                                    .eventID)
-                                                                .collection(
-                                                                    'Participants');
-                                                        collection
-                                                            .doc(e[
-                                                                'participantID']) // <-- Doc ID to be deleted.
-                                                            .delete() // <-- Delete
-                                                            .then(
-                                                              (_) => print(
-                                                                  'Deleted'),
-                                                            )
-                                                            .catchError(
-                                                              (error) => print(
-                                                                  'Delete failed: $error'),
-                                                            );
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                    ),
-                                                    TextButton(
-                                                      child: const Text(
-                                                        "No",
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.black),
-                                                      ),
-                                                      onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: Icon(
-                                      Icons.delete,
-                                      size: 30.h,
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                ),
-                              );
+                              return ParticipantsTile(participantID:e['participantID'], takenTime: itemTime, eventID: widget.eventID.toString(),);
                             }).toList());
                       } else {
                         return Center(
@@ -267,7 +181,7 @@ class _ScannerState extends State<Scanner> {
               SizedBox(
                 height: 50.h,
               ),
-             // qrViewController.
+              // qrViewController.
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -283,7 +197,7 @@ class _ScannerState extends State<Scanner> {
                 },
                 child: Text(
                   'Finish',
-                  style: TextStyle(fontSize: 18.sp),
+                  style: GoogleFonts.inter(fontSize: 18.sp,fontWeight: FontWeight.w400),
                 ),
               ),
             ],
