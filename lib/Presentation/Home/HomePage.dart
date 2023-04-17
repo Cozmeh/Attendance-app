@@ -50,15 +50,15 @@ class HomePage extends StatelessWidget {
                 } else if (snapshot.hasData) {
                   return ListView(
                       children: snapshot.data!.docs.map((e) {
-                    return e['endTime'].toDate().isAfter(DateTime.now())
+                    return DateTime.fromMillisecondsSinceEpoch(e['endTime'] * 1000).isAfter(DateTime.now())
                         ? EventCard(
-                            endTime: e['endTime'].toDate(),
+                            endTime:DateTime.fromMillisecondsSinceEpoch(e['startTime'] * 1000),
                             imageUrl: e['backDrop'],
                             eventName: e['eventName'],
                             departName: e['deptName'],
                             venue: e['venue'],
-                            dateTime: e['startTime'].toDate(),
-                            id: e['eventID'],
+                            dateTime:DateTime.fromMillisecondsSinceEpoch(e['startTime'] * 1000),
+                            id: e.id.toString(),
                             page: 'history',
                             desc: '',
                           )

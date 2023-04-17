@@ -46,7 +46,7 @@ class History extends StatelessWidget {
                               departName :details[index]['deptName'],
                               venue: details[index]['venue'],
                               dateTime: DateTime.fromMillisecondsSinceEpoch(details[index]['startTime'] * 1000),
-                              id: details[index]['eventID'],
+                              id: details[index].id,
                               page: 'history')
                           : SizedBox(width: 0,)
                   );

@@ -10,40 +10,68 @@ class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xffffffff),
       body: Container(
         height: MediaQuery.of(context).size.height*1,
-        child: Center(
-          child: ElevatedButton(onPressed: () async {
-            dynamic user=AuthRepo.googleSignup();
-            if(user==true){
-              Navigator.push(  
-                context,  
-                MaterialPageRoute(builder: (context) => HomePage()),  
-              );
-            }else{
+        child: Column(
+          children: [
+            SizedBox(height: MediaQuery.of(context).size.height*.2,),
+            Container(height: MediaQuery.of(context).size.height*.3,
+            child: Image.asset('assets/kjcLogo.png'),),
+            SizedBox(height: MediaQuery.of(context).size.height*.1),
+            const Center(
+              child: Text("Kristu Jayanti\n Attendance\n Management System",
+              textAlign: TextAlign.center,
+              style:  TextStyle(
+                      color: Colors.black,
+                                    fontFamily: 'Inter',
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w400),
+              ),
+            ),
+             SizedBox(height: MediaQuery.of(context).size.height*.05),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Color(0xffffffff),elevation: 0),
+              onPressed: () async {
+              dynamic user=AuthRepo.googleSignup();
+              if(user==true){
+                Navigator.push(  
+                  context,  
+                  MaterialPageRoute(builder: (context) => HomePage()),  
+                );
+              }else{
 
-            }
-          }, 
-          child: Center(
-              child: Container(
-                color: Colors.white,
-                child: Row(mainAxisAlignment: MainAxisAlignment.center, 
-                  children: [
-                    Image.network(height: 40,width:40,
-                'http://pngimg.com/uploads/google/google_PNG19635.png',
-                fit:BoxFit.cover
-              ), const SizedBox(
-          width: 5.0,
+              }
+            }, 
+            child: Container(
+              width: MediaQuery.of(context).size.width*.7,
+              decoration: BoxDecoration(
+                 color: Colors.white,
+                 border:Border.all(color: Color(0xff1D4ED8)), 
+              ),
+              child: Row(mainAxisAlignment: MainAxisAlignment.center, 
+                children: [
+                  Image.network(height: 40,width:40,
+              'http://pngimg.com/uploads/google/google_PNG19635.png',
+              fit:BoxFit.cover
+            ), const SizedBox(
+            width: 5.0,
+            ),
+                  const Text(
+                    "Sign in with Google",
+                    style: TextStyle(
+                      color: Color(0xff1D4ED8),
+                                    fontFamily: 'Inter',
+                                    height: 1.2,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400),
+                  ),
+                ],
+              ),
+            ),
+    ),
+          ],
         ),
-                    const Text(
-                      "Google Signin",
-                      style: TextStyle(fontSize: 18,color:Colors.black),
-                    ),
-                  ],
-                ),
-        ),
-          ),
-    )),
       ));
   }
 }
