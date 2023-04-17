@@ -25,7 +25,10 @@ class HomePage extends StatelessWidget {
       ),
       drawer: Drawer(
         backgroundColor: Colors.black,
-        child: AppDrawer(fAuth: FirebaseAuth.instance, pageTitle: "Home",),
+        child: AppDrawer(
+          fAuth: FirebaseAuth.instance,
+          pageTitle: "Home",
+        ),
       ),
       body: Scaffold(
         body: Padding(
@@ -57,6 +60,7 @@ class HomePage extends StatelessWidget {
                             dateTime: e['startTime'].toDate(),
                             id: e['eventID'],
                             page: 'history',
+                            desc: '',
                           )
                         : SizedBox();
                   }).toList());
