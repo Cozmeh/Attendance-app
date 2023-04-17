@@ -22,6 +22,7 @@ class Scanner extends StatefulWidget {
 }
 
 class _ScannerState extends State<Scanner> {
+  final ScrollController scrollControl = ScrollController();
   final GlobalKey globalKey = GlobalKey();
   QRViewController? qrViewController;
   bool correctScan = false;
@@ -151,6 +152,9 @@ class _ScannerState extends State<Scanner> {
                       if (correctScan == true) {
                         Vibration.vibrate(duration: 100);
                         correctScan = false;
+                        Timer(const Duration(seconds: 1), () {
+                          scrollLatest();
+                        });
                       } // Data Processing ..
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(
@@ -160,13 +164,18 @@ class _ScannerState extends State<Scanner> {
                         return Container();
                       } else if (snapshot.hasData) {
                         return ListView(
+                            controller: scrollControl,
                             physics: const BouncingScrollPhysics(),
                             children: snapshot.data!.docs.map((e) {
                               var itemTime = (e["takenTime"] as Timestamp)
                                   .toDate()
                                   .toString()
                                   .substring(0, 16);
-                              return ParticipantsTile(participantID:e['participantID'], takenTime: itemTime, eventID: widget.eventID.toString(),);
+                              return ParticipantsTile(
+                                participantID: e['participantID'],
+                                takenTime: itemTime,
+                                eventID: widget.eventID.toString(),
+                              );
                             }).toList());
                       } else {
                         return Center(
@@ -201,7 +210,8 @@ class _ScannerState extends State<Scanner> {
                 },
                 child: Text(
                   'Finish',
-                  style: GoogleFonts.inter(fontSize: 18.sp,fontWeight: FontWeight.w400),
+                  style: GoogleFonts.inter(
+                      fontSize: 18.sp, fontWeight: FontWeight.w400),
                 ),
               ),
             ],
@@ -221,6 +231,10 @@ class _ScannerState extends State<Scanner> {
         ),
       );
     }
+  }
+
+  void scrollLatest() {
+    scrollControl.jumpTo(scrollControl.position.maxScrollExtent);
   }
 
   void _onQRViewCreated(QRViewController controller) {

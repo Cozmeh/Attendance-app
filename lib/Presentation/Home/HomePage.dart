@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ftest/Presentation/Participants/Participants.dart';
+import 'package:ftest/Presentation/Scanner/Scanner.dart';
 import 'package:ftest/Widgets/EventCard.dart';
 
 import '../../Widgets/AppDrawer.dart';
@@ -12,6 +14,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //Navigator.pop(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
