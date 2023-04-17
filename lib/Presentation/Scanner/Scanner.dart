@@ -68,7 +68,11 @@ class _ScannerState extends State<Scanner> {
           appBar: AppBar(
             backgroundColor: Colors.white,
             centerTitle: true,
-            //title: const Text('Scanner'),
+            title: const Text(
+              'Scanner',
+              style: TextStyle(color: Colors.black),
+            ),
+            iconTheme: IconThemeData(color: Colors.black),
           ),
           body: Column(
             children: [

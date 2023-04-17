@@ -42,7 +42,7 @@ class _ParticipantsState extends State<Participants> {
     return Scaffold(
       backgroundColor: Color(0xffffffff),
       drawer: Drawer(
-        child:  AppDrawer(fAuth: FirebaseAuth.instance),
+        child:  AppDrawer(fAuth: FirebaseAuth.instance, pageTitle: "Participants",),
       ),
       appBar: AppBar(
         title: Text(
