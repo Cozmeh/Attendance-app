@@ -9,9 +9,9 @@ import '../Presentation/Scanner/Scanner.dart';
 class EventCard extends StatelessWidget{
 
   DateTime dateTime,endTime;
-  String imageUrl, eventName, departName, venue, page, id;
+  String imageUrl, eventName, departName, venue, page, id,desc;
 
-  EventCard({required this.imageUrl, required this.eventName, required this.endTime, required this.departName, required this.venue, required this.dateTime, required this.page, required this.id});
+  EventCard({required this.imageUrl,required this.desc,required this.eventName, required this.endTime, required this.departName, required this.venue, required this.dateTime, required this.page, required this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +55,7 @@ class EventCard extends StatelessWidget{
                       flex: 2,
                       child: ClipRRect(
                         borderRadius: const BorderRadius.only(topLeft: Radius.circular(11), topRight: Radius.circular(11)),
-                          child: Image.asset('assets/xactitude.jpg'))
+                          child: Image.network(imageUrl))
                       //child: Image.network('imageUrl'))
                   ),
                   Expanded(
@@ -167,7 +167,7 @@ class EventCard extends StatelessWidget{
                                 SizedBox(
                                   width: MediaQuery.of(context).size.width*.75,
                                   height: MediaQuery.of(context).size.height*.1,
-                                  child: Text("event details will be here i hav emade it multi line hope it works proper ly and doe snot give any anomalies aor in our languge bugs",
+                                  child: Text(desc,
                                     textAlign: TextAlign.justify,
                                     style: TextStyle(color: Color.fromRGBO(90, 90, 90, 1),
                                     fontFamily: 'Inter',

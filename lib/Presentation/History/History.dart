@@ -37,14 +37,15 @@ class History extends StatelessWidget {
                   return ListView.builder(
                       itemCount: details.length,
                       itemBuilder: (ctx, index) =>
-                      details[index]['endTime'].toDate().isBefore(DateTime.now())?
+                      DateTime.fromMillisecondsSinceEpoch(details[index]['endTime'] * 1000).isBefore(DateTime.now())?
                           EventCard(
-                              endTime:details[index]['endTime'].toDate(),
+                              endTime:DateTime.fromMillisecondsSinceEpoch(details[index]['endTime'] * 1000),
                               imageUrl: details[index]['backDrop'],
                               eventName: details[index]['eventName'],
+                              desc: details[index]['description'],
                               departName :details[index]['deptName'],
                               venue: details[index]['venue'],
-                              dateTime: details[index]['startTime'].toDate(),
+                              dateTime: DateTime.fromMillisecondsSinceEpoch(details[index]['startTime'] * 1000),
                               id: details[index]['eventID'],
                               page: 'history')
                           : SizedBox(width: 0,)
