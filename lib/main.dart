@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,6 +8,7 @@ import 'package:ftest/Presentation/Home/HomePage.dart';
 import 'package:ftest/firebase_options.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 // firebase
 import 'package:firebase_core/firebase_core.dart';
 import 'package:share/share.dart';
@@ -14,22 +16,19 @@ import 'helper.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-   await Firebase.initializeApp(
+  await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(
-    MaterialApp(
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      primaryColor: Colors.black,
-      backgroundColor: Colors.white,
-      appBarTheme: const AppBarTheme(
-        backgroundColor : Colors.white,
-        elevation: 0,
-
-        )
-      ),
-    home: Home()));
+  runApp(MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+          primaryColor: Colors.black,
+          backgroundColor: Colors.white,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.white,
+            elevation: 0,
+          )),
+      home: Home()));
 }
 
 class Home extends StatefulWidget {
@@ -40,38 +39,56 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  var isLogin=false;
+  var isLogin = false;
+  final Connectivity _connectivity = Connectivity();
 
   @override
   void initState() {
     isLogedin();
-    // TODO: implement initState
+    _connectivity.onConnectivityChanged.listen(connectionChecker);
     super.initState();
   }
 
-  isLogedin() async{
+  void connectionChecker(ConnectivityResult connectivityResult) {
+    if (connectivityResult == ConnectivityResult.none) {
+      var snackBar = const SnackBar(
+        duration: Duration(days: 1),
+        content: Center(
+          child: Text("No Internet Connection"),
+        ),
+        backgroundColor: Colors.red,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      Timer(const Duration(seconds: 1), () {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      });
+    }
+  }
+
+  isLogedin() async {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if(user!=null && mounted){
+      if (user != null && mounted) {
         setState(() {
-          isLogin=true;
+          isLogin = true;
         });
-      }else{
+      } else {
         setState(() {
-            isLogin=false;
+          isLogin = false;
         });
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: isLogin==false? Login():HomePage(),
+      body: isLogin == false ? Login() : HomePage(),
     );
   }
 }
 
-
-// Existing Code - Don't make any changes in this code  
+// Existing Code - Don't make any changes in this code
 class MyHome extends StatelessWidget {
   const MyHome({Key? key}) : super(key: key);
 
