@@ -83,28 +83,27 @@ class _AppDrawerState extends State<AppDrawer> {
                               MaterialPageRoute(
                                   builder: (context) => const  HomePage()));
                         },
-                        leading: const Icon(Icons.history),
+                        leading: const Icon(Icons.home),
                         title: Text(
                           "Home",
                           style: GoogleFonts.inter(
                               fontSize: 20.0, fontWeight: FontWeight.w400),
                         ),
-                      )
-                  )
-              ),
+                      ))),
               Expanded(
-                  child: Container(
-                    constraints: BoxConstraints(
-                      minHeight: MediaQuery.of(context).size.height * 0.25,
-                      maxHeight: MediaQuery.of(context).size.height * 0.45,
-                    ),
-                    alignment: Alignment.bottomCenter,
+                child: Container(
+                  constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height * 0.25,
+                    maxHeight: MediaQuery.of(context).size.height * 0.45,
                   ),
+                  alignment: Alignment.bottomCenter,
+                ),
               ), //this is the empty space between the button and the list items
               Container(
                   margin: const EdgeInsets.only(bottom: 20.0),
                   width: 200,
-                  decoration: BoxDecoration(border: Border.all(color: const Color(0xffb91c1c))),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: const Color(0xffb91c1c))),
                   child: TextButton(
                     child: Text(
                       "Sign Out",
@@ -117,16 +116,14 @@ class _AppDrawerState extends State<AppDrawer> {
                     onPressed: () async {
                       await AuthRepo.signOut()
                           .whenComplete(() => print("completes"));
-                      SchedulerBinding.instance.addPostFrameCallback(
-                              (_) => Navigator.of(context).pushReplacement(
+                      SchedulerBinding.instance.addPostFrameCallback((_) =>
+                          Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                   builder: (context) => const Login())));
                     },
-                  )
-              ),
+                  )),
             ],
-          )
-      ),
+          )),
     );
   }
 }
