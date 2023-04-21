@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -17,11 +19,11 @@ class HomePage extends StatelessWidget {
     //Navigator.pop(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Home',
           style: TextStyle(color: Colors.black),
         ),
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       drawer: Drawer(
         backgroundColor: Colors.black,
@@ -39,31 +41,44 @@ class HomePage extends StatelessWidget {
               stream: FirebaseFirestore.instance
                   .collection('Event')
                   .where('coordinators',
-                      arrayContains: FirebaseAuth.instance.currentUser!.email)
+                  arrayContains: FirebaseAuth.instance.currentUser!.email)
                   .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else if (!snapshot.hasData) {
                   return Container();
                 } else if (snapshot.hasData) {
+                  bool button;
                   return ListView(
                       children: snapshot.data!.docs.map((e) {
-                    return DateTime.fromMillisecondsSinceEpoch(e['endTime'] * 1000).isAfter(DateTime.now())
-                        ? EventCard(
-                            endTime:DateTime.fromMillisecondsSinceEpoch(e['startTime'] * 1000),
-                            imageUrl: e['backDrop'],
-                            eventName: e['eventName'],
-                            departName: e['deptName'],
-                            venue: e['venue'],
-                            dateTime:DateTime.fromMillisecondsSinceEpoch(e['startTime'] * 1000),
-                            id: e.id.toString(),
-                            page: 'history',
-                            desc: '',
-                          )
-                        : SizedBox();
-                  }).toList());
+                        String eventTense  = checkDate(e['eventDate']);
+                        if (eventTense != "past"){
+                          print(eventTense);
+                          List l = checkTime(e['startTime'], e['endTime']);
+                          if((eventTense ==  "today" && l[1] == "over") == false) {
+                            if (eventTense == "future"){
+                              button = false;
+                            }else if (l[1] == "pending"){
+                              button = false;
+                            }else{
+                              button = true;
+                            }
+                            return EventCard(
+                                imageUrl: e['backDrop'],
+                                eventName: e['eventName'],
+                                departName: e['deptName'],
+                                date: e['eventDate'],
+                                venue: e['venue'],
+                                time: l[1],
+                                description: e['description'],
+                                button: button,
+                                id: e.id);
+                          }
+                        }
+                        return const SizedBox();
+                      }).toList());
                 } else {
                   return Container();
                 }
@@ -74,5 +89,38 @@ class HomePage extends StatelessWidget {
       ),
       //)
     );
+  }
+
+  String checkDate(String eventDate){
+    DateTime today =  DateTime.now();
+    int eventYear = int.parse(eventDate.substring(0,4));
+    int eventMonth = int.parse(eventDate.substring(5,7));
+    int eventDay = int.parse(eventDate.substring(8));
+    if (today.year > eventYear){
+      return "past";
+    }else if ((today.year == eventYear) && (today.month > eventMonth)){
+      return "past";
+    }else if((today.year == eventYear) && (today.month == eventMonth) && (today.day > eventDay)){
+      return "past";
+    }else if((today.year == eventYear) && (today.month == eventMonth) && (today.day == eventDay)){
+      return "today";
+    }else{
+      return "future";
+    }
+  }
+
+  List checkTime(int startTime, int endTime){
+    DateTime today = DateTime.now();
+    DateTime start = DateTime.fromMillisecondsSinceEpoch(startTime >= 1000000000 ? startTime : startTime * 1000);
+    DateTime end = DateTime.fromMillisecondsSinceEpoch(endTime >= 1000000000 ? endTime : startTime * 1000);
+    String eventTime = '${start.hour % 12 == 0 ? 12 : start.hour % 12}:${start.minute < 10 ? '0' : ''}${start.minute} ${start.hour < 12 ? 'AM' : 'PM'}';
+
+    if ((today.hour < start.hour) || (today.hour == start.hour && today.minute < start.minute)){
+      return ["pending", eventTime];
+    }else if ((today.hour == start.hour && today.minute > start.minute) || (today.hour > start.hour && today.hour < end.hour) || (today.hour == end.hour && today.minute < end.minute)){
+      return ["running",eventTime];
+    }else{
+      return ["over",eventTime];
+    }
   }
 }
