@@ -1,5 +1,4 @@
 import 'dart:ffi';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -8,7 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ftest/Presentation/Participants/Participants.dart';
 import 'package:ftest/Presentation/Scanner/Scanner.dart';
 import 'package:ftest/Widgets/EventCard.dart';
-
 import '../../Widgets/AppDrawer.dart';
 
 class HomePage extends StatelessWidget {
@@ -53,8 +51,10 @@ class HomePage extends StatelessWidget {
                   bool button;
                   return ListView(
                       children: snapshot.data!.docs.map((e) {
+                        print(e);
                         String eventTense  = checkDate(e['eventDate']);
-                        if (eventTense != "past"){
+                        if(!DateTime.fromMillisecondsSinceEpoch(e["endTime"]>= 1000000000 ?e["endTime"]:e["endTime"]*1000 ).isBefore(DateTime.now())){
+                        //if (eventTense != "past"){
                           print(eventTense);
                           List l = checkTime(e['startTime'], e['endTime']);
                           if((eventTense ==  "today" && l[1] == "over") == false) {
@@ -66,6 +66,7 @@ class HomePage extends StatelessWidget {
                               button = true;
                             }
                             return EventCard(
+                                isOpenForall: e['openForAll'],
                                 imageUrl: e['backDrop'],
                                 eventName: e['eventName'],
                                 departName: e['deptName'],
@@ -73,7 +74,7 @@ class HomePage extends StatelessWidget {
                                 venue: e['venue'],
                                 time: l[1],
                                 description: e['description'],
-                                button: button,
+                                button: DateTime.fromMillisecondsSinceEpoch(e['startTime']).isBefore(DateTime.now()) && DateTime.fromMillisecondsSinceEpoch(e['endTime']).isAfter(DateTime.now()),
                                 id: e.id);
                           }
                         }

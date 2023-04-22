@@ -60,7 +60,9 @@ class History extends StatelessWidget {
                                 time: l[1],
                                 description: e['description'],
                                 button: button,
-                                id: e.id);
+                                id: e.id,
+                                isOpenForall: e['openForAll'],
+                                );
                         }
                         return const SizedBox();
                       }).toList());

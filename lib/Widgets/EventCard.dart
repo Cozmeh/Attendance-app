@@ -7,7 +7,7 @@ import '../Presentation/Scanner/Scanner.dart';
 class EventCard extends StatelessWidget{
 
   String imageUrl, eventName, departName, date, venue, time, description, id;
-  bool button;
+  bool button,isOpenForall;
 
   EventCard({required this.imageUrl,
     required this.eventName,
@@ -17,7 +17,9 @@ class EventCard extends StatelessWidget{
     required this.venue,
     required this.description,
     required this.button,
-    required this.id});
+    required this.id,
+    required this.isOpenForall
+    });
 
   @override
   Widget build(BuildContext context) {
@@ -152,8 +154,8 @@ class EventCard extends StatelessWidget{
                             Row(
                               children:  [
                                 SizedBox(
-                                  width: 320,
-                                  height: 130,
+                                  width: MediaQuery.of(context).size.width*.8,
+                                  height: MediaQuery.of(context).size.height*.1,
                                   child: Text(description,
                                     textAlign: TextAlign.justify,
                                     style: const TextStyle(color: Color.fromRGBO(90, 90, 90, 1),
@@ -172,10 +174,13 @@ class EventCard extends StatelessWidget{
                                 Expanded(
                                     flex: 7,
                                     child: ElevatedButton(
-                                      onPressed: button? () { Navigator.of(context).push(MaterialPageRoute(
-                                        builder: (context) => Scanner(eventID: id),
+                                      onPressed: button ? () { 
+                                        Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) => Scanner(
+                                          eventID: id,
+                                          isOpenForall: isOpenForall),
                                       ));
-                                      }: null,
+                                      } : null,
                                       style: ElevatedButton.styleFrom(
                                           backgroundColor: const Color.fromRGBO(29, 78, 216, 1),
                                           disabledForegroundColor: const Color.fromRGBO(29, 78, 216, 1).withOpacity(0.38), disabledBackgroundColor: const Color.fromRGBO(29, 78, 216, 1).withOpacity(0.12)
@@ -196,12 +201,12 @@ class EventCard extends StatelessWidget{
                                     flex: 7,
                                     child: ElevatedButton(
                                       onPressed: () {Navigator.of(context).push(MaterialPageRoute(
-                                        builder: (context) => Participants(eventID: id),
+                                        builder: (context) => Participants(eventID: id,isOpenForall: isOpenForall),
                                       ));},
                                       style: const ButtonStyle(
                                           backgroundColor: MaterialStatePropertyAll(Color.fromRGBO(29, 78, 216, 1))
                                       ),
-                                      child: const Text('View Participents',
+                                      child: const Text('View Participants',
                                         style: TextStyle(color: Color.fromRGBO(255, 255, 255, 1),
                                             fontFamily: 'Inter',
                                             height: 1.2,

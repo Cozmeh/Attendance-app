@@ -12,7 +12,8 @@ import '../../Widgets/AppDrawer.dart';
 
 class Participants extends StatefulWidget {
   String? eventID;
-  Participants({super.key, required this.eventID});
+  bool isOpenForall;
+  Participants({super.key, required this.eventID,required this.isOpenForall});
 
   @override
   State<Participants> createState() => _ParticipantsState();
@@ -100,12 +101,12 @@ class _ParticipantsState extends State<Participants> {
                         ? const Center(child: CircularProgressIndicator())
                         : ListView(
                             children: snapshot.data!.docs.map((e) {
-                            var time = (e["takenTime"] as Timestamp).toDate().toString();
+                            var time = DateTime.fromMillisecondsSinceEpoch(e["takenTime"]>= 1000000000 ?e["takenTime"]:e["takenTime"]*1000 ).toString();
                             items.add([e['participantID'], e["takenBy"], time, e["isPresent"].toString()]);
                             if (number == "") {
-                              return ParticipantsTile(participantID: e['participantID'], takenTime: time);
+                              return ParticipantsTile(participantID: e['participantID'], takenTime: time,isPresent: e['isPresent'],isOpenForall: widget.isOpenForall);
                             } else if (e['participantID'].toString().toUpperCase().contains(number.toString().toUpperCase())) {
-                              return ParticipantsTile(participantID: e['participantID'], takenTime: time);
+                              return ParticipantsTile(participantID: e['participantID'], takenTime: time,isPresent: e['isPresent'],isOpenForall:widget.isOpenForall,);
                             } else {
                               return Container();
                             }

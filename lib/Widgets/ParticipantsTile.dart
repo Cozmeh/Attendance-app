@@ -5,10 +5,13 @@ import 'package:google_fonts/google_fonts.dart';
 
 class ParticipantsTile extends StatefulWidget {
   String participantID, takenTime, eventID;
+  bool isPresent, isOpenForall;
   ParticipantsTile(
       {super.key,
       required this.participantID,
       required this.takenTime,
+      required this.isPresent,
+      required this.isOpenForall,
       this.eventID = ""});
 
   @override
@@ -23,6 +26,10 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
       shadowColor: const Color(0xff000000),
       color: const Color(0xfff1f1f1),
       child: ListTile(
+        leading: !widget.isOpenForall?
+        widget.isPresent? const Icon(Icons.check,color: Colors.green,)
+        : const Icon(Icons.close,color: Colors.red)
+        :const Icon(Icons.check,color: Colors.green,),
         tileColor: Colour.tileColor,
         dense: true,
         title: Text(

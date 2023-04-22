@@ -16,7 +16,8 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class Scanner extends StatefulWidget {
   String? eventID;
-  Scanner({super.key, required this.eventID});
+  bool isOpenForall;
+  Scanner({super.key, required this.eventID,required this.isOpenForall});
   @override
   State<Scanner> createState() => _ScannerState();
 }
@@ -33,26 +34,8 @@ class _ScannerState extends State<Scanner> {
   int totalCount = 0;
   String status = "";
 
-  Future<int> countProducts() async {
-    print("count products");
-    final CollectionReference<Map<String, dynamic>> productList =
-        FirebaseFirestore.instance
-            .collection('Event')
-            .doc(widget.eventID)
-            .collection("Participants");
-    AggregateQuerySnapshot query = await productList.count().get();
-    print('The number of products: ${query.count}');
-    setState(() {
-      totalCount = query.count;
-    });
-    print(query.count);
-    return query.count;
-  }
-
   @override
   void initState() {
-    //qrViewController?.resumeCamera();
-    //countProducts();
     // TODO: implement initState
     super.initState();
   }
@@ -167,11 +150,11 @@ class _ScannerState extends State<Scanner> {
                             controller: scrollControl,
                             physics: const BouncingScrollPhysics(),
                             children: snapshot.data!.docs.map((e) {
-                              var itemTime = (e["takenTime"] as Timestamp)
-                                  .toDate()
-                                  .toString()
+                              var itemTime = (DateTime.fromMillisecondsSinceEpoch(e["takenTime"]>= 1000000000 ?e["takenTime"]:e["takenTime"]*1000 ).toString())
                                   .substring(0, 16);
                               return ParticipantsTile(
+                                isOpenForall: widget.isOpenForall,
+                                isPresent: e['isPresent'],
                                 participantID: e['participantID'],
                                 takenTime: itemTime,
                                 eventID: widget.eventID.toString(),
@@ -245,6 +228,40 @@ class _ScannerState extends State<Scanner> {
         qrViewController?.stopCamera();
         if (scanData.code != null) {
           setState(() => result = scanData.code);
+          if(!widget.isOpenForall){
+            var sc = await FirebaseFirestore.instance
+              .collection("Event")
+              .doc(widget.eventID)
+              .collection("Participants")
+              .doc(scanData.code);
+            if ((await FirebaseFirestore.instance
+                  .collection("Event")
+                  .doc(widget.eventID)
+                  .collection("Participants")
+                  .doc(scanData.code)
+                  .get())
+              .exists) {
+            sc.update({
+                'takenTime': DateTime.now().millisecondsSinceEpoch,
+                'isPresent': true,
+                'takenBy': FirebaseAuth.instance.currentUser!.email,
+                'participantID': scanData.code
+            });
+             setState(() {
+              scanStatus = Colors.green;
+              status = "$result Attendance Marked";
+              correctScan = true;
+            });
+            qrViewController?.resumeCamera();
+            }else{
+              setState(() {
+                scanStatus = Colors.red;
+                status = "$result is not eligible for this exam";
+              });
+              qrViewController?.resumeCamera();
+            }
+            //if the event is open for all
+          }else{
           var a = await FirebaseFirestore.instance
               .collection("Event")
               .doc(widget.eventID)
@@ -279,7 +296,7 @@ class _ScannerState extends State<Scanner> {
                 .doc(scanData.code);
             participantref.set(
               {
-                'takenTime': DateTime.now(),
+                'takenTime': DateTime.now().millisecondsSinceEpoch,
                 'isPresent': true,
                 'takenBy': FirebaseAuth.instance.currentUser!.email,
                 'participantID': scanData.code
@@ -292,8 +309,8 @@ class _ScannerState extends State<Scanner> {
             });
             qrViewController?.resumeCamera();
           }
-          //
-        }
+         } 
+         }
       },
     );
   }
