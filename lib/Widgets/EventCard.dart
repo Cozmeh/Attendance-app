@@ -1,62 +1,48 @@
-// ignore_for_file: unrelated_type_equality_checks
-
-
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../Presentation/Participants/Participants.dart';
 import '../Presentation/Scanner/Scanner.dart';
 
 // ignore: must_be_immutable
 class EventCard extends StatelessWidget{
 
-  DateTime dateTime,endTime;
-  String imageUrl, eventName, departName, venue, page, id,desc;
+  String imageUrl, eventName, departName, date, venue, time, description, id;
+  bool button;
 
-  EventCard({required this.imageUrl,required this.desc,required this.eventName, required this.endTime, required this.departName, required this.venue, required this.dateTime, required this.page, required this.id});
+  EventCard({required this.imageUrl,
+    required this.eventName,
+    required this.departName,
+    required this.date,
+    required this.time,
+    required this.venue,
+    required this.description,
+    required this.button,
+    required this.id});
 
   @override
   Widget build(BuildContext context) {
-    bool disableButton = true;
-    String date = '${dateTime.day}-${dateTime.month}-${dateTime.year}';
-    String time = "";
-    String minute = "";
-    if(dateTime.minute.toInt() > 9) {
-      minute = dateTime.minute.toString();
-    }else{
-      minute  = '0${dateTime.minute}';
-    }
-    if(dateTime.hour.toInt() > 12){
-      // ignore: prefer_interpolation_to_compose_strings
-      time = (dateTime.hour.toInt() - 12).toString() + ':' + minute + " PM";
-    }else if(dateTime.hour.toString() == 12){
-      // ignore: prefer_interpolation_to_compose_strings
-      time = dateTime.hour.toString() + ':' + minute + " PM";
-    }else{
-      // ignore: prefer_interpolation_to_compose_strings
-      time = dateTime.hour.toString() + ':' + minute + " AM";
-    }
-    if(page == 'history'){
-      disableButton = false;
-    }
-    return  Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
+    //return ScreenUtilInit(
+        //designSize: const Size(477, 500),
+    //splitScreenMode: true,
+    //builder: (context, child) {
+      return  Container(
         constraints: const BoxConstraints(minHeight: 0, maxHeight: 700.0),
         child: Card(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(11)
+              borderRadius: BorderRadius.circular(11)
           ),
           elevation:30,
           shadowColor: const Color.fromRGBO(0, 0, 0, 0.3),
           child: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.8,
+              width: MediaQuery.of(context).size.width * 0.8,
               child: Column(
                 children: [
                   Expanded(
                       flex: 2,
                       child: ClipRRect(
-                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(11), topRight: Radius.circular(11)),
+                          borderRadius: const BorderRadius.only(topLeft: Radius.circular(11), topRight: Radius.circular(11)),
+                          //child: Image.asset('assets/xactitude.jpg'))
                           child: Image.network(imageUrl))
-                      //child: Image.network('imageUrl'))
                   ),
                   Expanded(
                       flex: 3,
@@ -67,11 +53,11 @@ class EventCard extends StatelessWidget{
                             Row(
                               children: [
                                 Text(eventName,
-                                style: const TextStyle(color: Color.fromRGBO(58, 58, 58, 1),
-                                fontFamily: 'Inter',
-                                height: 1.2,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w500),)
+                                  style: const TextStyle(color: Color.fromRGBO(58, 58, 58, 1),
+                                      fontFamily: 'Inter',
+                                      height: 1.2,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w500),)
                               ],),
                             Row(
                               children: [
@@ -153,7 +139,8 @@ class EventCard extends StatelessWidget{
                                   ],),
                                 Column(
                                   children: [
-                                    Text(time, textAlign: TextAlign.right,
+                                    Text(time,
+                                      textAlign: TextAlign.right,
                                       style: const TextStyle(color: Color.fromRGBO(90, 90, 90, 1),
                                           fontFamily: 'Inter',
                                           height: 1.2,
@@ -163,17 +150,17 @@ class EventCard extends StatelessWidget{
                               ],),
                             const SizedBox(height: 15,),
                             Row(
-                              children: [
+                              children:  [
                                 SizedBox(
-                                  width: MediaQuery.of(context).size.width*.75,
-                                  height: MediaQuery.of(context).size.height*.1,
-                                  child: Text(desc,
+                                  width: 320,
+                                  height: 130,
+                                  child: Text(description,
                                     textAlign: TextAlign.justify,
-                                    style: TextStyle(color: Color.fromRGBO(90, 90, 90, 1),
-                                    fontFamily: 'Inter',
-                                    height: 1.2,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w400),
+                                    style: const TextStyle(color: Color.fromRGBO(90, 90, 90, 1),
+                                        fontFamily: 'Inter',
+                                        height: 1.2,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w400),
                                     overflow: TextOverflow.clip,
                                   ),
                                 ),
@@ -183,48 +170,43 @@ class EventCard extends StatelessWidget{
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Expanded(
-                                  flex: 7,
+                                    flex: 7,
                                     child: ElevatedButton(
-                                        onPressed: 
-                                                     (dateTime)
-                                              .isBefore(DateTime.now()) &&
-                                          (endTime)
-                                              .isAfter(DateTime.now()) ? 
-                                        () { Navigator.of(context).push(MaterialPageRoute(
-                                                      builder: (context) => Scanner(eventID: id),
-                                                    ));
-                                                    }: null,
+                                      onPressed: button? () { Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) => Scanner(eventID: id),
+                                      ));
+                                      }: null,
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromRGBO(29, 78, 216, 1),
+                                          backgroundColor: const Color.fromRGBO(29, 78, 216, 1),
                                           disabledForegroundColor: const Color.fromRGBO(29, 78, 216, 1).withOpacity(0.38), disabledBackgroundColor: const Color.fromRGBO(29, 78, 216, 1).withOpacity(0.12)
                                       ),
-                                        child: const Text('Open Scanner',
-                                          style: TextStyle(color: Color.fromRGBO(255, 255, 255, 1),
-                                              fontFamily: 'Inter',
-                                              height: 1.2,
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w400),
-                                        ),
+                                      child: const Text('Open Scanner',
+                                        style: TextStyle(color: Color.fromRGBO(255, 255, 255, 1),
+                                            fontFamily: 'Inter',
+                                            height: 1.2,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w400),
+                                      ),
                                     )
                                 ),
                                 const Spacer(
                                   flex: 1,
                                 ),
                                 Expanded(
-                                  flex: 7,
+                                    flex: 7,
                                     child: ElevatedButton(
-                                        onPressed: () {Navigator.of(context).push(MaterialPageRoute(
-                                          builder: (context) => Participants(eventID: id),
-                                        ));},
+                                      onPressed: () {Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) => Participants(eventID: id),
+                                      ));},
                                       style: const ButtonStyle(
-                                        backgroundColor: MaterialStatePropertyAll(Color.fromRGBO(29, 78, 216, 1))
+                                          backgroundColor: MaterialStatePropertyAll(Color.fromRGBO(29, 78, 216, 1))
                                       ),
-                                        child: const Text('View Participants',
-                                          style: TextStyle(color: Color.fromRGBO(255, 255, 255, 1),
-                                              fontFamily: 'Inter',
-                                              height: 1.2,
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w400),),
+                                      child: const Text('View Participents',
+                                        style: TextStyle(color: Color.fromRGBO(255, 255, 255, 1),
+                                            fontFamily: 'Inter',
+                                            height: 1.2,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w400),),
                                     )
                                 )
                               ],
@@ -234,10 +216,10 @@ class EventCard extends StatelessWidget{
                       )
                   )],
               )
-            ),
           ),
-      ),
-    );
-  }
-
+        ),
+      );
+    }
+    //);
+  //}
 }
