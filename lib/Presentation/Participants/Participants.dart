@@ -53,7 +53,7 @@ class _ParticipantsState extends State<Participants> {
         iconTheme: IconThemeData(color: Colors.black),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: showSearchBar ? Icon(Icons.cancel) : Icon(Icons.search),
             onPressed: () {
               setState(() {
                 showSearchBar = !showSearchBar;
@@ -106,7 +106,7 @@ class _ParticipantsState extends State<Participants> {
                             if (number == "") {
                               return ParticipantsTile(participantID: e['participantID'], takenTime: time,isPresent: e['isPresent'],isOpenForall: widget.isOpenForall);
                             } else if (e['participantID'].toString().toUpperCase().contains(number.toString().toUpperCase())) {
-                              return ParticipantsTile(participantID: e['participantID'], takenTime: time,isPresent: e['isPresent'],isOpenForall:widget.isOpenForall,);
+                              return ParticipantsTile(participantID: e['participantID'], takenTime: time,isPresent: e['isPresent'],isOpenForall:widget.isOpenForall);
                             } else {
                               return Container();
                             }
