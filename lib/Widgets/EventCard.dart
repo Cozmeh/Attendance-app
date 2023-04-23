@@ -268,7 +268,7 @@ class _EventCardState extends State<EventCard> {
                       physics: const BouncingScrollPhysics(),
                       child: Text(
                         widget.description,
-                        textAlign: TextAlign.left,
+                        textAlign: TextAlign.justify,
                         overflow: TextOverflow.clip,
                         style: TextStyle(
                             color: const Color.fromRGBO(58, 58, 58, 1),
