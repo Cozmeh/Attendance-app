@@ -46,10 +46,9 @@ class History extends StatelessWidget {
                   bool button;
                   return ListView(
                       children: snapshot.data!.docs.map((e) {
-                        String eventTense  = checkDate(e['eventDate']);
                         List l = checkTime(e['startTime'], e['endTime']);
-                        if ((eventTense == "past")  || (eventTense == "today" && l[1] == "over")){
-                          print(eventTense);
+                        if (l[0] == "over"){
+                          print(l[0]);
                           button = false;
                             return EventCard(
                                 imageUrl: e['backDrop'],
@@ -78,33 +77,15 @@ class History extends StatelessWidget {
     );
   }
 
-  String checkDate(String eventDate){
-    DateTime today =  DateTime.now();
-    int eventYear = int.parse(eventDate.substring(0,4));
-    int eventMonth = int.parse(eventDate.substring(5,7));
-    int eventDay = int.parse(eventDate.substring(8));
-    if (today.year > eventYear){
-      return "past";
-    }else if ((today.year == eventYear) && (today.month > eventMonth)){
-      return "past";
-    }else if((today.year == eventYear) && (today.month == eventMonth) && (today.day > eventDay)){
-      return "past";
-    }else if((today.year == eventYear) && (today.month == eventMonth) && (today.day == eventDay)){
-      return "today";
-    }else{
-      return "future";
-    }
-  }
-
   List checkTime(int startTime, int endTime){
-    DateTime date = DateTime.now();
+    DateTime today = DateTime.now();
     DateTime start = DateTime.fromMillisecondsSinceEpoch(startTime >= 1000000000 ? startTime : startTime * 1000);
     DateTime end = DateTime.fromMillisecondsSinceEpoch(endTime >= 1000000000 ? endTime : startTime * 1000);
     String eventTime = '${start.hour % 12 == 0 ? 12 : start.hour % 12}:${start.minute < 10 ? '0' : ''}${start.minute} ${start.hour < 12 ? 'AM' : 'PM'}';
 
-    if ((date.hour < start.hour) || (date.hour == start.hour && date.minute < start.minute)){
+    if (start.isAfter(today)){
       return ["pending", eventTime];
-    }else if ((date.hour == start.hour && date.minute > start.minute) || (date.hour > start.hour && date.hour < end.hour) || (date.hour == end.hour && date.minute < end.minute)){
+    }else if (start.isBefore(today) && end.isAfter(today)){
       return ["running",eventTime];
     }else{
       return ["over",eventTime];
