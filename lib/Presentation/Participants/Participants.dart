@@ -13,7 +13,7 @@ import '../../Widgets/AppDrawer.dart';
 class Participants extends StatefulWidget {
   String? eventID;
   bool isOpenForall;
-  Participants({super.key, required this.eventID,required this.isOpenForall});
+  Participants({super.key, required this.eventID, required this.isOpenForall});
 
   @override
   State<Participants> createState() => _ParticipantsState();
@@ -43,12 +43,16 @@ class _ParticipantsState extends State<Participants> {
     return Scaffold(
       backgroundColor: Color(0xffffffff),
       drawer: Drawer(
-        child:  AppDrawer(fAuth: FirebaseAuth.instance, pageTitle: "Participants",),
+        child: AppDrawer(
+          fAuth: FirebaseAuth.instance,
+          pageTitle: "Participants",
+        ),
       ),
       appBar: AppBar(
         title: Text(
-            "Participants",
-          style: GoogleFonts.inter(color: Color(0xff404040),fontWeight: FontWeight.w500),
+          "Participants",
+          style: GoogleFonts.inter(
+              color: Color(0xff404040), fontWeight: FontWeight.w500),
         ),
         iconTheme: IconThemeData(color: Colors.black),
         actions: [
@@ -72,7 +76,7 @@ class _ParticipantsState extends State<Participants> {
         child: Column(
           children: <Widget>[
             Visibility(
-              visible : showSearchBar,
+              visible: showSearchBar,
               child: Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -82,9 +86,7 @@ class _ParticipantsState extends State<Participants> {
                   padding: const EdgeInsets.only(left: 10.0, right: 10.0),
                   child: TextField(
                     decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.search),
-                      labelText: 'Roll No.'
-                  ),
+                        prefixIcon: Icon(Icons.search), labelText: 'Roll No.'),
                     onChanged: (roll) => setState(() => number = roll),
                   ),
                 ),
@@ -93,25 +95,47 @@ class _ParticipantsState extends State<Participants> {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.8,
               child: Padding(
-                padding: const EdgeInsets.only(left: 21.0, right: 21.0),
+                padding: const EdgeInsets.only(left: 25.0, right: 25.0),
                 child: StreamBuilder(
-                  stream: participants.orderBy('takenTime', descending: false).snapshots(),
+                  stream: participants
+                      .orderBy('takenTime', descending: false)
+                      .snapshots(),
                   builder: (context, snapshot) {
                     return (snapshot.connectionState == ConnectionState.waiting)
                         ? const Center(child: CircularProgressIndicator())
                         : ListView(
+                            physics: const BouncingScrollPhysics(),
                             children: snapshot.data!.docs.map((e) {
-                            var time = DateTime.fromMillisecondsSinceEpoch(e["takenTime"]>= 1000000000 ?e["takenTime"]:e["takenTime"]*1000 ).toString();
-                            items.add([e['participantID'], e["takenBy"], time, e["isPresent"].toString()]);
-                            if (number == "") {
-                              return ParticipantsTile(participantID: e['participantID'], takenTime: time,isPresent: e['isPresent'],isOpenForall: widget.isOpenForall);
-                            } else if (e['participantID'].toString().toUpperCase().contains(number.toString().toUpperCase())) {
-                              return ParticipantsTile(participantID: e['participantID'], takenTime: time,isPresent: e['isPresent'],isOpenForall:widget.isOpenForall);
-                            } else {
-                              return Container();
-                            }
-                          }).toList()
-                    );
+                              var time = DateTime.fromMillisecondsSinceEpoch(
+                                      e["takenTime"] >= 1000000000
+                                          ? e["takenTime"]
+                                          : e["takenTime"] * 1000)
+                                  .toString();
+                              items.add([
+                                e['participantID'],
+                                e["takenBy"],
+                                time,
+                                e["isPresent"].toString()
+                              ]);
+                              if (number == "") {
+                                return ParticipantsTile(
+                                    participantID: e['participantID'],
+                                    takenTime: time,
+                                    isPresent: e['isPresent'],
+                                    isOpenForall: widget.isOpenForall);
+                              } else if (e['participantID']
+                                  .toString()
+                                  .toUpperCase()
+                                  .contains(number.toString().toUpperCase())) {
+                                return ParticipantsTile(
+                                    participantID: e['participantID'],
+                                    takenTime: time,
+                                    isPresent: e['isPresent'],
+                                    isOpenForall: widget.isOpenForall);
+                              } else {
+                                return Container();
+                              }
+                            }).toList());
                   },
                 ),
               ),
