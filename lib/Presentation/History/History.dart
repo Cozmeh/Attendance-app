@@ -1,15 +1,9 @@
-import 'dart:ffi';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ftest/Presentation/Participants/Participants.dart';
-import 'package:ftest/Presentation/Scanner/Scanner.dart';
 import 'package:ftest/Widgets/EventCard.dart';
-
-import '../../Widgets/AppDrawer.dart';
 
 class History extends StatelessWidget {
   const History({super.key});
@@ -34,7 +28,7 @@ class History extends StatelessWidget {
               stream: FirebaseFirestore.instance
                   .collection('Event')
                   .where('coordinators',
-                  arrayContains: FirebaseAuth.instance.currentUser!.email)
+                      arrayContains: FirebaseAuth.instance.currentUser!.email)
                   .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -45,23 +39,24 @@ class History extends StatelessWidget {
                 } else if (snapshot.hasData) {
                   bool button;
                   return ListView(
+                      physics: const BouncingScrollPhysics(),
                       children: snapshot.data!.docs.map((e) {
                         List l = checkTime(e['startTime'], e['endTime']);
-                        if (l[0] == "over"){
+                        if (l[0] == "over") {
                           print(l[0]);
                           button = false;
-                            return EventCard(
-                                imageUrl: e['backDrop'],
-                                eventName: e['eventName'],
-                                departName: e['deptName'],
-                                date: e['eventDate'],
-                                venue: e['venue'],
-                                time: l[1],
-                                description: e['description'],
-                                button: button,
-                                id: e.id,
-                                isOpenForall: e['openForAll'],
-                                );
+                          return EventCard(
+                            imageUrl: e['backDrop'],
+                            eventName: e['eventName'],
+                            departName: e['deptName'],
+                            date: e['eventDate'],
+                            venue: e['venue'],
+                            time: l[1],
+                            description: e['description'],
+                            button: button,
+                            id: e.id,
+                            isOpenForall: e['openForAll'],
+                          );
                         }
                         return const SizedBox();
                       }).toList());
@@ -77,18 +72,21 @@ class History extends StatelessWidget {
     );
   }
 
-  List checkTime(int startTime, int endTime){
+  List checkTime(int startTime, int endTime) {
     DateTime today = DateTime.now();
-    DateTime start = DateTime.fromMillisecondsSinceEpoch(startTime >= 1000000000 ? startTime : startTime * 1000);
-    DateTime end = DateTime.fromMillisecondsSinceEpoch(endTime >= 1000000000 ? endTime : startTime * 1000);
-    String eventTime = '${start.hour % 12 == 0 ? 12 : start.hour % 12}:${start.minute < 10 ? '0' : ''}${start.minute} ${start.hour < 12 ? 'AM' : 'PM'}';
+    DateTime start = DateTime.fromMillisecondsSinceEpoch(
+        startTime >= 1000000000 ? startTime : startTime * 1000);
+    DateTime end = DateTime.fromMillisecondsSinceEpoch(
+        endTime >= 1000000000 ? endTime : startTime * 1000);
+    String eventTime =
+        '${start.hour % 12 == 0 ? 12 : start.hour % 12}:${start.minute < 10 ? '0' : ''}${start.minute} ${start.hour < 12 ? 'AM' : 'PM'}';
 
-    if (start.isAfter(today)){
+    if (start.isAfter(today)) {
       return ["pending", eventTime];
-    }else if (start.isBefore(today) && end.isAfter(today)){
-      return ["running",eventTime];
-    }else{
-      return ["over",eventTime];
+    } else if (start.isBefore(today) && end.isAfter(today)) {
+      return ["running", eventTime];
+    } else {
+      return ["over", eventTime];
     }
   }
 }

@@ -68,13 +68,25 @@ class _EventCardState extends State<EventCard> {
                               topRight: Radius.circular(10)),
                           child: Image.network(
                             widget.imageUrl,
-                            fit: BoxFit.cover,
+                            fit: BoxFit.cover, // lets the image clip and zoom
                             loadingBuilder: (context, child, loadingProgress) {
                               if (loadingProgress == null) {
                                 return child;
                               }
                               return const Center(child: Text("Loading.."));
-                            }, // lets the image clip and zoom
+                            },
+                            errorBuilder: (BuildContext context,
+                                Object exception, StackTrace? stackTrace) {
+                              return Center(
+                                child: Text(
+                                  "N/A",
+                                  style: TextStyle(
+                                    fontSize: 20.sp,
+                                    fontFamily: 'Inter',
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ),
