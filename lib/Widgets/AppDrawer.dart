@@ -56,40 +56,40 @@ class _AppDrawerState extends State<AppDrawer> {
                       thickness: 1.0,
                     )),
               ),
+              Visibility(
+                visible: widget.pageTitle != "Home",
+                child: Container(
+                  padding: const EdgeInsets.all(5.0),
+                  color: const Color(0xffd9d9d9),
+                  child: ListTile(
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const  HomePage()));
+                    },
+                    leading: const Icon(Icons.home),
+                    title: Text(
+                      "Home",
+                      style: GoogleFonts.inter(
+                          fontSize: 20.0, fontWeight: FontWeight.w400),
+                    ),
+                  )
+                )
+              ),
               Container(
                   padding: const EdgeInsets.all(5.0),
                   color: const Color(0xffd9d9d9),
                   child: ListTile(
-                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const History(),
-                    )),
+                    onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => const History()));
+                      },
                     leading: const Icon(Icons.history),
                     title: Text(
                       "History",
                       style: GoogleFonts.inter(
-                          fontSize: 20.0, fontWeight: FontWeight.w400),
-                    ),
+                          fontSize: 20.0, fontWeight: FontWeight.w400),),
                   )),
-              Visibility(
-                  visible: widget.pageTitle != "Home",
-                  child: Container(
-                      padding: const EdgeInsets.all(5.0),
-                      color: const Color(0xffd9d9d9),
-                      child: ListTile(
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const  HomePage()));
-                        },
-                        leading: const Icon(Icons.home),
-                        title: Text(
-                          "Home",
-                          style: GoogleFonts.inter(
-                              fontSize: 20.0, fontWeight: FontWeight.w400),
-                        ),
-                      ))),
               Expanded(
                 child: Container(
                   constraints: BoxConstraints(

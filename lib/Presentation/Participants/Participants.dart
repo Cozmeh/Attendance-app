@@ -22,7 +22,6 @@ class Participants extends StatefulWidget {
 class _ParticipantsState extends State<Participants> {
   String number = "";
   List<List<String>> items = [];
-  bool showSearchBar = false;
 
   @override
   void initState() {
@@ -35,11 +34,8 @@ class _ParticipantsState extends State<Participants> {
 
   @override
   Widget build(BuildContext context) {
-    CollectionReference<Map<String, dynamic>> participants = FirebaseFirestore
-        .instance
-        .collection('Event')
-        .doc(widget.eventID)
-        .collection('Participants');
+    DocumentReference<Map<String, dynamic>> participants =
+        FirebaseFirestore.instance.collection('Event').doc(widget.eventID);
     return Scaffold(
       backgroundColor: Color(0xffffffff),
       drawer: Drawer(
@@ -49,24 +45,12 @@ class _ParticipantsState extends State<Participants> {
         ),
       ),
       appBar: AppBar(
-        title: Text(
-          "Participants",
-          style: GoogleFonts.inter(
-              color: Color(0xff404040), fontWeight: FontWeight.w500),
-        ),
-        iconTheme: IconThemeData(color: Colors.black),
-        actions: [
-          IconButton(
-            icon: showSearchBar ? Icon(Icons.cancel) : Icon(Icons.search),
-            onPressed: () {
-              setState(() {
-                showSearchBar = !showSearchBar;
-                number = "";
-              });
-            },
+          title: Text(
+            "Participants",
+            style: GoogleFonts.inter(
+                color: Color(0xff404040), fontWeight: FontWeight.w500),
           ),
-        ],
-      ),
+          iconTheme: IconThemeData(color: Colors.black)),
       // floatingActionButton: FloatingActionButton(
       //  backgroundColor: Color(0xff1D4ED8),
       //   onPressed: () => getCSV(),
@@ -75,20 +59,17 @@ class _ParticipantsState extends State<Participants> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Visibility(
-              visible: showSearchBar,
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                elevation: 7,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                  child: TextField(
-                    decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.search), labelText: 'Roll No.'),
-                    onChanged: (roll) => setState(() => number = roll),
-                  ),
+            Card(
+              borderOnForeground: false,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                child: TextField(
+                  decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.search), labelText: 'Roll No.'),
+                  onChanged: (roll) => setState(() => number = roll),
                 ),
               ),
             ),
@@ -98,44 +79,56 @@ class _ParticipantsState extends State<Participants> {
                 padding: const EdgeInsets.only(left: 25.0, right: 25.0),
                 child: StreamBuilder(
                   stream: participants
+                      .collection('Participants')
                       .orderBy('takenTime', descending: false)
                       .snapshots(),
                   builder: (context, snapshot) {
                     return (snapshot.connectionState == ConnectionState.waiting)
                         ? const Center(child: CircularProgressIndicator())
-                        : ListView(
-                            physics: const BouncingScrollPhysics(),
-                            children: snapshot.data!.docs.map((e) {
-                              var time = DateTime.fromMillisecondsSinceEpoch(
-                                      e["takenTime"] >= 1000000000
-                                          ? e["takenTime"]
-                                          : e["takenTime"] * 1000)
-                                  .toString();
-                              items.add([
-                                e['participantID'],
-                                e["takenBy"],
-                                time,
-                                e["isPresent"].toString()
-                              ]);
-                              if (number == "") {
-                                return ParticipantsTile(
-                                    participantID: e['participantID'],
-                                    takenTime: time,
-                                    isPresent: e['isPresent'],
-                                    isOpenForall: widget.isOpenForall);
-                              } else if (e['participantID']
-                                  .toString()
-                                  .toUpperCase()
-                                  .contains(number.toString().toUpperCase())) {
-                                return ParticipantsTile(
-                                    participantID: e['participantID'],
-                                    takenTime: time,
-                                    isPresent: e['isPresent'],
-                                    isOpenForall: widget.isOpenForall);
-                              } else {
-                                return Container();
-                              }
-                            }).toList());
+                        : snapshot.data!.docs.isEmpty
+                            ? Center(
+                                child: widget.isOpenForall
+                                    ? Text(
+                                        'THIS EVENT IS OPEN FOR ALL',
+                                        style: GoogleFonts.inter(
+                                            color: Color(0xff404040),
+                                            fontWeight: FontWeight.w500),
+                                      )
+                                    : null,
+                              )
+                            : ListView(
+                                children: snapshot.data!.docs.map((e) {
+                                var time = DateTime.fromMillisecondsSinceEpoch(
+                                        e["takenTime"] >= 1000000000
+                                            ? e["takenTime"]
+                                            : e["takenTime"] * 1000)
+                                    .toString();
+                                items.add([
+                                  e['participantID'],
+                                  e["takenBy"],
+                                  time,
+                                  e["isPresent"].toString()
+                                ]);
+                                if (number == "") {
+                                  return ParticipantsTile(
+                                      participantID: e['participantID'],
+                                      takenTime: time,
+                                      isPresent: e['isPresent'],
+                                      isOpenForall: widget.isOpenForall);
+                                } else if (e['participantID']
+                                    .toString()
+                                    .toUpperCase()
+                                    .contains(
+                                        number.toString().toUpperCase())) {
+                                  return ParticipantsTile(
+                                      participantID: e['participantID'],
+                                      takenTime: time,
+                                      isPresent: e['isPresent'],
+                                      isOpenForall: widget.isOpenForall);
+                                } else {
+                                  return Container();
+                                }
+                              }).toList());
                   },
                 ),
               ),
