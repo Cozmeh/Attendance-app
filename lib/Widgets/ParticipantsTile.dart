@@ -1,5 +1,8 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ftest/Data/Colour.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -21,71 +24,93 @@ class ParticipantsTile extends StatefulWidget {
 class _ParticipantsTileState extends State<ParticipantsTile> {
   @override
   Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
-      shadowColor: const Color(0xff000000),
-      color: const Color(0xfff1f1f1),
-      child: ListTile(
-        leading: !widget.isOpenForall?
-        widget.isPresent? const Icon(Icons.check,color: Colors.green,)
-        : const Icon(Icons.close,color: Colors.red)
-        :const Icon(Icons.check,color: Colors.green,),
-        tileColor: Colour.tileColor,
-        dense: true,
-        title: Text(
-          widget.participantID,
-          style: GoogleFonts.inter(
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-              color: Color(0xff404040)),
-        ),
-        trailing: Visibility(
-          visible: (widget.eventID != ""),
-          child: GestureDetector(
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text("Delete Entry"),
-                      content: Text(
-                          "Do you want to Delete ${widget.participantID} ?"),
-                      actions: [
-                        TextButton(
-                          child: const Text(
-                            "Yes",
-                            style: TextStyle(color: Colors.red),
-                          ),
-                          onPressed: () {
-                            FirebaseFirestore.instance
-                                .collection('Event')
-                                .doc(widget.eventID)
-                                .collection('Participants')
-                                .doc(widget.participantID)
-                                .delete()
-                                .then((_) => print('Deleted'))
-                                .catchError(
-                                    (error) => print('Delete failed: $error'));
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        TextButton(
-                          child: const Text(
-                            "No",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                      ],
+    return SizedBox(
+      height: 70.h,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+        shadowColor: Colors.transparent,
+        color: const Color(0xfff1f1f1),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 20.w,
+            ),
+            !widget.isOpenForall
+                ? widget.isPresent
+                    ? Icon(
+                        size: 35.h,
+                        Icons.check_circle_outline_sharp,
+                        color: Colors.green,
+                      )
+                    : Icon(size: 35.h, Icons.cancel_outlined, color: Colors.red)
+                : Icon(
+                    size: 35.h,
+                    Icons.check_circle_outline_sharp,
+                    color: Colors.green,
+                  ),
+            SizedBox(
+              width: 20.w,
+            ),
+            Text(
+              widget.participantID,
+              style: GoogleFonts.inter(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xff404040)),
+            ),
+            const Expanded(child: SizedBox()),
+            Visibility(
+              visible: (widget.eventID != ""),
+              child: GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text("Delete Entry"),
+                          content: Text(
+                              "Do you want to Delete ${widget.participantID} ?"),
+                          actions: [
+                            TextButton(
+                              child: const Text(
+                                "Yes",
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              onPressed: () {
+                                FirebaseFirestore.instance
+                                    .collection('Event')
+                                    .doc(widget.eventID)
+                                    .collection('Participants')
+                                    .doc(widget.participantID)
+                                    .delete()
+                                    .then((_) => print('Deleted'))
+                                    .catchError((error) =>
+                                        print('Delete failed: $error'));
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: const Text(
+                                "No",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                          ],
+                        );
+                      },
                     );
                   },
-                );
-              },
-              child: const Icon(
-                Icons.delete,
-                size: 30,
-                color: Color(0xff838383),
-              )),
+                  child: Icon(
+                    Icons.delete,
+                    size: 30.sp,
+                    color: const Color(0xff838383),
+                  )),
+            ),
+            SizedBox(
+              width: 20.w,
+            )
+          ],
         ),
       ),
     );
