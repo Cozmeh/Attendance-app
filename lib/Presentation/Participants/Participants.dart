@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csv/csv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ftest/Widgets/ParticipantsTile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:open_filex/open_filex.dart';
@@ -34,9 +35,11 @@ class _ParticipantsState extends State<Participants> {
 
   @override
   Widget build(BuildContext context) {
+    FocusNode focusNode = FocusNode();
     DocumentReference<Map<String, dynamic>> participants =
         FirebaseFirestore.instance.collection('Event').doc(widget.eventID);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Color(0xffffffff),
       drawer: Drawer(
         child: AppDrawer(
@@ -56,85 +59,107 @@ class _ParticipantsState extends State<Participants> {
       //   onPressed: () => getCSV(),
       //   child: const Icon(Icons.download),
       // ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Card(
-              borderOnForeground: false,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(6),
+      body: Column(
+        children: <Widget>[
+          SizedBox(
+            height: 10.h,
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 25.w, right: 25.w),
+            child: SizedBox(
+              height: 70.h,
+              child: TextField(
+                style: TextStyle(fontSize: 20.sp),
+                onTap: () {
+                  focusNode.requestFocus();
+                },
+                focusNode: focusNode,
+                decoration: InputDecoration(
+                    hintStyle: TextStyle(fontSize: 20.sp),
+                    focusColor: const Color.fromRGBO(29, 78, 216, 1),
+                    border: const OutlineInputBorder(),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      size: 35.h,
+                    ),
+                    hintText: 'Search Participants..'),
+                onChanged: (roll) => setState(() => number = roll),
               ),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                child: TextField(
-                  decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.search), labelText: 'Roll No.'),
-                  onChanged: (roll) => setState(() => number = roll),
+            ),
+          ),
+          SizedBox(
+            height: 10.h,
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                focusNode.unfocus();
+              },
+              child: SizedBox(
+                child: Padding(
+                  padding: EdgeInsets.only(left: 25.w, right: 25.w),
+                  child: StreamBuilder(
+                    stream: participants
+                        .collection('Participants')
+                        .orderBy('takenTime', descending: false)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      return (snapshot.connectionState ==
+                              ConnectionState.waiting)
+                          ? const Center(child: CircularProgressIndicator())
+                          : snapshot.data!.docs.isEmpty
+                              ? Center(
+                                  child: widget.isOpenForall
+                                      ? Text(
+                                          'THIS EVENT IS OPEN FOR ALL',
+                                          style: GoogleFonts.inter(
+                                              color: Color(0xff404040),
+                                              fontWeight: FontWeight.w500),
+                                        )
+                                      : null,
+                                )
+                              : ListView(
+                                  physics: const BouncingScrollPhysics(),
+                                  children: snapshot.data!.docs.map((e) {
+                                    var time =
+                                        DateTime.fromMillisecondsSinceEpoch(
+                                                e["takenTime"] >= 1000000000
+                                                    ? e["takenTime"]
+                                                    : e["takenTime"] * 1000)
+                                            .toString();
+                                    items.add([
+                                      e['participantID'],
+                                      e["takenBy"],
+                                      time,
+                                      e["isPresent"].toString()
+                                    ]);
+                                    if (number == "") {
+                                      return ParticipantsTile(
+                                          participantID: e['participantID'],
+                                          takenTime: time,
+                                          isPresent: e['isPresent'],
+                                          isOpenForall: widget.isOpenForall);
+                                    } else if (e['participantID']
+                                        .toString()
+                                        .toUpperCase()
+                                        .contains(
+                                            number.toString().toUpperCase())) {
+                                      return ParticipantsTile(
+                                          participantID: e['participantID'],
+                                          takenTime: time,
+                                          isPresent: e['isPresent'],
+                                          isOpenForall: widget.isOpenForall);
+                                    } else {
+                                      return Container();
+                                    }
+                                  }).toList());
+                    },
+                  ),
                 ),
               ),
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.8,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 25.0, right: 25.0),
-                child: StreamBuilder(
-                  stream: participants
-                      .collection('Participants')
-                      .orderBy('takenTime', descending: false)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    return (snapshot.connectionState == ConnectionState.waiting)
-                        ? const Center(child: CircularProgressIndicator())
-                        : snapshot.data!.docs.isEmpty
-                            ? Center(
-                                child: widget.isOpenForall
-                                    ? Text(
-                                        'THIS EVENT IS OPEN FOR ALL',
-                                        style: GoogleFonts.inter(
-                                            color: Color(0xff404040),
-                                            fontWeight: FontWeight.w500),
-                                      )
-                                    : null,
-                              )
-                            : ListView(
-                                children: snapshot.data!.docs.map((e) {
-                                var time = DateTime.fromMillisecondsSinceEpoch(
-                                        e["takenTime"] >= 1000000000
-                                            ? e["takenTime"]
-                                            : e["takenTime"] * 1000)
-                                    .toString();
-                                items.add([
-                                  e['participantID'],
-                                  e["takenBy"],
-                                  time,
-                                  e["isPresent"].toString()
-                                ]);
-                                if (number == "") {
-                                  return ParticipantsTile(
-                                      participantID: e['participantID'],
-                                      takenTime: time,
-                                      isPresent: e['isPresent'],
-                                      isOpenForall: widget.isOpenForall);
-                                } else if (e['participantID']
-                                    .toString()
-                                    .toUpperCase()
-                                    .contains(
-                                        number.toString().toUpperCase())) {
-                                  return ParticipantsTile(
-                                      participantID: e['participantID'],
-                                      takenTime: time,
-                                      isPresent: e['isPresent'],
-                                      isOpenForall: widget.isOpenForall);
-                                } else {
-                                  return Container();
-                                }
-                              }).toList());
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
