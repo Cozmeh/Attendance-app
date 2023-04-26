@@ -66,6 +66,7 @@ class HomePage extends StatelessWidget {
                               button = false;
                             }
                             return EventCard(
+                              validator: e['qrValidator'],
                                 imageUrl: e['backDrop'],
                                 eventName: e['eventName'],
                                 departName: e['deptName'],

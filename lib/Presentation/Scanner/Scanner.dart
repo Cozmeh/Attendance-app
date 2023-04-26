@@ -17,7 +17,8 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 class Scanner extends StatefulWidget {
   String? eventID;
   bool isOpenForall;
-  Scanner({super.key, required this.eventID, required this.isOpenForall});
+  List<dynamic> validator;
+  Scanner({super.key, required this.eventID, required this.isOpenForall,required this.validator});
   @override
   State<Scanner> createState() => _ScannerState();
 }
@@ -33,6 +34,7 @@ class _ScannerState extends State<Scanner> {
   Color? scanStatus;
   int totalCount = 0;
   String status = "";
+  TextEditingController id=TextEditingController();
 
   @override
   void initState() {
@@ -47,6 +49,11 @@ class _ScannerState extends State<Scanner> {
       splitScreenMode: true,
       builder: (context, child) {
         return Scaffold(
+          // floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+          // floatingActionButton: FloatingActionButton(
+          //   onPressed: () {},
+          //   child: Icon(Icons.edit),
+          // ),
           backgroundColor: Color(0xffffffff),
           appBar: AppBar(
             backgroundColor: Colors.white,
@@ -85,7 +92,7 @@ class _ScannerState extends State<Scanner> {
                   ),
                   Positioned(
                     bottom: 8.w,
-                    right: 8.w,
+                    right: 4.w,
                     child: SizedBox(
                         child: IconButton(
                       icon: isFlash
@@ -234,7 +241,7 @@ class _ScannerState extends State<Scanner> {
       (scanData) async {
         //print("ITs sancnning");
         qrViewController?.stopCamera();
-        if (scanData.code != null) {
+        if (scanData.code != null && validQR(scanData.code.toString(), widget.validator)) {
           setState(() => result = scanData.code);
           if (!widget.isOpenForall) {
             var sc = await FirebaseFirestore.instance
@@ -318,8 +325,23 @@ class _ScannerState extends State<Scanner> {
               qrViewController?.resumeCamera();
             }
           }
+        }else{
+           setState(() {
+                scanStatus = Colors.red;
+                status = "${scanData.code} is not eligible for the event";
+                correctScan = true;
+              });
+            qrViewController?.resumeCamera();
         }
       },
     );
   }
+  bool validQR(String data,List<dynamic> validator) {
+    for(String format in validator){
+      if(data.startsWith(format)){
+        return true;
+      }
+    }
+    return false;
+}
 }

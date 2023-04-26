@@ -8,6 +8,7 @@ import '../Presentation/Scanner/Scanner.dart';
 class EventCard extends StatefulWidget {
   String imageUrl, eventName, departName, date, venue, time, description, id;
   bool button, isOpenForall;
+  List<dynamic> validator;
   EventCard(
       {super.key,
       required this.imageUrl,
@@ -19,7 +20,8 @@ class EventCard extends StatefulWidget {
       required this.description,
       required this.button,
       required this.id,
-      required this.isOpenForall});
+      required this.isOpenForall,
+      required this.validator});
   @override
   State<EventCard> createState() => _EventCardState();
 }
@@ -310,7 +312,9 @@ class _EventCardState extends State<EventCard> {
                                         .push(MaterialPageRoute(
                                       builder: (context) => Scanner(
                                           eventID: widget.id,
-                                          isOpenForall: widget.isOpenForall),
+                                          isOpenForall: widget.isOpenForall,
+                                          validator: widget.validator,
+                                          ),
                                     ));
                                   }
                                 : null,
