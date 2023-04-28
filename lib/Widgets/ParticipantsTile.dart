@@ -72,15 +72,12 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
                               "Do you want to Delete ${widget.participantID} ?"),
                           actions: [
                             TextButton(
-                              child: Text(
+                              child: const Text(
                                 "Yes",
                                 style: TextStyle(color: Colors.red),
                               ),
-                              onPressed: () async {
-                                print("Delete clicked");
-                                print(widget.eventID);
-                                print(widget.participantID);
-                                await FirebaseFirestore.instance
+                              onPressed: () {
+                                FirebaseFirestore.instance
                                     .collection('Event')
                                     .doc(widget.eventID)
                                     .collection('Participants')
@@ -89,7 +86,7 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
                                     .then((_) => print('Deleted'))
                                     .catchError((error) =>
                                         print('Delete failed: $error'));
-                                    Navigator.of(context).pop();
+                                Navigator.of(context).pop();
                               },
                             ),
                             TextButton(

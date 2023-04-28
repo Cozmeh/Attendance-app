@@ -46,7 +46,6 @@ class History extends StatelessWidget {
                           print(l[0]);
                           button = false;
                           return EventCard(
-                            validator: e['qrValidator'],
                             imageUrl: e['backDrop'],
                             eventName: e['eventName'],
                             departName: e['deptName'],
