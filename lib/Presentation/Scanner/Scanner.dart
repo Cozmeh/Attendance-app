@@ -234,90 +234,99 @@ class _ScannerState extends State<Scanner> {
       (scanData) async {
         //print("ITs sancnning");
         qrViewController?.stopCamera();
-        if (scanData.code != null) {
-          setState(() => result = scanData.code);
-          if (!widget.isOpenForall) {
-            var sc = await FirebaseFirestore.instance
-                .collection("Event")
-                .doc(widget.eventID)
-                .collection("Participants")
-                .doc(scanData.code);
-            if ((await FirebaseFirestore.instance
-                    .collection("Event")
-                    .doc(widget.eventID)
-                    .collection("Participants")
-                    .doc(scanData.code)
-                    .get())
-                .exists) {
-              sc.update({
-                'takenTime': DateTime.now().millisecondsSinceEpoch,
-                'isPresent': true,
-                'takenBy': FirebaseAuth.instance.currentUser!.email,
-                'participantID': scanData.code
-              });
-              setState(() {
-                scanStatus = Colors.green;
-                status = "$result Attendance Marked";
-                correctScan = true;
-              });
-              qrViewController?.resumeCamera();
-            } else {
-              setState(() {
-                scanStatus = Colors.red;
-                status = "$result is not eligible for this exam";
-              });
-              qrViewController?.resumeCamera();
-            }
-            //if the event is open for all
-          } else {
-            var a = await FirebaseFirestore.instance
-                .collection("Event")
-                .doc(widget.eventID)
-                .collection("Participants")
-                .doc(scanData.code)
-                .get();
-
-            if ((await FirebaseFirestore.instance
-                    .collection("Event")
-                    .doc(widget.eventID)
-                    .collection("Participants")
-                    .doc(scanData.code)
-                    .get())
-                .exists) {
-              setState(() {
-                scanStatus = Colors.orange;
-                status = "$result Attendance Marked already";
-              });
-              qrViewController?.resumeCamera();
-            } else {
-              setState(() {
-                status = "Some problem occured";
-                scanStatus = Colors.red;
-              });
-            }
-
-            if (scanData.code != null && !a.exists) {
-              var participantref = FirebaseFirestore.instance
+        try {
+          if (scanData.code != null) {
+            setState(() => result = scanData.code);
+            if (!widget.isOpenForall) {
+              var sc = await FirebaseFirestore.instance
                   .collection("Event")
                   .doc(widget.eventID)
                   .collection("Participants")
                   .doc(scanData.code);
-              participantref.set(
-                {
+              if ((await FirebaseFirestore.instance
+                      .collection("Event")
+                      .doc(widget.eventID)
+                      .collection("Participants")
+                      .doc(scanData.code)
+                      .get())
+                  .exists) {
+                sc.update({
                   'takenTime': DateTime.now().millisecondsSinceEpoch,
                   'isPresent': true,
                   'takenBy': FirebaseAuth.instance.currentUser!.email,
                   'participantID': scanData.code
-                },
-              );
-              setState(() {
-                scanStatus = Colors.green;
-                status = "$result Attendance Marked";
-                correctScan = true;
-              });
-              qrViewController?.resumeCamera();
+                });
+                setState(() {
+                  scanStatus = Colors.green;
+                  status = "$result Attendance Marked";
+                  correctScan = true;
+                });
+                qrViewController?.resumeCamera();
+              } else {
+                setState(() {
+                  scanStatus = Colors.red;
+                  status = "$result is not eligible for this exam";
+                });
+                qrViewController?.resumeCamera();
+              }
+              //if the event is open for all
+            } else {
+              var a = await FirebaseFirestore.instance
+                  .collection("Event")
+                  .doc(widget.eventID)
+                  .collection("Participants")
+                  .doc(scanData.code)
+                  .get();
+
+              if ((await FirebaseFirestore.instance
+                      .collection("Event")
+                      .doc(widget.eventID)
+                      .collection("Participants")
+                      .doc(scanData.code)
+                      .get())
+                  .exists) {
+                setState(() {
+                  scanStatus = Colors.orange;
+                  status = "$result Attendance Marked already";
+                });
+                qrViewController?.resumeCamera();
+              } else {
+                setState(() {
+                  status = "Some problem occured";
+                  scanStatus = Colors.red;
+                });
+              }
+
+              if (scanData.code != null && !a.exists) {
+                var participantref = FirebaseFirestore.instance
+                    .collection("Event")
+                    .doc(widget.eventID)
+                    .collection("Participants")
+                    .doc(scanData.code);
+                participantref.set(
+                  {
+                    'takenTime': DateTime.now().millisecondsSinceEpoch,
+                    'isPresent': true,
+                    'takenBy': FirebaseAuth.instance.currentUser!.email,
+                    'participantID': scanData.code
+                  },
+                );
+                setState(() {
+                  scanStatus = Colors.green;
+                  status = "$result Attendance Marked";
+                  correctScan = true;
+                });
+                qrViewController?.resumeCamera();
+              }
             }
           }
+        } catch (e) {
+          //print("### Exception occured ###$e");
+          setState(() {
+            status = "INVALID QR";
+            scanStatus = Colors.red;
+          });
+          qrViewController?.resumeCamera();
         }
       },
     );
