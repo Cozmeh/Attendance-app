@@ -1,15 +1,9 @@
 import 'dart:async';
-import 'dart:developer';
-import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ftest/Presentation/Authentication/Login.dart';
+import 'package:ftest/Presentation/Authentication/login.dart';
 import 'package:ftest/Presentation/Home/HomePage.dart';
-import 'package:prompt_dialog/prompt_dialog.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:share/share.dart';
-import 'helper.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -67,7 +61,7 @@ class _HomeState extends State<Home> {
     );
   }
 }
-
+/*
 // Existing Code - Don't make any changes in this code
 class MyHome extends StatelessWidget {
   const MyHome({Key? key}) : super(key: key);
@@ -425,3 +419,4 @@ class ScanOverlay extends StatelessWidget {
     );
   }
 }
+*/

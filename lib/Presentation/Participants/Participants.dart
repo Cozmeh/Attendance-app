@@ -4,12 +4,13 @@ import 'package:csv/csv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ftest/Widgets/ParticipantsTile.dart';
+import 'package:ftest/Widgets/participantsTile.dart';
+import 'package:ftest/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../../Widgets/AppDrawer.dart';
+import '../../Widgets/appDrawer.dart';
 
 class Participants extends StatefulWidget {
   String? eventID;
@@ -40,7 +41,7 @@ class _ParticipantsState extends State<Participants> {
         FirebaseFirestore.instance.collection('Event').doc(widget.eventID);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color(0xffffffff),
+      backgroundColor: background,
       drawer: Drawer(
         child: AppDrawer(
           fAuth: FirebaseAuth.instance,
@@ -51,7 +52,7 @@ class _ParticipantsState extends State<Participants> {
           title: Text(
             "Participants",
             style: GoogleFonts.inter(
-                color: Color(0xff404040), fontWeight: FontWeight.w500),
+                color: textColor, fontWeight: FontWeight.w500),
           ),
           iconTheme: IconThemeData(color: Colors.black)),
       // floatingActionButton: FloatingActionButton(
@@ -76,7 +77,7 @@ class _ParticipantsState extends State<Participants> {
                 focusNode: focusNode,
                 decoration: InputDecoration(
                     hintStyle: TextStyle(fontSize: 20.sp),
-                    focusColor: const Color.fromRGBO(29, 78, 216, 1),
+                    focusColor: primaryBlue,
                     border: const OutlineInputBorder(),
                     prefixIcon: Icon(
                       Icons.search,
@@ -113,7 +114,7 @@ class _ParticipantsState extends State<Participants> {
                                       ? Text(
                                           'THIS EVENT IS OPEN FOR ALL',
                                           style: GoogleFonts.inter(
-                                              color: Color(0xff404040),
+                                              color: textColor,
                                               fontWeight: FontWeight.w500),
                                         )
                                       : null,

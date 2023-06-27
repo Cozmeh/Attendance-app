@@ -1,12 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:ftest/Presentation/History/History.dart';
+import 'package:ftest/Presentation/History/history.dart';
 import 'package:ftest/Presentation/Home/HomePage.dart';
+import 'package:ftest/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../InfraStructure/AuthRepo.dart';
 import '../Presentation/Authentication/Login.dart';
 
+// ignore: must_be_immutable
 class AppDrawer extends StatefulWidget {
   FirebaseAuth fAuth;
   String pageTitle;
@@ -27,7 +29,7 @@ class _AppDrawerState extends State<AppDrawer> {
               Container(
                 width: double.infinity,
                 height: 300,
-                padding: EdgeInsets.only(top: 35, bottom: 5.0),
+                padding: const EdgeInsets.only(top: 35, bottom: 5.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -42,7 +44,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     ),
                     Text(
                       FirebaseAuth.instance.currentUser!.email.toString(),
-                      style: GoogleFonts.inter(color: Color(0xff616161)),
+                      style: GoogleFonts.inter(color: textColor),
                     ),
                   ],
                 ),
@@ -57,38 +59,42 @@ class _AppDrawerState extends State<AppDrawer> {
                     )),
               ),
               Visibility(
-                visible: widget.pageTitle != "Home",
-                child: Container(
-                  padding: const EdgeInsets.all(5.0),
-                  color: const Color(0xffd9d9d9),
-                  child: ListTile(
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const  HomePage()));
-                    },
-                    leading: const Icon(Icons.home),
-                    title: Text(
-                      "Home",
-                      style: GoogleFonts.inter(
-                          fontSize: 20.0, fontWeight: FontWeight.w400),
-                    ),
-                  )
-                )
-              ),
+                  visible: widget.pageTitle != "Home",
+                  child: Container(
+                      padding: const EdgeInsets.all(5.0),
+                      color: const Color(0xffd9d9d9),
+                      child: ListTile(
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const HomePage()));
+                        },
+                        leading: const Icon(Icons.home),
+                        title: Text(
+                          "Home",
+                          style: GoogleFonts.inter(
+                              fontSize: 20.0, fontWeight: FontWeight.w400),
+                        ),
+                      ))),
               Container(
                   padding: const EdgeInsets.all(5.0),
                   color: const Color(0xffd9d9d9),
                   child: ListTile(
                     onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => const History()));
-                      },
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const History()));
+                    },
                     leading: const Icon(Icons.history),
                     title: Text(
                       "History",
                       style: GoogleFonts.inter(
-                          fontSize: 20.0, fontWeight: FontWeight.w400),),
+                          fontSize: 20.0, fontWeight: FontWeight.w400),
+                    ),
                   )),
               Expanded(
                 child: Container(
@@ -114,8 +120,9 @@ class _AppDrawerState extends State<AppDrawer> {
                           fontWeight: FontWeight.normal),
                     ),
                     onPressed: () async {
-                      await AuthRepo.signOut()
-                          .whenComplete(() => print("completes"));
+                      await AuthRepo.signOut().whenComplete(() {
+                        print("completes");
+                      });
                       SchedulerBinding.instance.addPostFrameCallback((_) =>
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(

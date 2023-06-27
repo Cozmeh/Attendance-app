@@ -1,9 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ftest/Widgets/EventCard.dart';
+import 'package:ftest/Widgets/eventCard.dart';
 
 class History extends StatelessWidget {
   const History({super.key});
@@ -22,7 +20,7 @@ class History extends StatelessWidget {
       body: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Container(
+          child: SizedBox(
             height: MediaQuery.of(context).size.height * 1,
             child: StreamBuilder(
               stream: FirebaseFirestore.instance
@@ -43,7 +41,7 @@ class History extends StatelessWidget {
                       children: snapshot.data!.docs.map((e) {
                         List l = checkTime(e['startTime'], e['endTime']);
                         if (l[0] == "over") {
-                          print(l[0]);
+                          //print(l[0]);
                           button = false;
                           return EventCard(
                             imageUrl: e['backDrop'],

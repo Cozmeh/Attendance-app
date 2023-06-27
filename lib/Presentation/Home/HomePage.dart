@@ -1,17 +1,12 @@
 // ignore_for_file: avoid_print
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ftest/Presentation/Participants/Participants.dart';
-import 'package:ftest/Presentation/Scanner/Scanner.dart';
-import 'package:ftest/Widgets/EventCard.dart';
-import '../../Widgets/AppDrawer.dart';
+import 'package:ftest/Widgets/eventCard.dart';
+import 'package:ftest/constants.dart';
+import '../../Widgets/appDrawer.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -25,7 +20,7 @@ class HomePage extends StatelessWidget {
         return WillPopScope(
           onWillPop: () async {
             var exitBar = SnackBar(
-              backgroundColor: const Color.fromRGBO(29, 78, 216, 1),
+              backgroundColor: primaryBlue,
               content: const Text("Do you want to Exit ?"),
               action: SnackBarAction(
                   label: "Yes",

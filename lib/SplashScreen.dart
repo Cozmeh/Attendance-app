@@ -1,6 +1,5 @@
-// ignore_for_file: file_names
 import 'package:flutter/material.dart';
-import 'package:ftest/MainHome.dart';
+import 'package:ftest/mainHome.dart';
 
 class Splash extends StatefulWidget {
   const Splash({super.key});

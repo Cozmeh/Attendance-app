@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ftest/main.dart';
+import 'package:ftest/constants.dart';
 import '../Presentation/Participants/Participants.dart';
-import '../Presentation/Scanner/Scanner.dart';
+import '../Presentation/Scanner/scan.dart';
 
 // ignore: must_be_immutable
 class EventCard extends StatefulWidget {
@@ -28,7 +28,7 @@ class _EventCardState extends State<EventCard> {
   var divider = Padding(
     padding: EdgeInsets.only(left: 30.w, right: 30.w),
     child: const Divider(
-      color: Color.fromRGBO(192, 192, 192, 1),
+      color: dimGrey,
       height: 10,
     ),
   );
@@ -46,7 +46,7 @@ class _EventCardState extends State<EventCard> {
       child: Padding(
         padding: EdgeInsets.all(15.w),
         child: Card(
-          shadowColor: Colors.grey.shade100,
+          shadowColor: Colors.grey[300],
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           elevation: 5,
@@ -104,7 +104,7 @@ class _EventCardState extends State<EventCard> {
                   Text(
                     widget.eventName,
                     style: TextStyle(
-                        color: const Color.fromRGBO(58, 58, 58, 1),
+                        color: textColor,
                         fontFamily: 'Inter',
                         fontSize: 24.sp,
                         fontWeight: FontWeight.w600),
@@ -121,7 +121,7 @@ class _EventCardState extends State<EventCard> {
                   Text(
                     "Department of ${widget.departName}",
                     style: TextStyle(
-                        color: const Color.fromRGBO(90, 90, 90, 1),
+                        color: textColor,
                         fontFamily: 'Inter',
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w400),
@@ -143,7 +143,7 @@ class _EventCardState extends State<EventCard> {
                           'Date ',
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                              color: const Color.fromRGBO(90, 90, 90, 1),
+                              color: textColor,
                               fontFamily: 'Inter',
                               fontSize: 20.sp,
                               fontWeight: FontWeight.w400),
@@ -159,7 +159,7 @@ class _EventCardState extends State<EventCard> {
                           widget.date,
                           textAlign: TextAlign.right,
                           style: TextStyle(
-                              color: const Color.fromRGBO(90, 90, 90, 1),
+                              color: textColor,
                               fontFamily: 'Inter',
                               fontSize: 20.sp,
                               fontWeight: FontWeight.w400),
@@ -184,7 +184,7 @@ class _EventCardState extends State<EventCard> {
                           'Venue ',
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                              color: const Color.fromRGBO(90, 90, 90, 1),
+                              color: textColor,
                               fontFamily: 'Inter',
                               fontSize: 20.sp,
                               fontWeight: FontWeight.w400),
@@ -200,7 +200,7 @@ class _EventCardState extends State<EventCard> {
                           widget.venue,
                           textAlign: TextAlign.right,
                           style: TextStyle(
-                              color: const Color.fromRGBO(90, 90, 90, 1),
+                              color: textColor,
                               fontFamily: 'Inter',
                               fontSize: 20.sp,
                               fontWeight: FontWeight.w400),
@@ -225,7 +225,7 @@ class _EventCardState extends State<EventCard> {
                           'Time ',
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                              color: const Color.fromRGBO(90, 90, 90, 1),
+                              color: textColor,
                               fontFamily: 'Inter',
                               fontSize: 20.sp,
                               fontWeight: FontWeight.w400),
@@ -241,7 +241,7 @@ class _EventCardState extends State<EventCard> {
                           widget.time,
                           textAlign: TextAlign.right,
                           style: TextStyle(
-                              color: const Color.fromRGBO(90, 90, 90, 1),
+                              color: textColor,
                               fontFamily: 'Inter',
                               fontSize: 20.sp,
                               fontWeight: FontWeight.w400),
@@ -261,7 +261,7 @@ class _EventCardState extends State<EventCard> {
                   Text(
                     "Description",
                     style: TextStyle(
-                        color: const Color.fromRGBO(58, 58, 58, 1),
+                        color: textColor,
                         fontFamily: 'Inter',
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w400),
@@ -283,9 +283,9 @@ class _EventCardState extends State<EventCard> {
                         textAlign: TextAlign.justify,
                         overflow: TextOverflow.clip,
                         style: TextStyle(
-                            color: const Color.fromRGBO(58, 58, 58, 1),
+                            color: textColor,
                             fontFamily: 'Inter',
-                            fontSize: 15.sp,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.w400),
                       ),
                     ),
@@ -316,12 +316,11 @@ class _EventCardState extends State<EventCard> {
                                 : null,
                             style: ElevatedButton.styleFrom(
                                 fixedSize: Size(200.w, 50.h),
-                                backgroundColor:
-                                    const Color.fromRGBO(29, 78, 216, 1)),
+                                backgroundColor: primaryBlue),
                             child: Text(
                               'Scanner',
                               style: TextStyle(
-                                  color: const Color.fromRGBO(255, 255, 255, 1),
+                                  color: Colors.white,
                                   fontFamily: 'Inter',
                                   fontSize: 20.sp,
                                   fontWeight: FontWeight.w400),
@@ -343,12 +342,11 @@ class _EventCardState extends State<EventCard> {
                           },
                           style: ElevatedButton.styleFrom(
                               fixedSize: Size(200.w, 50.h),
-                              backgroundColor:
-                                  const Color.fromRGBO(29, 78, 216, 1)),
+                              backgroundColor: primaryBlue),
                           child: Text(
                             'Participants',
                             style: TextStyle(
-                                color: const Color.fromRGBO(255, 255, 255, 1),
+                                color: Colors.white,
                                 fontFamily: 'Inter',
                                 fontSize: 20.sp,
                                 fontWeight: FontWeight.w400),

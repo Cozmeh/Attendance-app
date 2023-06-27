@@ -1,19 +1,17 @@
-// ignore_for_file: avoid_print
-
 import 'dart:async';
 import 'dart:math';
 import 'package:ftest/Widgets/ParticipantsTile.dart';
+import 'package:ftest/Data/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:vibration/vibration.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ftest/Presentation/Home/HomePage.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
+// ignore: must_be_immutable
 class Scanner extends StatefulWidget {
   String? eventID;
   bool isOpenForall;
@@ -36,7 +34,6 @@ class _ScannerState extends State<Scanner> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -47,7 +44,7 @@ class _ScannerState extends State<Scanner> {
       splitScreenMode: true,
       builder: (context, child) {
         return Scaffold(
-          backgroundColor: Color(0xffffffff),
+          backgroundColor: background,
           appBar: AppBar(
             backgroundColor: Colors.white,
             centerTitle: true,
@@ -55,7 +52,7 @@ class _ScannerState extends State<Scanner> {
               'Scanner',
               style: TextStyle(color: Colors.black),
             ),
-            iconTheme: IconThemeData(color: Colors.black),
+            iconTheme: const IconThemeData(color: Colors.black),
           ),
           body: Column(
             children: [
@@ -166,9 +163,9 @@ class _ScannerState extends State<Scanner> {
                               );
                             }).toList());
                       } else {
-                        return Center(
+                        return const Center(
                           child: Column(
-                            children: const [
+                            children: [
                               Icon(Icons.error_outline, color: Colors.red),
                               Text("There was a problem in loading data..")
                             ],
@@ -185,7 +182,7 @@ class _ScannerState extends State<Scanner> {
               // qrViewController.
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xff1D4ED8),
+                  backgroundColor: primaryBlue,
                   fixedSize: Size(450.w, 60.h),
                 ),
                 onPressed: () {
@@ -238,7 +235,7 @@ class _ScannerState extends State<Scanner> {
           if (scanData.code != null) {
             setState(() => result = scanData.code);
             if (!widget.isOpenForall) {
-              var sc = await FirebaseFirestore.instance
+              var sc = FirebaseFirestore.instance
                   .collection("Event")
                   .doc(widget.eventID)
                   .collection("Participants")

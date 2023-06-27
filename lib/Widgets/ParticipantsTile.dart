@@ -1,11 +1,10 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ftest/Data/Colour.dart';
+import 'package:ftest/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+// ignore: must_be_immutable
 class ParticipantsTile extends StatefulWidget {
   String participantID, takenTime, eventID;
   bool isPresent, isOpenForall;
@@ -56,7 +55,7 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
               style: GoogleFonts.inter(
                   fontSize: 20.sp,
                   fontWeight: FontWeight.w400,
-                  color: Color(0xff404040)),
+                  color: textColor),
             ),
             const Expanded(child: SizedBox()),
             Visibility(
