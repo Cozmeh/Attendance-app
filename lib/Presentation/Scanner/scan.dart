@@ -49,8 +49,8 @@ class _ScannerState extends State<Scanner> {
             backgroundColor: Colors.white,
             centerTitle: true,
             title: const Text(
-              'Scanner',
-              style: TextStyle(color: Colors.black),
+              'QR Scan',
+              style: TextStyle(color: textColor),
             ),
             iconTheme: const IconThemeData(color: Colors.black),
           ),

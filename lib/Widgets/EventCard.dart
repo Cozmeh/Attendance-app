@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ftest/constants.dart';
+import 'package:ftest/Presentation/Scanner/Nfc.dart';
+import 'package:ftest/Data/constants.dart';
 import '../Presentation/Participants/Participants.dart';
 import '../Presentation/Scanner/scan.dart';
 
@@ -53,45 +54,48 @@ class _EventCardState extends State<EventCard> {
           color: Colors.white,
           child: Column(
             children: [
-              Expanded(
-                // takes possible vertical height
-                child: Row(
-                  children: [
-                    Expanded(
-                      // take possible horizontal height
-                      child: SizedBox(
-                        height: 500
-                            .h, // beyound certain amount which makes the image stay inside the possible vertical and horizontal limits
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              topRight: Radius.circular(10)),
-                          child: Image.network(
-                            widget.imageUrl,
-                            fit: BoxFit.cover, // lets the image clip and zoom
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) {
-                                return child;
-                              }
-                              return const Center(child: Text("Loading.."));
-                            },
-                            errorBuilder: (BuildContext context,
-                                Object exception, StackTrace? stackTrace) {
-                              return Center(
-                                child: Text(
-                                  "N/A",
-                                  style: TextStyle(
-                                    fontSize: 20.sp,
-                                    fontFamily: 'Inter',
+              SizedBox(
+                child: Expanded(
+                  // takes possible vertical height
+                  child: Row(
+                    children: [
+                      Expanded(
+                        // take possible horizontal height
+                        child: SizedBox(
+                          height: 300
+                              .h, // beyound certain amount which makes the image stay inside the possible vertical and horizontal limits
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                topRight: Radius.circular(10)),
+                            child: Image.network(
+                              widget.imageUrl,
+                              fit: BoxFit.cover, // lets the image clip and zoom
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                }
+                                return const Center(child: Text("Loading.."));
+                              },
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                return Center(
+                                  child: Text(
+                                    "N/A",
+                                    style: TextStyle(
+                                      fontSize: 20.sp,
+                                      fontFamily: 'Inter',
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
@@ -293,7 +297,7 @@ class _EventCardState extends State<EventCard> {
                 ],
               ),
               SizedBox(
-                height: 40.h,
+                height: 30.h,
               ),
               Row(
                 // Time Row
@@ -333,18 +337,18 @@ class _EventCardState extends State<EventCard> {
                       Padding(
                         padding: EdgeInsets.only(right: 30.w),
                         child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => Participants(
-                                  eventID: widget.id,
-                                  isOpenForall: widget.isOpenForall),
-                            ));
-                          },
+                          onPressed: widget.button
+                              ? () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => const nfcScanner(),
+                                  ));
+                                }
+                              : null,
                           style: ElevatedButton.styleFrom(
                               fixedSize: Size(200.w, 50.h),
                               backgroundColor: primaryBlue),
                           child: Text(
-                            'Participants',
+                            'NFC',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'Inter',
@@ -354,12 +358,48 @@ class _EventCardState extends State<EventCard> {
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
+              sizedbox10,
               SizedBox(
-                height: 40.h,
-              )
+                child: Expanded(
+                  // takes possible vertical height
+                  child: Row(
+                    children: [
+                      Expanded(
+                        // take possible horizontal height
+                        child: SizedBox(
+                          // beyound certain amount which makes the image stay inside the possible vertical and horizontal limits
+                          child: Column(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => Participants(
+                                        eventID: widget.id,
+                                        isOpenForall: widget.isOpenForall),
+                                  ));
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: primaryBlue),
+                                child: Text(
+                                  'Participants',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontFamily: 'Inter',
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),

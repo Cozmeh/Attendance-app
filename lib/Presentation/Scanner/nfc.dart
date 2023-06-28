@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../../Data/constants.dart';
+
 class nfcScanner extends StatefulWidget {
   const nfcScanner({super.key});
 
@@ -12,6 +14,15 @@ class nfcScanner extends StatefulWidget {
 class _nfcScannerState extends State<nfcScanner> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text(
+          'NFC Read',
+          style: TextStyle(color: textColor),
+        ),
+        iconTheme: const IconThemeData(color: Colors.black),
+      ),
+    );
   }
 }

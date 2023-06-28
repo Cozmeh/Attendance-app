@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ftest/Widgets/eventCard.dart';
-import 'package:ftest/constants.dart';
+import 'package:ftest/Data/constants.dart';
 import '../../Widgets/appDrawer.dart';
 
 class HomePage extends StatelessWidget {

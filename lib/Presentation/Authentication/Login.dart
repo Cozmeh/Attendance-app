@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ftest/InfraStructure/AuthRepo.dart';
 import 'package:ftest/Presentation/Home/HomePage.dart';
-import 'package:ftest/constants.dart';
+import 'package:ftest/Data/constants.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:ftest/Presentation/History/history.dart';
 import 'package:ftest/Presentation/Home/HomePage.dart';
-import 'package:ftest/constants.dart';
+import 'package:ftest/Data/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../InfraStructure/AuthRepo.dart';
 import '../Presentation/Authentication/Login.dart';
