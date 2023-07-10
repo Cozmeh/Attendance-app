@@ -19,12 +19,12 @@ class History extends StatelessWidget {
       ),
       body: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(0),
           child: SizedBox(
             height: MediaQuery.of(context).size.height * 1,
             child: StreamBuilder(
               stream: FirebaseFirestore.instance
-                  .collection('Event')
+                  .collection('events')
                   .where('coordinators',
                       arrayContains: FirebaseAuth.instance.currentUser!.email)
                   .snapshots(),
@@ -46,11 +46,10 @@ class History extends StatelessWidget {
                           return EventCard(
                             imageUrl: e['backDrop'],
                             eventName: e['eventName'],
-                            departName: e['deptName'],
+                            departName: e['organizer'],
                             date: e['eventDate'],
                             venue: e['venue'],
                             time: l[1],
-                            description: e['description'],
                             button: button,
                             id: e.id,
                             isOpenForall: e['openForAll'],

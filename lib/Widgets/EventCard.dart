@@ -7,7 +7,7 @@ import '../Presentation/Scanner/scan.dart';
 
 // ignore: must_be_immutable
 class EventCard extends StatefulWidget {
-  String imageUrl, eventName, departName, date, venue, time, description, id;
+  String imageUrl, eventName, departName, date, venue, time, id;
   bool button, isOpenForall;
   EventCard(
       {super.key,
@@ -17,7 +17,6 @@ class EventCard extends StatefulWidget {
       required this.date,
       required this.time,
       required this.venue,
-      required this.description,
       required this.button,
       required this.id,
       required this.isOpenForall});
@@ -26,16 +25,9 @@ class EventCard extends StatefulWidget {
 }
 
 class _EventCardState extends State<EventCard> {
-  var divider = Padding(
-    padding: EdgeInsets.only(left: 30.w, right: 30.w),
-    child: const Divider(
-      color: dimGrey,
-      height: 10,
-    ),
-  );
-
-  var Leftspacer = SizedBox(
-    width: 30.w,
+  var divider = Divider(
+    color: dimGrey,
+    height: 10.h,
   );
 
   var sizedbox10 = SizedBox(height: 10.h);
@@ -43,360 +35,292 @@ class _EventCardState extends State<EventCard> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 950.h,
+      height: 550,
       child: Padding(
-        padding: EdgeInsets.all(15.w),
-        child: Card(
-          shadowColor: Colors.grey[300],
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          elevation: 5,
+        padding: const EdgeInsets.all(10),
+        child: Container(
           color: Colors.white,
           child: Column(
             children: [
-              SizedBox(
-                child: Expanded(
-                  // takes possible vertical height
-                  child: Row(
-                    children: [
-                      Expanded(
-                        // take possible horizontal height
-                        child: SizedBox(
-                          height: 300
-                              .h, // beyound certain amount which makes the image stay inside the possible vertical and horizontal limits
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                topRight: Radius.circular(10)),
-                            child: Image.network(
-                              widget.imageUrl,
-                              fit: BoxFit.cover, // lets the image clip and zoom
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                if (loadingProgress == null) {
-                                  return child;
-                                }
-                                return const Center(child: Text("Loading.."));
-                              },
-                              errorBuilder: (BuildContext context,
-                                  Object exception, StackTrace? stackTrace) {
-                                return Center(
-                                  child: Text(
-                                    "N/A",
-                                    style: TextStyle(
-                                      fontSize: 20.sp,
-                                      fontFamily: 'Inter',
-                                    ),
-                                  ),
-                                );
-                              },
+              Flexible(
+                flex: 1,
+                fit: FlexFit.loose,
+                child: SizedBox(
+                  height: double.infinity,
+                  width: double.infinity,
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10)),
+                    child: Image.network(
+                      fit: BoxFit.cover,
+                      widget.imageUrl, // lets the image clip and zoom
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        }
+                        return const Center(child: Text("Loading.."));
+                      },
+                      errorBuilder: (BuildContext context, Object exception,
+                          StackTrace? stackTrace) {
+                        return Center(
+                            child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.image_not_supported,
+                              size: 50,
                             ),
-                          ),
-                        ),
-                      ),
-                    ],
+                            Text(
+                              "No Image Available",
+                              style: TextStyle(
+                                fontSize: 20.sp,
+                                fontFamily: 'Inter',
+                              ),
+                            ),
+                          ],
+                        ));
+                      },
+                    ),
                   ),
                 ),
               ),
-              SizedBox(
-                height: 30.h,
-              ),
-              Row(
-                //Event Name row
-                children: [
-                  Leftspacer,
-                  Text(
-                    widget.eventName,
-                    style: TextStyle(
-                        color: textColor,
-                        fontFamily: 'Inter',
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10.h,
-              ),
-              Row(
-                // Department Row
-                children: [
-                  Leftspacer,
-                  Text(
-                    "Department of ${widget.departName}",
-                    style: TextStyle(
-                        color: textColor,
-                        fontFamily: 'Inter',
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w400),
-                  ),
-                ],
-              ),
-              sizedbox10,
-              divider,
-              sizedbox10,
-              Row(
-                // Date Row
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 30.w),
-                        child: Text(
-                          'Date ',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              color: textColor,
-                              fontFamily: 'Inter',
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: 30.w),
-                        child: Text(
-                          widget.date,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                              color: textColor,
-                              fontFamily: 'Inter',
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              sizedbox10,
-              divider,
-              sizedbox10,
-              Row(
-                // Venue Row
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 30.w),
-                        child: Text(
-                          'Venue ',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              color: textColor,
-                              fontFamily: 'Inter',
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: 30.w),
-                        child: Text(
-                          widget.venue,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                              color: textColor,
-                              fontFamily: 'Inter',
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              sizedbox10,
-              divider,
-              sizedbox10,
-              Row(
-                // Time Row
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 30.w),
-                        child: Text(
-                          'Time ',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              color: textColor,
-                              fontFamily: 'Inter',
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: 30.w),
-                        child: Text(
-                          widget.time,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                              color: textColor,
-                              fontFamily: 'Inter',
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              sizedbox10,
-              divider,
-              sizedbox10,
-              Row(
-                //Event Name row
-                children: [
-                  Leftspacer,
-                  Text(
-                    "Description",
-                    style: TextStyle(
-                        color: textColor,
-                        fontFamily: 'Inter',
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w400),
-                  ),
-                ],
-              ),
-              sizedbox10,
-              Row(
-                //Event Name row
-                children: [
-                  Leftspacer,
-                  SizedBox(
-                    width: 450.w,
-                    height: 100.h,
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: Text(
-                        widget.description,
-                        textAlign: TextAlign.justify,
-                        overflow: TextOverflow.clip,
-                        style: TextStyle(
-                            color: textColor,
-                            fontFamily: 'Inter',
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 30.h,
-              ),
-              Row(
-                // Time Row
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      Padding(
-                          padding: EdgeInsets.only(left: 30.w),
-                          child: ElevatedButton(
-                            onPressed: widget.button
-                                ? () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                      builder: (context) => Scanner(
-                                          eventID: widget.id,
-                                          isOpenForall: widget.isOpenForall),
-                                    ));
-                                  }
-                                : null,
-                            style: ElevatedButton.styleFrom(
-                                fixedSize: Size(200.w, 50.h),
-                                backgroundColor: primaryBlue),
-                            child: Text(
-                              'Scanner',
+              Flexible(
+                flex: 0,
+                //fit: FlexFit.tight,
+                child: Container(
+                  //color: Colors.green,
+                  child: Padding(
+                    padding: EdgeInsets.all(20.h),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              widget.eventName,
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: textColor,
+                                  fontFamily: 'Inter',
+                                  fontSize: 24.sp,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
+                        sizedbox10,
+                        Row(
+                          children: [
+                            Text(
+                              "Organised by - ${widget.departName}",
+                              style: TextStyle(
+                                  color: textColor,
                                   fontFamily: 'Inter',
                                   fontSize: 20.sp,
                                   fontWeight: FontWeight.w400),
                             ),
-                          )),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: 30.w),
-                        child: ElevatedButton(
-                          onPressed: widget.button
-                              ? () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => const nfcScanner(),
-                                  ));
-                                }
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                              fixedSize: Size(200.w, 50.h),
-                              backgroundColor: primaryBlue),
-                          child: Text(
-                            'NFC',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Inter',
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.w400),
-                          ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              sizedbox10,
-              SizedBox(
-                child: Expanded(
-                  // takes possible vertical height
-                  child: Row(
-                    children: [
-                      Expanded(
-                        // take possible horizontal height
-                        child: SizedBox(
-                          // beyound certain amount which makes the image stay inside the possible vertical and horizontal limits
-                          child: Column(
-                            children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => Participants(
-                                        eventID: widget.id,
-                                        isOpenForall: widget.isOpenForall),
-                                  ));
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: primaryBlue),
-                                child: Text(
-                                  'Participants',
+                        const Divider(
+                          color: Colors.black,
+                          thickness: 0.5,
+                        ),
+                        sizedbox10,
+                        Row(
+                          // Date Row
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                  'Date ',
+                                  textAlign: TextAlign.left,
                                   style: TextStyle(
-                                      color: Colors.white,
+                                      color: textColor,
                                       fontFamily: 'Inter',
                                       fontSize: 20.sp,
                                       fontWeight: FontWeight.w400),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  widget.date,
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontFamily: 'Inter',
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        sizedbox10,
+                        divider,
+                        sizedbox10,
+                        Row(
+                          // Venue Row
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                  'Venue ',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontFamily: 'Inter',
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  widget.venue,
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontFamily: 'Inter',
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        sizedbox10,
+                        divider,
+                        sizedbox10,
+                        Row(
+                          // Time Row
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                  'Time ',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontFamily: 'Inter',
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  widget.time,
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontFamily: 'Inter',
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        sizedbox10,
+                        divider,
+                        sizedbox10,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ElevatedButton(
+                              onPressed: widget.button
+                                  ? () {
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) => Scanner(
+                                            eventID: widget.id,
+                                            isOpenForall: widget.isOpenForall),
+                                      ));
+                                    }
+                                  : null,
+                              style: ElevatedButton.styleFrom(
+                                  fixedSize: Size(200.w, 60.h),
+                                  backgroundColor: primaryBlue),
+                              child: Text(
+                                'Scanner',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Inter',
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: widget.button
+                                  ? () {
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) =>
+                                            const nfcScanner(),
+                                      ));
+                                    }
+                                  : null,
+                              style: ElevatedButton.styleFrom(
+                                  fixedSize: Size(200.w, 60.h),
+                                  backgroundColor: primaryBlue),
+                              child: Text(
+                                'NFC',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Inter',
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                            ),
+                          ],
+                        ),
+                        sizedbox10,
+                        Container(
+                          color: primaryBlue,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                // take possible horizontal height
+                                child: SizedBox(
+                                  // beyound certain amount which makes the image stay inside the possible vertical and horizontal limits
+                                  child: Column(
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context)
+                                              .push(MaterialPageRoute(
+                                            builder: (context) => Participants(
+                                                eventID: widget.id,
+                                                isOpenForall:
+                                                    widget.isOpenForall),
+                                          ));
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            fixedSize: Size(200.w, 70.h),
+                                            backgroundColor: primaryBlue),
+                                        child: Text(
+                                          'Participants',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: 'Inter',
+                                              fontSize: 20.sp,
+                                              fontWeight: FontWeight.w400),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -407,3 +331,28 @@ class _EventCardState extends State<EventCard> {
     );
   }
 }
+
+
+
+
+
+/*
+
+Navigator.of(context)
+                                              .push(MaterialPageRoute(
+                                            builder: (context) => Participants(
+                                                eventID: widget.id,
+                                                isOpenForall:
+                                                    widget.isOpenForall),
+                                          ));
+
+Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) => Scanner(
+                                            eventID: widget.id,
+                                            isOpenForall: widget.isOpenForall),
+                                      ));
+
+
+
+*/

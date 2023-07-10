@@ -33,6 +33,7 @@ class HomePage extends StatelessWidget {
             return false;
           },
           child: Scaffold(
+            backgroundColor: Colors.orange,
             appBar: AppBar(
               title: const Text(
                 'Home',
@@ -53,7 +54,7 @@ class HomePage extends StatelessWidget {
                 height: double.infinity,
                 child: StreamBuilder(
                   stream: FirebaseFirestore.instance
-                      .collection('Event')
+                      .collection('events')
                       .where('coordinators',
                           arrayContains:
                               FirebaseAuth.instance.currentUser!.email)
@@ -73,7 +74,7 @@ class HomePage extends StatelessWidget {
                             List l = checkTime(e['startTime'], e['endTime']);
                             if (l[0] == "pending" || l[0] == "running") {
                               //if (eventTense != "past"){
-                              print(l[0]);
+                              //print(l[0]);
                               if (l[0] == "running") {
                                 button = true;
                               } else {
@@ -82,11 +83,10 @@ class HomePage extends StatelessWidget {
                               return EventCard(
                                   imageUrl: e['backDrop'],
                                   eventName: e['eventName'],
-                                  departName: e['deptName'],
+                                  departName: e['organizer'],
                                   date: e['eventDate'],
                                   venue: e['venue'],
                                   time: l[1],
-                                  description: e['description'],
                                   button: button,
                                   id: e.id,
                                   isOpenForall: e['openForAll']);
