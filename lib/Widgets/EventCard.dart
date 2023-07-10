@@ -135,41 +135,6 @@ class _EventCardState extends State<EventCard> {
                         ),
                         sizedbox10,
                         Row(
-                          // Date Row
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              children: [
-                                Text(
-                                  'Date ',
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                      color: textColor,
-                                      fontFamily: 'Inter',
-                                      fontSize: 20.sp,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  widget.date,
-                                  textAlign: TextAlign.right,
-                                  style: TextStyle(
-                                      color: textColor,
-                                      fontFamily: 'Inter',
-                                      fontSize: 20.sp,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                        sizedbox10,
-                        divider,
-                        sizedbox10,
-                        Row(
                           // Venue Row
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -190,6 +155,41 @@ class _EventCardState extends State<EventCard> {
                               children: [
                                 Text(
                                   widget.venue,
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontFamily: 'Inter',
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        sizedbox10,
+                        divider,
+                        sizedbox10,
+                        Row(
+                          // Date Row
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                  'Date ',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontFamily: 'Inter',
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  widget.date,
                                   textAlign: TextAlign.right,
                                   style: TextStyle(
                                       color: textColor,

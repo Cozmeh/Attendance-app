@@ -68,7 +68,7 @@ class _ParticipantsState extends State<Participants> {
             height: 15.h,
           ),
           Padding(
-            padding: EdgeInsets.only(left: 25.w, right: 25.w),
+            padding: EdgeInsets.only(left: 15.w, right: 15.w),
             child: SizedBox(
               height: 70.h,
               child: TextField(
@@ -100,7 +100,7 @@ class _ParticipantsState extends State<Participants> {
               },
               child: SizedBox(
                 child: Padding(
-                  padding: EdgeInsets.only(left: 25.w, right: 25.w),
+                  padding: EdgeInsets.only(left: 15.w, right: 15.w),
                   child: StreamBuilder(
                     stream: participants
                         .collection('Participants')

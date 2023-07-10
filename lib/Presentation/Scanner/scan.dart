@@ -56,15 +56,11 @@ class _ScannerState extends State<Scanner> {
           ),
           body: Column(
             children: [
-              SizedBox(
-                height: 5.h,
-              ),
               Stack(
                 alignment: AlignmentDirectional.bottomEnd,
                 children: <Widget>[
                   SizedBox(
                     height: 450.h,
-                    width: 450.w,
                     child: QRView(
                       key: globalKey,
                       onQRViewCreated: _onQRViewCreated,
@@ -72,9 +68,9 @@ class _ScannerState extends State<Scanner> {
                         cutOutHeight: 350.h,
                         cutOutWidth: 350.w,
                         borderColor: scanStatus ?? Colors.red,
-                        borderRadius: 10,
+                        borderRadius: 15,
                         borderLength: min(350.h, 350.w) / 2 + 12.w * 2,
-                        borderWidth: 12.w,
+                        borderWidth: 15.w,
                       ),
                       onPermissionSet: (ctrl, p) =>
                           _onPermissionSet(context, ctrl, p),
@@ -104,75 +100,78 @@ class _ScannerState extends State<Scanner> {
                 height: 10.h,
               ),
               Container(
-                padding: EdgeInsets.all(8.h),
+                padding: EdgeInsets.all(10.h),
                 decoration: BoxDecoration(
                     color: scanStatus, borderRadius: BorderRadius.circular(5)),
                 child: Text(
                   status,
-                  style: TextStyle(fontSize: 15.sp),
+                  style: TextStyle(fontSize: 20.sp),
                 ),
               ),
               SizedBox(
                 height: 10.h,
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 45.w, right: 45.w),
-                child: SizedBox(
-                  height: 350.h,
-                  child: StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection('events')
-                        .doc(widget.eventID)
-                        .collection('Participants')
-                        .orderBy('takenTime', descending: false)
-                        .snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      // Camera pausing ..
-                      if (correctScan == true) {
-                        Vibration.vibrate(duration: 100);
-                        correctScan = false;
-                        Timer(const Duration(seconds: 1), () {
-                          scrollLatest();
-                        });
-                      } // Data Processing ..
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: Text("Loading.."),
-                        );
-                      } else if (!snapshot.hasData) {
-                        return Container();
-                      } else if (snapshot.hasData) {
-                        return ListView(
-                            controller: scrollControl,
-                            physics: const BouncingScrollPhysics(),
-                            children: snapshot.data!.docs.map((e) {
-                              var itemTime =
-                                  (DateTime.fromMillisecondsSinceEpoch(
-                                              e["takenTime"] >= 1000000000
-                                                  ? e["takenTime"]
-                                                  : e["takenTime"] * 1000)
-                                          .toString())
-                                      .substring(0, 16);
-                              return ParticipantsTile(
-                                isOpenForall: widget.isOpenForall,
-                                isPresent: e['isPresent'],
-                                participantID: e['participantID'],
-                                takenTime: itemTime,
-                                eventID: widget.eventID.toString(),
-                              );
-                            }).toList());
-                      } else {
-                        return const Center(
-                          child: Column(
-                            children: [
-                              Icon(Icons.error_outline, color: Colors.red),
-                              Text("There was a problem in loading data..")
-                            ],
-                          ),
-                        );
-                      }
-                    },
+              Flexible(
+                flex: 10,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 15.w, right: 15.w),
+                  child: SizedBox(
+                    child: StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection('events')
+                          .doc(widget.eventID)
+                          .collection('Participants')
+                          .orderBy('takenTime', descending: false)
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        // Camera pausing ..
+                        if (correctScan == true) {
+                          Vibration.vibrate(duration: 100);
+                          correctScan = false;
+                          Timer(const Duration(seconds: 1), () {
+                            scrollLatest();
+                          });
+                        } // Data Processing ..
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: Text("Loading.."),
+                          );
+                        } else if (!snapshot.hasData) {
+                          return Container();
+                        } else if (snapshot.hasData) {
+                          return ListView(
+                              controller: scrollControl,
+                              physics: const BouncingScrollPhysics(),
+                              children: snapshot.data!.docs.map((e) {
+                                var itemTime =
+                                    (DateTime.fromMillisecondsSinceEpoch(
+                                                e["takenTime"] >= 1000000000
+                                                    ? e["takenTime"]
+                                                    : e["takenTime"] * 1000)
+                                            .toString())
+                                        .substring(0, 16);
+                                return ParticipantsTile(
+                                  isOpenForall: widget.isOpenForall,
+                                  isPresent: e['isPresent'],
+                                  participantID: e['participantID'],
+                                  takenTime: itemTime,
+                                  eventID: widget.eventID.toString(),
+                                );
+                              }).toList());
+                        } else {
+                          return const Center(
+                            child: Column(
+                              children: [
+                                Icon(Icons.error_outline, color: Colors.red),
+                                Text("There was a problem in loading data..")
+                              ],
+                            ),
+                          );
+                        }
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -183,7 +182,7 @@ class _ScannerState extends State<Scanner> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryBlue,
-                  fixedSize: Size(450.w, 60.h),
+                  fixedSize: Size(500.w, 60.h),
                 ),
                 onPressed: () {
                   Navigator.of(context).push(
@@ -196,7 +195,7 @@ class _ScannerState extends State<Scanner> {
                 child: Text(
                   'Finish',
                   style: GoogleFonts.inter(
-                      fontSize: 20.sp, fontWeight: FontWeight.bold),
+                      fontSize: 25.sp, fontWeight: FontWeight.bold),
                 ),
               ),
               SizedBox(
