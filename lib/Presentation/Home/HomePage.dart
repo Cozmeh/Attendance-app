@@ -71,11 +71,15 @@ class HomePage extends StatelessWidget {
                           physics: const BouncingScrollPhysics(),
                           children: snapshot.data!.docs.map((e) {
                             print(e);
-                            List l = checkTime(e['startTime'], e['endTime']);
-                            if (l[0] == "pending" || l[0] == "running") {
+                            List timeCheck =
+                                checkTime(e['startTime'], e['endTime']);
+                            List timeCheck2 =
+                                checkTime(e['endTime'], e['startTime']);
+                            if (timeCheck[0] == "pending" ||
+                                timeCheck[0] == "running") {
                               //if (eventTense != "past"){
                               //print(l[0]);
-                              if (l[0] == "running") {
+                              if (timeCheck[0] == "running") {
                                 button = true;
                               } else {
                                 button = false;
@@ -86,7 +90,8 @@ class HomePage extends StatelessWidget {
                                   departName: e['organizer'],
                                   date: e['eventDate'],
                                   venue: e['venue'],
-                                  time: l[1],
+                                  startTime: timeCheck[1],
+                                  endTime: timeCheck2[1],
                                   button: button,
                                   id: e.id,
                                   isOpenForall: e['openForAll']);

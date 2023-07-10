@@ -39,8 +39,11 @@ class History extends StatelessWidget {
                   return ListView(
                       physics: const BouncingScrollPhysics(),
                       children: snapshot.data!.docs.map((e) {
-                        List l = checkTime(e['startTime'], e['endTime']);
-                        if (l[0] == "over") {
+                        List timeCheck =
+                            checkTime(e['startTime'], e['endTime']);
+                        List timeCheck2 =
+                            checkTime(e['endTime'], e['startTime']);
+                        if (timeCheck[0] == "over") {
                           //print(l[0]);
                           button = false;
                           return EventCard(
@@ -49,7 +52,8 @@ class History extends StatelessWidget {
                             departName: e['organizer'],
                             date: e['eventDate'],
                             venue: e['venue'],
-                            time: l[1],
+                            startTime: timeCheck[1],
+                            endTime: timeCheck2[1],
                             button: button,
                             id: e.id,
                             isOpenForall: e['openForAll'],
