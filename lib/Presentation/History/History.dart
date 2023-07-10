@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ftest/Data/constants.dart';
 import 'package:ftest/Widgets/eventCard.dart';
 
 class History extends StatelessWidget {
@@ -11,11 +12,13 @@ class History extends StatelessWidget {
     //Navigator.pop(context);
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: pageHeaderBgColor,
         title: const Text(
           'History',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: pageHeaderTextColor),
         ),
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: pageHeaderTextColor),
       ),
       body: Scaffold(
         body: Padding(

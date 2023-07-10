@@ -33,13 +33,15 @@ class HomePage extends StatelessWidget {
             return false;
           },
           child: Scaffold(
-            backgroundColor: Colors.orange,
+            backgroundColor: background,
             appBar: AppBar(
+              backgroundColor: Colors.black,
+              centerTitle: true,
               title: const Text(
-                'Home',
-                style: TextStyle(color: Colors.black),
+                'Home Page',
+                style: TextStyle(color: Colors.white),
               ),
-              iconTheme: const IconThemeData(color: Colors.black),
+              iconTheme: const IconThemeData(color: Colors.white),
             ),
             drawer: Drawer(
               backgroundColor: Colors.black,

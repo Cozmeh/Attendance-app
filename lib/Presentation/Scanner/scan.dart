@@ -46,13 +46,13 @@ class _ScannerState extends State<Scanner> {
         return Scaffold(
           backgroundColor: background,
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: pageHeaderBgColor,
             centerTitle: true,
             title: const Text(
               'QR Scan',
-              style: TextStyle(color: textColor),
+              style: TextStyle(color: pageHeaderTextColor),
             ),
-            iconTheme: const IconThemeData(color: Colors.black),
+            iconTheme: const IconThemeData(color: pageHeaderTextColor),
           ),
           body: Column(
             children: [
@@ -121,7 +121,7 @@ class _ScannerState extends State<Scanner> {
                   height: 350.h,
                   child: StreamBuilder(
                     stream: FirebaseFirestore.instance
-                        .collection('Event')
+                        .collection('events')
                         .doc(widget.eventID)
                         .collection('Participants')
                         .orderBy('takenTime', descending: false)
@@ -196,7 +196,7 @@ class _ScannerState extends State<Scanner> {
                 child: Text(
                   'Finish',
                   style: GoogleFonts.inter(
-                      fontSize: 18.sp, fontWeight: FontWeight.w400),
+                      fontSize: 20.sp, fontWeight: FontWeight.bold),
                 ),
               ),
               SizedBox(
@@ -236,12 +236,12 @@ class _ScannerState extends State<Scanner> {
             setState(() => result = scanData.code);
             if (!widget.isOpenForall) {
               var sc = FirebaseFirestore.instance
-                  .collection("Event")
+                  .collection("events")
                   .doc(widget.eventID)
                   .collection("Participants")
                   .doc(scanData.code);
               if ((await FirebaseFirestore.instance
-                      .collection("Event")
+                      .collection("events")
                       .doc(widget.eventID)
                       .collection("Participants")
                       .doc(scanData.code)
@@ -269,14 +269,14 @@ class _ScannerState extends State<Scanner> {
               //if the event is open for all
             } else {
               var a = await FirebaseFirestore.instance
-                  .collection("Event")
+                  .collection("events")
                   .doc(widget.eventID)
                   .collection("Participants")
                   .doc(scanData.code)
                   .get();
 
               if ((await FirebaseFirestore.instance
-                      .collection("Event")
+                      .collection("events")
                       .doc(widget.eventID)
                       .collection("Participants")
                       .doc(scanData.code)
@@ -296,7 +296,7 @@ class _ScannerState extends State<Scanner> {
 
               if (scanData.code != null && !a.exists) {
                 var participantref = FirebaseFirestore.instance
-                    .collection("Event")
+                    .collection("events")
                     .doc(widget.eventID)
                     .collection("Participants")
                     .doc(scanData.code);

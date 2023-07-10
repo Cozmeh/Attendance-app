@@ -38,23 +38,25 @@ class _ParticipantsState extends State<Participants> {
   Widget build(BuildContext context) {
     FocusNode focusNode = FocusNode();
     DocumentReference<Map<String, dynamic>> participants =
-        FirebaseFirestore.instance.collection('Event').doc(widget.eventID);
+        FirebaseFirestore.instance.collection('events').doc(widget.eventID);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: background,
-      drawer: Drawer(
+      /*drawer: Drawer(
         child: AppDrawer(
           fAuth: FirebaseAuth.instance,
           pageTitle: "Participants",
         ),
-      ),
+      ),*/
       appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: pageHeaderBgColor,
           title: Text(
             "Participants",
             style: GoogleFonts.inter(
-                color: textColor, fontWeight: FontWeight.w500),
+                color: pageHeaderTextColor, fontWeight: FontWeight.w500),
           ),
-          iconTheme: IconThemeData(color: Colors.black)),
+          iconTheme: const IconThemeData(color: Colors.white)),
       // floatingActionButton: FloatingActionButton(
       //  backgroundColor: Color(0xff1D4ED8),
       //   onPressed: () => getCSV(),
@@ -63,7 +65,7 @@ class _ParticipantsState extends State<Participants> {
       body: Column(
         children: <Widget>[
           SizedBox(
-            height: 10.h,
+            height: 15.h,
           ),
           Padding(
             padding: EdgeInsets.only(left: 25.w, right: 25.w),

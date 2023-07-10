@@ -24,11 +24,11 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 70.h,
+      height: 80.h,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
         shadowColor: Colors.transparent,
-        color: const Color(0xfff1f1f1),
+        color: Color.fromARGB(255, 233, 233, 233),
         child: Row(
           children: [
             SizedBox(
@@ -54,7 +54,7 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
               widget.participantID,
               style: GoogleFonts.inter(
                   fontSize: 20.sp,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w500,
                   color: textColor),
             ),
             const Expanded(child: SizedBox()),
@@ -77,7 +77,7 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
                               ),
                               onPressed: () {
                                 FirebaseFirestore.instance
-                                    .collection('Event')
+                                    .collection('events')
                                     .doc(widget.eventID)
                                     .collection('Participants')
                                     .doc(widget.participantID)
