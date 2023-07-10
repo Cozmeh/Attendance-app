@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ftest/Presentation/History/history.dart';
 import 'package:ftest/Presentation/Home/HomePage.dart';
 import 'package:ftest/Data/constants.dart';
@@ -22,14 +23,14 @@ class _AppDrawerState extends State<AppDrawer> {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-          color: const Color(0xffe6e6e6),
+          color: pageHeaderBgColor,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 width: double.infinity,
                 height: 300,
-                padding: const EdgeInsets.only(top: 35, bottom: 5.0),
+                padding: const EdgeInsets.only(top: 40, bottom: 5.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -38,13 +39,22 @@ class _AppDrawerState extends State<AppDrawer> {
                           widget.fAuth.currentUser!.photoURL.toString()),
                       maxRadius: 100,
                     ),
+                    SizedBox(
+                      height: 10.h,
+                    ),
                     Text(
                       FirebaseAuth.instance.currentUser!.displayName.toString(),
-                      style: GoogleFonts.inter(),
+                      style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 25.sp,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 5.h,
                     ),
                     Text(
                       FirebaseAuth.instance.currentUser!.email.toString(),
-                      style: GoogleFonts.inter(color: textColor),
+                      style: GoogleFonts.inter(color: dimGrey, fontSize: 20.sp),
                     ),
                   ],
                 ),
@@ -54,7 +64,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     height: 25,
                     width: MediaQuery.of(context).size.width * 0.7,
                     child: const Divider(
-                      color: Color(0xffa7a7a7),
+                      color: Color.fromARGB(255, 66, 66, 66),
                       thickness: 1.0,
                     )),
               ),
@@ -80,7 +90,7 @@ class _AppDrawerState extends State<AppDrawer> {
                       ))),
               Container(
                   padding: const EdgeInsets.all(5.0),
-                  color: const Color(0xffd9d9d9),
+                  color: Color.fromARGB(255, 66, 66, 66),
                   child: ListTile(
                     onTap: () {
                       Navigator.pop(context);
@@ -89,11 +99,16 @@ class _AppDrawerState extends State<AppDrawer> {
                           MaterialPageRoute(
                               builder: (context) => const History()));
                     },
-                    leading: const Icon(Icons.history),
+                    leading: const Icon(
+                      Icons.history_toggle_off,
+                      color: Colors.white,
+                    ),
                     title: Text(
                       "History",
                       style: GoogleFonts.inter(
-                          fontSize: 20.0, fontWeight: FontWeight.w400),
+                          color: Colors.white,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.w400),
                     ),
                   )),
               Expanded(
@@ -107,15 +122,16 @@ class _AppDrawerState extends State<AppDrawer> {
               ), //this is the empty space between the button and the list items
               Container(
                   margin: const EdgeInsets.only(bottom: 20.0),
-                  width: 200,
+                  width: 250,
                   decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xffb91c1c))),
+                      border:
+                          Border.all(color: Color.fromARGB(255, 255, 0, 0))),
                   child: TextButton(
                     child: Text(
                       "Sign Out",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(
-                          color: const Color(0xffb91c1c),
+                          color: Color.fromARGB(255, 255, 0, 0),
                           fontSize: 20.0,
                           fontWeight: FontWeight.normal),
                     ),

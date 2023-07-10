@@ -5,4 +5,4 @@ const Color background = Colors.white;
 const Color dimGrey = Color.fromARGB(255, 153, 153, 153);
 const Color textColor = Colors.black;
 const Color pageHeaderTextColor = Colors.white;
-const Color pageHeaderBgColor = Colors.black;
+const Color pageHeaderBgColor = Color.fromRGBO(23, 23, 28, 1);
