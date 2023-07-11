@@ -34,6 +34,8 @@ class _ScannerState extends State<Scanner> {
 
   @override
   void initState() {
+    status = "Scan the QR to mark Attendance";
+    scanStatus = primaryBlue;
     super.initState();
   }
 
@@ -105,7 +107,7 @@ class _ScannerState extends State<Scanner> {
                     color: scanStatus, borderRadius: BorderRadius.circular(5)),
                 child: Text(
                   status,
-                  style: TextStyle(fontSize: 20.sp),
+                  style: TextStyle(fontSize: 20.sp, color: Colors.white),
                 ),
               ),
               SizedBox(

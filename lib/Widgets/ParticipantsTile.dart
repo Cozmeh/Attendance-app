@@ -59,7 +59,7 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
             ),
             const Expanded(child: SizedBox()),
             Visibility(
-              visible: (widget.eventID != ""),
+              visible: (widget.eventID == ""),
               child: GestureDetector(
                   onTap: () {
                     showDialog(

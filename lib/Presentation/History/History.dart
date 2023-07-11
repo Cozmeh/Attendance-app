@@ -38,7 +38,7 @@ class History extends StatelessWidget {
                 } else if (!snapshot.hasData) {
                   return Container();
                 } else if (snapshot.hasData) {
-                  bool button;
+                  bool button, isStarted, isEnded;
                   return ListView(
                       physics: const BouncingScrollPhysics(),
                       children: snapshot.data!.docs.map((e) {
@@ -49,6 +49,8 @@ class History extends StatelessWidget {
                         if (timeCheck[0] == "over") {
                           //print(l[0]);
                           button = false;
+                          isStarted = false;
+                          isEnded = true;
                           return EventCard(
                             imageUrl: e['backDrop'],
                             eventName: e['eventName'],
@@ -60,6 +62,8 @@ class History extends StatelessWidget {
                             button: button,
                             id: e.id,
                             isOpenForall: e['openForAll'],
+                            isStarted: isStarted,
+                            isEnded: isEnded,
                           );
                         }
                         return const SizedBox();

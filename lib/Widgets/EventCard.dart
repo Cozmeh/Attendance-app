@@ -8,19 +8,22 @@ import '../Presentation/Scanner/scan.dart';
 // ignore: must_be_immutable
 class EventCard extends StatefulWidget {
   String imageUrl, eventName, departName, date, venue, startTime, endTime, id;
-  bool button, isOpenForall;
-  EventCard(
-      {super.key,
-      required this.imageUrl,
-      required this.eventName,
-      required this.departName,
-      required this.date,
-      required this.startTime,
-      required this.endTime,
-      required this.venue,
-      required this.button,
-      required this.id,
-      required this.isOpenForall});
+  bool button, isOpenForall, isStarted, isEnded;
+  EventCard({
+    super.key,
+    required this.imageUrl,
+    required this.eventName,
+    required this.departName,
+    required this.date,
+    required this.startTime,
+    required this.endTime,
+    required this.venue,
+    required this.button,
+    required this.id,
+    required this.isOpenForall,
+    required this.isStarted,
+    required this.isEnded,
+  });
   @override
   State<EventCard> createState() => _EventCardState();
 }
@@ -211,10 +214,10 @@ class _EventCardState extends State<EventCard> {
                             Column(
                               children: [
                                 Text(
-                                  widget.button ? 'Started' : "Start",
+                                  widget.isStarted ? "Started" : "Start",
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
-                                      color: widget.button
+                                      color: widget.isStarted
                                           ? Colors.green
                                           : textColor,
                                       fontFamily: 'Inter',
@@ -248,12 +251,12 @@ class _EventCardState extends State<EventCard> {
                             Column(
                               children: [
                                 Text(
-                                  widget.button ? 'End' : 'Ended',
+                                  widget.isEnded ? "Ended" : "End",
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
-                                      color: widget.button
-                                          ? textColor
-                                          : Colors.red,
+                                      color: widget.isEnded
+                                          ? Colors.red
+                                          : textColor,
                                       fontFamily: 'Inter',
                                       fontSize: 20.sp,
                                       fontWeight: FontWeight.w500),

@@ -55,11 +55,14 @@ class HomePage extends StatelessWidget {
               child: SizedBox(
                 height: double.infinity,
                 child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
+                  stream: FirebaseFirestore
+                      .instance // composite indexes should be created in the firestore for ordering to work
                       .collection('events')
                       .where('coordinators',
                           arrayContains:
                               FirebaseAuth.instance.currentUser!.email)
+                      .orderBy('startTime', descending: false)
+                      .orderBy('eventName', descending: false)
                       .snapshots(),
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -68,7 +71,7 @@ class HomePage extends StatelessWidget {
                     } else if (!snapshot.hasData) {
                       return Container();
                     } else if (snapshot.hasData) {
-                      bool button;
+                      bool button, isEnded, isStarted;
                       return ListView(
                           physics: const BouncingScrollPhysics(),
                           children: snapshot.data!.docs.map((e) {
@@ -83,20 +86,27 @@ class HomePage extends StatelessWidget {
                               //print(l[0]);
                               if (timeCheck[0] == "running") {
                                 button = true;
+                                isStarted = true; // started
+                                isEnded = false; // didn't end yet
                               } else {
                                 button = false;
+                                isStarted = false; // didn't start yet
+                                isEnded = false; // didn't end yet
                               }
                               return EventCard(
-                                  imageUrl: e['backDrop'],
-                                  eventName: e['eventName'],
-                                  departName: e['organizer'],
-                                  date: e['eventDate'],
-                                  venue: e['venue'],
-                                  startTime: timeCheck[1],
-                                  endTime: timeCheck2[1],
-                                  button: button,
-                                  id: e.id,
-                                  isOpenForall: e['openForAll']);
+                                imageUrl: e['backDrop'],
+                                eventName: e['eventName'],
+                                departName: e['organizer'],
+                                date: e['eventDate'],
+                                venue: e['venue'],
+                                startTime: timeCheck[1],
+                                endTime: timeCheck2[1],
+                                button: button,
+                                id: e.id,
+                                isOpenForall: e['openForAll'],
+                                isStarted: isStarted,
+                                isEnded: isEnded,
+                              );
                             }
                             return const SizedBox();
                           }).toList());
