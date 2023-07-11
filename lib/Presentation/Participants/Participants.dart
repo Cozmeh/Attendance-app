@@ -22,21 +22,22 @@ class Participants extends StatefulWidget {
 }
 
 class _ParticipantsState extends State<Participants> {
-  String number = "";
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode focusNode = FocusNode();
+  String searchValue = "";
   List<List<String>> items = [];
+  bool searchCross = false;
 
   @override
   void initState() {
     items = [
       <String>["participantID", "takenBy", "takenTime", "isPresent"]
     ];
-    // TODO: implement initState
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    FocusNode focusNode = FocusNode();
     DocumentReference<Map<String, dynamic>> participants =
         FirebaseFirestore.instance.collection('events').doc(widget.eventID);
     return Scaffold(
@@ -70,23 +71,53 @@ class _ParticipantsState extends State<Participants> {
           Padding(
             padding: EdgeInsets.only(left: 15.w, right: 15.w),
             child: SizedBox(
-              height: 70.h,
+              height: 50,
               child: TextField(
-                style: TextStyle(fontSize: 20.sp),
-                onTap: () {
-                  focusNode.requestFocus();
-                },
+                style: TextStyle(fontSize: 22.sp),
+                cursorColor: Colors.black,
                 focusNode: focusNode,
+                controller: _searchController,
                 decoration: InputDecoration(
-                    hintStyle: TextStyle(fontSize: 20.sp),
-                    focusColor: primaryBlue,
-                    border: const OutlineInputBorder(),
-                    prefixIcon: Icon(
-                      Icons.search,
-                      size: 35.h,
+                  hintText: 'Search Participants..',
+                  hintStyle: TextStyle(fontSize: 25.sp, color: dimGrey),
+                  contentPadding: EdgeInsets.all(10.w),
+                  focusColor: primaryBlue,
+                  focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: primaryBlue),
+                      borderRadius: BorderRadius.circular(10)),
+                  border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    size: 35.h,
+                  ),
+                  prefixIconColor: Colors.black,
+                  suffixIconColor: Colors.black,
+                  suffixIcon: Visibility(
+                    visible: searchCross,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.clear,
+                        size: 35.h,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _searchController.clear();
+                          focusNode.unfocus();
+                          searchValue = "";
+                          searchCross = false;
+                        });
+                      },
                     ),
-                    hintText: 'Search Participants..'),
-                onChanged: (roll) => setState(() => number = roll),
+                  ),
+                ),
+                onTap: () {
+                  setState(() {
+                    focusNode.requestFocus();
+                    searchCross = true;
+                  });
+                },
+                onChanged: (changed) => setState(() => searchValue = changed),
               ),
             ),
           ),
@@ -96,7 +127,9 @@ class _ParticipantsState extends State<Participants> {
           Expanded(
             child: GestureDetector(
               onTap: () {
-                focusNode.unfocus();
+                setState(() {
+                  focusNode.unfocus();
+                });
               },
               child: SizedBox(
                 child: Padding(
@@ -136,7 +169,7 @@ class _ParticipantsState extends State<Participants> {
                                       time,
                                       e["isPresent"].toString()
                                     ]);
-                                    if (number == "") {
+                                    if (searchValue == "") {
                                       return ParticipantsTile(
                                           participantID: e['participantID'],
                                           takenTime: time,
@@ -145,8 +178,9 @@ class _ParticipantsState extends State<Participants> {
                                     } else if (e['participantID']
                                         .toString()
                                         .toUpperCase()
-                                        .contains(
-                                            number.toString().toUpperCase())) {
+                                        .contains(searchValue
+                                            .toString()
+                                            .toUpperCase())) {
                                       return ParticipantsTile(
                                           participantID: e['participantID'],
                                           takenTime: time,

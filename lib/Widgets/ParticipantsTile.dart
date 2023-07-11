@@ -28,7 +28,7 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
         shadowColor: Colors.transparent,
-        color: Color.fromARGB(255, 233, 233, 233),
+        color: const Color.fromARGB(255, 233, 233, 233),
         child: Row(
           children: [
             SizedBox(
@@ -38,13 +38,13 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
                 ? widget.isPresent
                     ? Icon(
                         size: 35.h,
-                        Icons.check_circle_outline_sharp,
+                        Icons.check_circle,
                         color: Colors.green,
                       )
-                    : Icon(size: 35.h, Icons.cancel_outlined, color: Colors.red)
+                    : Icon(size: 35.h, Icons.cancel, color: Colors.red)
                 : Icon(
                     size: 35.h,
-                    Icons.check_circle_outline_sharp,
+                    Icons.check_circle,
                     color: Colors.green,
                   ),
             SizedBox(
@@ -53,7 +53,7 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
             Text(
               widget.participantID,
               style: GoogleFonts.inter(
-                  fontSize: 20.sp,
+                  fontSize: 22.sp,
                   fontWeight: FontWeight.w500,
                   color: textColor),
             ),
@@ -101,9 +101,9 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
                     );
                   },
                   child: Icon(
-                    Icons.delete,
+                    Icons.remove_circle_outline,
                     size: 30.sp,
-                    color: const Color(0xff838383),
+                    color: dimGrey,
                   )),
             ),
             SizedBox(
