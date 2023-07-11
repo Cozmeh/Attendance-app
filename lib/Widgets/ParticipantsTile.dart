@@ -82,9 +82,9 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
                                     .collection('Participants')
                                     .doc(widget.participantID)
                                     .delete()
-                                    .then((_) => print('Deleted'))
+                                    .then((_) => debugPrint('Deleted'))
                                     .catchError((error) =>
-                                        print('Delete failed: $error'));
+                                        debugPrint('Delete failed: $error'));
                                 Navigator.of(context).pop();
                               },
                             ),

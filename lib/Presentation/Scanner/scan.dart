@@ -40,6 +40,12 @@ class _ScannerState extends State<Scanner> {
   }
 
   @override
+  void dispose() {
+    qrViewController?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: const Size(555, 1200),
@@ -187,12 +193,12 @@ class _ScannerState extends State<Scanner> {
                   fixedSize: Size(500.w, 60.h),
                 ),
                 onPressed: () {
-                  Navigator.of(context).push(
+                  qrViewController?.dispose();
+                  Navigator.of(context).pop(
                     MaterialPageRoute(
                       builder: (context) => const HomePage(),
                     ),
                   );
-                  qrViewController?.dispose();
                 },
                 child: Text(
                   'Finish',
