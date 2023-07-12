@@ -119,17 +119,26 @@ class _EventCardState extends State<EventCard> {
                             ),
                           ],
                         ),
-                        sizedbox10,
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Organised by - ${widget.departName}",
+                              "Organizer : ${widget.departName}",
                               style: TextStyle(
                                   color: textColor,
                                   fontFamily: 'Inter',
                                   fontSize: 20.sp,
-                                  fontWeight: FontWeight.w500),
+                                  fontWeight: FontWeight.w100),
                             ),
+                            widget.isOpenForall
+                                ? Icon(
+                                    Icons.public,
+                                    size: 30.sp,
+                                  )
+                                : Icon(
+                                    Icons.public_off,
+                                    size: 30.sp,
+                                  ),
                           ],
                         ),
                         const Divider(

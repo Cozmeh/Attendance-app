@@ -61,6 +61,14 @@ class _ScannerState extends State<Scanner> {
               style: TextStyle(color: pageHeaderTextColor),
             ),
             iconTheme: const IconThemeData(color: pageHeaderTextColor),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  //nfc page route goes here
+                },
+                icon: const Icon(Icons.nfc),
+              ),
+            ],
           ),
           body: Column(
             children: [

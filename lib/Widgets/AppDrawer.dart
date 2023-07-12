@@ -32,7 +32,6 @@ class _AppDrawerState extends State<AppDrawer> {
                 height: 300,
                 padding: const EdgeInsets.only(top: 40, bottom: 5.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     CircleAvatar(
                       backgroundImage: NetworkImage(
@@ -40,14 +39,15 @@ class _AppDrawerState extends State<AppDrawer> {
                       maxRadius: 100,
                     ),
                     SizedBox(
-                      height: 10.h,
+                      height: 20.h,
                     ),
                     Text(
                       FirebaseAuth.instance.currentUser!.displayName.toString(),
                       style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontSize: 25.sp,
-                          fontWeight: FontWeight.bold),
+                        color: Colors.white,
+                        fontSize: 30.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     SizedBox(
                       height: 5.h,
@@ -59,14 +59,10 @@ class _AppDrawerState extends State<AppDrawer> {
                   ],
                 ),
               ),
-              Center(
+              const Center(
                 child: SizedBox(
-                    height: 25,
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    child: const Divider(
-                      color: Color.fromARGB(255, 66, 66, 66),
-                      thickness: 1.0,
-                    )),
+                  height: 20,
+                ),
               ),
               Visibility(
                   visible: widget.pageTitle != "Home",
@@ -89,28 +85,34 @@ class _AppDrawerState extends State<AppDrawer> {
                         ),
                       ))),
               Container(
-                  padding: const EdgeInsets.all(5.0),
-                  color: Color.fromARGB(255, 66, 66, 66),
-                  child: ListTile(
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const History()));
-                    },
-                    leading: const Icon(
-                      Icons.history_toggle_off,
-                      color: Colors.white,
-                    ),
-                    title: Text(
-                      "History",
-                      style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  )),
+                padding: const EdgeInsets.all(5.0),
+                color: const Color.fromARGB(255, 66, 66, 66),
+                child: ListTile(
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const History()));
+                  },
+                  leading: Icon(
+                    Icons.history_toggle_off,
+                    size: 35.h,
+                    color: Colors.white,
+                  ),
+                  title: Text(
+                    "History",
+                    style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.w400),
+                  ),
+                  trailing: const Icon(
+                    Icons.launch,
+                    color: dimGrey,
+                  ),
+                ),
+              ),
               Expanded(
                 child: Container(
                   constraints: BoxConstraints(
@@ -122,22 +124,27 @@ class _AppDrawerState extends State<AppDrawer> {
               ), //this is the empty space between the button and the list items
               Container(
                   margin: const EdgeInsets.only(bottom: 20.0),
-                  width: 250,
+                  width: 300.h,
+                  height: 60.h,
                   decoration: BoxDecoration(
-                      border:
-                          Border.all(color: Color.fromARGB(255, 255, 0, 0))),
+                      border: Border.all(color: Colors.red),
+                      borderRadius: BorderRadius.circular(5)),
                   child: TextButton(
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            const Color.fromARGB(255, 117, 0, 0))),
                     child: Text(
                       "Sign Out",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(
-                          color: Color.fromARGB(255, 255, 0, 0),
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.normal),
+                        color: Colors.white,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     onPressed: () async {
                       await AuthRepo.signOut().whenComplete(() {
-                        print("completes");
+                        debugPrint("completes");
                       });
                       SchedulerBinding.instance.addPostFrameCallback((_) =>
                           Navigator.of(context).pushReplacement(
