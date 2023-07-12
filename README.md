@@ -1,7 +1,5 @@
-# Xactitude Attendance App
-
-App to take attendance of participants of [XACTITUDE](https://xactitude-2023-website.vercel.app/) by scanning their [ID CARDS](github.com/sayan01/xactitude-id-cards).
-
+#Attendance App
+An attendance management app 
 Written in: Flutter
 Written for: Android
 Bugs: many... open issue if found
