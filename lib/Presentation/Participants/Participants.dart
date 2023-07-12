@@ -50,14 +50,21 @@ class _ParticipantsState extends State<Participants> {
         ),
       ),*/
       appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: pageHeaderBgColor,
-          title: Text(
-            "Participants",
-            style: GoogleFonts.inter(
-                color: pageHeaderTextColor, fontWeight: FontWeight.w500),
-          ),
-          iconTheme: const IconThemeData(color: Colors.white)),
+        centerTitle: true,
+        backgroundColor: pageHeaderBgColor,
+        title: Text(
+          "Participants",
+          style: GoogleFonts.inter(
+              color: pageHeaderTextColor, fontWeight: FontWeight.w500),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.stacked_bar_chart_rounded),
+          )
+        ],
+      ),
       // floatingActionButton: FloatingActionButton(
       //  backgroundColor: Color(0xff1D4ED8),
       //   onPressed: () => getCSV(),
