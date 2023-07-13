@@ -194,7 +194,6 @@ class _ScannerState extends State<Scanner> {
               const Expanded(
                 child: SizedBox(),
               ),
-              // qrViewController.
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryBlue,
@@ -224,9 +223,9 @@ class _ScannerState extends State<Scanner> {
     );
   }
 
+  //  Permission for camera
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
     qrViewController!.resumeCamera();
-    //print('${DateTime.now().toIso8601String()}_onPermissionSet $p');
     if (!p) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -236,25 +235,40 @@ class _ScannerState extends State<Scanner> {
     }
   }
 
+  // Scroll to the latest scanned QR
   void scrollLatest() {
     scrollControl.jumpTo(scrollControl.position.maxScrollExtent);
   }
 
+  bool scannedDataFormatChecker(String? scannedData) {
+    if (scannedData!.length == 8 &&
+        int.tryParse(scannedData.substring(0, 2)) is int &&
+        int.tryParse(scannedData.substring(2, 6)) == null &&
+        int.tryParse(scannedData.substring(6, 8)) is int) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  //  QR Code Scanner
   void _onQRViewCreated(QRViewController controller) {
     setState(() => qrViewController = controller);
     controller.scannedDataStream.listen(
       (scanData) async {
-        //print("ITs sancnning");
         qrViewController?.stopCamera();
         try {
-          if (scanData.code != null) {
+          if (scanData.code != null &&
+              scannedDataFormatChecker(scanData.code)) {
             setState(() => result = scanData.code);
+            // if the event is NOT OPEN FOR ALL
             if (!widget.isOpenForall) {
-              var sc = FirebaseFirestore.instance
+              var participantData = FirebaseFirestore.instance
                   .collection("events")
                   .doc(widget.eventID)
                   .collection("Participants")
                   .doc(scanData.code);
+              // if the participant is registered for the event
               if ((await FirebaseFirestore.instance
                       .collection("events")
                       .doc(widget.eventID)
@@ -262,26 +276,43 @@ class _ScannerState extends State<Scanner> {
                       .doc(scanData.code)
                       .get())
                   .exists) {
-                sc.update({
-                  'takenTime': DateTime.now().millisecondsSinceEpoch,
-                  'isPresent': true,
-                  'takenBy': FirebaseAuth.instance.currentUser!.email,
-                  'participantID': scanData.code
-                });
-                setState(() {
-                  scanStatus = Colors.green;
-                  status = "$result Attendance Marked";
-                  correctScan = true;
-                });
-                qrViewController?.resumeCamera();
+                // if the participant is (already marked present)
+                if ((await FirebaseFirestore.instance
+                        .collection("events")
+                        .doc(widget.eventID)
+                        .collection("Participants")
+                        .doc(scanData.code)
+                        .get())['isPresent'] ==
+                    true) {
+                  setState(() {
+                    scanStatus = Colors.orange;
+                    status = "$result Attendance Marked already";
+                  });
+                  qrViewController?.resumeCamera();
+                  // if the participant is registered (but not marked present)
+                } else {
+                  participantData.update({
+                    'takenTime': DateTime.now().millisecondsSinceEpoch,
+                    'isPresent': true,
+                    'takenBy': FirebaseAuth.instance.currentUser!.email,
+                    'participantID': scanData.code
+                  });
+                  setState(() {
+                    scanStatus = Colors.green;
+                    status = "$result Attendance Marked";
+                    correctScan = true;
+                  });
+                  qrViewController?.resumeCamera();
+                }
+                // if the participant is not registered for the event
               } else {
                 setState(() {
                   scanStatus = Colors.red;
-                  status = "$result is not eligible for this exam";
+                  status = "$result is not eligible for this Event";
                 });
                 qrViewController?.resumeCamera();
               }
-              //if the event is open for all
+              // if the event is OPEN FOR ALL
             } else {
               var a = await FirebaseFirestore.instance
                   .collection("events")
@@ -289,7 +320,7 @@ class _ScannerState extends State<Scanner> {
                   .collection("Participants")
                   .doc(scanData.code)
                   .get();
-
+              // if the participant is already marked for the event
               if ((await FirebaseFirestore.instance
                       .collection("events")
                       .doc(widget.eventID)
@@ -308,7 +339,7 @@ class _ScannerState extends State<Scanner> {
                   scanStatus = Colors.red;
                 });
               }
-
+              // if the participant is not marked for the event
               if (scanData.code != null && !a.exists) {
                 var participantref = FirebaseFirestore.instance
                     .collection("events")
@@ -331,11 +362,17 @@ class _ScannerState extends State<Scanner> {
                 qrViewController?.resumeCamera();
               }
             }
+          } else {
+            setState(() {
+              status = "Invalid QR format";
+              scanStatus = Colors.red;
+            });
+            qrViewController?.resumeCamera();
           }
         } catch (e) {
           //print("### Exception occured ###$e");
           setState(() {
-            status = "INVALID QR";
+            status = "Invalid QR format";
             scanStatus = Colors.red;
           });
           qrViewController?.resumeCamera();
