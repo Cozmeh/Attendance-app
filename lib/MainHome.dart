@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ftest/InfraStructure/authRepo.dart';
+import 'package:ftest/Presentation/Authentication/Logout.dart';
 import 'package:ftest/Presentation/Authentication/login.dart';
 import 'package:ftest/Presentation/Home/HomePage.dart';
 
@@ -14,6 +17,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   var isLogin = false;
+  String? userEmail;
   final Connectivity _connectivity = Connectivity();
 
   @override
@@ -41,11 +45,34 @@ class _HomeState extends State<Home> {
   }
 
   isLogedin() async {
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) async {
       if (user != null && mounted) {
         setState(() {
-          isLogin = true;
+          userEmail = FirebaseAuth.instance.currentUser!.providerData[0].email
+              .toString();
+          print("userEmail: $userEmail");
         });
+        if ((await FirebaseFirestore.instance
+                .collection("faculty")
+                .doc(FirebaseAuth.instance.currentUser!.providerData[0].email
+                    .toString())
+                .get())
+            .exists) {
+          setState(() {
+            isLogin = true;
+          });
+        } else {
+          await AuthRepo.signOut().whenComplete(() {
+            if (context.mounted) {
+              print("Signed Out");
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => Logout(userEmail: userEmail!),
+                ),
+              );
+            }
+          });
+        }
       } else {
         setState(() {
           isLogin = false;

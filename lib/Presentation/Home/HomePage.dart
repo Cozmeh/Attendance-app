@@ -8,9 +8,14 @@ import 'package:ftest/Widgets/eventCard.dart';
 import 'package:ftest/Data/constants.dart';
 import '../../Widgets/appDrawer.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     //Navigator.pop(context);
@@ -67,49 +72,54 @@ class HomePage extends StatelessWidget {
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(
+                          child: Center(child: Text("Loading...")));
                     } else if (!snapshot.hasData) {
                       return Container();
                     } else if (snapshot.hasData) {
                       bool button, isEnded, isStarted;
-                      return ListView(
-                          physics: const BouncingScrollPhysics(),
-                          children: snapshot.data!.docs.map((e) {
-                            print(e);
-                            List timeCheck =
-                                checkTime(e['startTime'], e['endTime']);
-                            List timeCheck2 =
-                                checkTime(e['endTime'], e['startTime']);
-                            if (timeCheck[0] == "pending" ||
-                                timeCheck[0] == "running") {
-                              //if (eventTense != "past"){
-                              //print(l[0]);
-                              if (timeCheck[0] == "running") {
-                                button = true;
-                                isStarted = true; // started
-                                isEnded = false; // didn't end yet
-                              } else {
-                                button = false;
-                                isStarted = false; // didn't start yet
-                                isEnded = false; // didn't end yet
+                      return RefreshIndicator(
+                        triggerMode: RefreshIndicatorTriggerMode.anywhere,
+                        displacement: 20,
+                        color: primaryBlue,
+                        onRefresh: refresh,
+                        child: ListView(
+                            physics: const AlwaysScrollableScrollPhysics(
+                                parent: BouncingScrollPhysics()),
+                            children: snapshot.data!.docs.map((e) {
+                              List startTime =
+                                  checkTime(e['startTime'], e['endTime']);
+                              List endTime =
+                                  checkTime(e['endTime'], e['startTime']);
+                              if (startTime[0] == "pending" ||
+                                  startTime[0] == "running") {
+                                if (startTime[0] == "running") {
+                                  button = true;
+                                  isStarted = true; // started
+                                  isEnded = false; // didn't end yet
+                                } else {
+                                  button = false;
+                                  isStarted = false; // didn't start yet
+                                  isEnded = false; // didn't end yet
+                                }
+                                return EventCard(
+                                  imageUrl: e['backDrop'],
+                                  eventName: e['eventName'],
+                                  departName: e['organizer'],
+                                  date: e['eventDate'],
+                                  venue: e['venue'],
+                                  startTime: startTime[1],
+                                  endTime: endTime[1],
+                                  button: button,
+                                  id: e.id,
+                                  isOpenForall: e['openForAll'],
+                                  isStarted: isStarted,
+                                  isEnded: isEnded,
+                                );
                               }
-                              return EventCard(
-                                imageUrl: e['backDrop'],
-                                eventName: e['eventName'],
-                                departName: e['organizer'],
-                                date: e['eventDate'],
-                                venue: e['venue'],
-                                startTime: timeCheck[1],
-                                endTime: timeCheck2[1],
-                                button: button,
-                                id: e.id,
-                                isOpenForall: e['openForAll'],
-                                isStarted: isStarted,
-                                isEnded: isEnded,
-                              );
-                            }
-                            return const SizedBox();
-                          }).toList());
+                              return const SizedBox();
+                            }).toList()),
+                      );
                     } else {
                       return Container();
                     }
@@ -122,6 +132,12 @@ class HomePage extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> refresh() {
+    return Future.delayed(const Duration(seconds: 1), () {
+      setState(() {});
+    });
   }
 
   List checkTime(int startTime, int endTime) {

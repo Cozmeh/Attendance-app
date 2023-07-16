@@ -79,22 +79,18 @@ class _EventCardState extends State<EventCard> {
                         errorBuilder: (BuildContext context, Object exception,
                             StackTrace? stackTrace) {
                           return Center(
-                              child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.image_not_supported,
-                                size: 50,
-                              ),
-                              Text(
-                                "No Image Available",
+                            child: Padding(
+                              padding: EdgeInsets.all(20.w),
+                              child: Text(
+                                widget.eventName.toUpperCase(),
+                                textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontSize: 20.sp,
+                                  fontSize: 40.sp,
                                   fontFamily: 'Inter',
                                 ),
                               ),
-                            ],
-                          ));
+                            ),
+                          );
                         },
                       ),
                     ),
@@ -109,13 +105,19 @@ class _EventCardState extends State<EventCard> {
                       children: [
                         Row(
                           children: [
-                            Text(
-                              widget.eventName.toUpperCase(),
-                              style: TextStyle(
-                                  color: textColor,
-                                  fontFamily: 'Inter',
-                                  fontSize: 25.sp,
-                                  fontWeight: FontWeight.bold),
+                            Flexible(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Text(
+                                  widget.eventName.toUpperCase(),
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontFamily: 'Inter',
+                                      fontSize: 25.sp,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
                             ),
                           ],
                         ),

@@ -53,7 +53,8 @@ class _AppDrawerState extends State<AppDrawer> {
                       height: 5.h,
                     ),
                     Text(
-                      FirebaseAuth.instance.currentUser!.providerData[0].email.toString(),
+                      FirebaseAuth.instance.currentUser!.providerData[0].email
+                          .toString(),
                       style: GoogleFonts.inter(color: dimGrey, fontSize: 20.sp),
                     ),
                   ],
@@ -104,11 +105,11 @@ class _AppDrawerState extends State<AppDrawer> {
                     "History",
                     style: GoogleFonts.inter(
                         color: Colors.white,
-                        fontSize: 20.0,
+                        fontSize: 20,
                         fontWeight: FontWeight.w400),
                   ),
                   trailing: const Icon(
-                    Icons.launch,
+                    Icons.open_in_new_rounded,
                     color: dimGrey,
                   ),
                 ),
@@ -130,14 +131,11 @@ class _AppDrawerState extends State<AppDrawer> {
                       border: Border.all(color: Colors.red),
                       borderRadius: BorderRadius.circular(5)),
                   child: TextButton(
-                    style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            const Color.fromARGB(255, 117, 0, 0))),
                     child: Text(
-                      "Sign Out",
+                      "Log Out",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(
-                        color: Colors.white,
+                        color: Colors.red,
                         fontSize: 20.0,
                         fontWeight: FontWeight.w600,
                       ),

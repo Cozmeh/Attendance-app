@@ -36,15 +36,18 @@ class Login extends StatelessWidget {
               SizedBox(height: MediaQuery.of(context).size.height * .1),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryBlue, elevation: 2),
+                    backgroundColor: Colors.black,
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10))),
                 onPressed: () async {
-                  dynamic user = AuthRepo.googleSignup();
-                  if (user == true) {
+                  /*dynamic user =*/ AuthRepo.googleSignup();
+                  /*if (user == true) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const HomePage()),
                     );
-                  } else {}
+                  } else {}*/
                 },
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * .7,
