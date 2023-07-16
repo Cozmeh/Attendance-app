@@ -53,7 +53,7 @@ class _AppDrawerState extends State<AppDrawer> {
                       height: 5.h,
                     ),
                     Text(
-                      FirebaseAuth.instance.currentUser!.email.toString(),
+                      FirebaseAuth.instance.currentUser!.providerData[0].email.toString(),
                       style: GoogleFonts.inter(color: dimGrey, fontSize: 20.sp),
                     ),
                   ],

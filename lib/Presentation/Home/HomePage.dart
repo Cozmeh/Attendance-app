@@ -59,8 +59,8 @@ class HomePage extends StatelessWidget {
                       .instance // composite indexes should be created in the firestore for ordering to work
                       .collection('events')
                       .where('coordinators',
-                          arrayContains:
-                              FirebaseAuth.instance.currentUser!.email)
+                          arrayContains: FirebaseAuth
+                              .instance.currentUser!.providerData[0].email)
                       .orderBy('startTime', descending: false)
                       .orderBy('eventName', descending: false)
                       .snapshots(),

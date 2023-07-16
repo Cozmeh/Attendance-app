@@ -171,28 +171,34 @@ class _ParticipantsState extends State<Participants> {
                                                     : e["takenTime"] * 1000)
                                             .toString();
                                     items.add([
-                                      e['participantID'],
+                                      e.id,
                                       e["takenBy"],
                                       time,
                                       e["isPresent"].toString()
                                     ]);
                                     if (searchValue == "") {
                                       return ParticipantsTile(
-                                          participantID: e['participantID'],
+                                          participantID: e.id,
                                           takenTime: time,
                                           isPresent: e['isPresent'],
-                                          isOpenForall: widget.isOpenForall);
-                                    } else if (e['participantID']
+                                          isOpenForall: widget.isOpenForall,
+                                          eventID: widget.eventID!.toString(),
+                                          deleteBtn: true,
+                                      );
+                                    } else if (e.id
                                         .toString()
                                         .toUpperCase()
                                         .contains(searchValue
                                             .toString()
                                             .toUpperCase())) {
                                       return ParticipantsTile(
-                                          participantID: e['participantID'],
-                                          takenTime: time,
-                                          isPresent: e['isPresent'],
-                                          isOpenForall: widget.isOpenForall);
+                                        participantID: e.id,
+                                        takenTime: time,
+                                        isPresent: e['isPresent'],
+                                        isOpenForall: widget.isOpenForall,
+                                        eventID: widget.eventID!,
+                                        deleteBtn: true,
+                                      );
                                     } else {
                                       return Container();
                                     }

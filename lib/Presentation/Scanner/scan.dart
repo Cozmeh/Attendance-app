@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:ftest/Widgets/ParticipantsTile.dart';
 import 'package:ftest/Data/constants.dart';
+import 'package:ftest/Widgets/participantsTile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:vibration/vibration.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -168,12 +168,14 @@ class _ScannerState extends State<Scanner> {
                                                     : e["takenTime"] * 1000)
                                             .toString())
                                         .substring(0, 16);
+
                                 return ParticipantsTile(
                                   isOpenForall: widget.isOpenForall,
                                   isPresent: e['isPresent'],
-                                  participantID: e['participantID'],
+                                  participantID: e.id,
                                   takenTime: itemTime,
                                   eventID: widget.eventID.toString(),
+                                  deleteBtn: false,
                                 );
                               }).toList());
                         } else {
@@ -294,7 +296,8 @@ class _ScannerState extends State<Scanner> {
                   participantData.update({
                     'takenTime': DateTime.now().millisecondsSinceEpoch,
                     'isPresent': true,
-                    'takenBy': FirebaseAuth.instance.currentUser!.email,
+                    'takenBy': FirebaseAuth
+                        .instance.currentUser!.providerData[0].email,
                     'participantID': scanData.code
                   });
                   setState(() {
@@ -350,7 +353,8 @@ class _ScannerState extends State<Scanner> {
                   {
                     'takenTime': DateTime.now().millisecondsSinceEpoch,
                     'isPresent': true,
-                    'takenBy': FirebaseAuth.instance.currentUser!.email,
+                    'takenBy': FirebaseAuth
+                        .instance.currentUser!.providerData[0].email,
                     'participantID': scanData.code
                   },
                 );

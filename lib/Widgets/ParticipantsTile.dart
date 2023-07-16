@@ -4,17 +4,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ftest/Data/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// ignore: must_be_immutable
 class ParticipantsTile extends StatefulWidget {
   String participantID, takenTime, eventID;
-  bool isPresent, isOpenForall;
-  ParticipantsTile(
-      {super.key,
-      required this.participantID,
-      required this.takenTime,
-      required this.isPresent,
-      required this.isOpenForall,
-      this.eventID = ""});
+  bool isPresent, isOpenForall, deleteBtn;
+  ParticipantsTile({
+    super.key,
+    required this.participantID,
+    required this.takenTime,
+    required this.isPresent,
+    required this.isOpenForall,
+    required this.eventID,
+    required this.deleteBtn,
+  });
 
   @override
   _ParticipantsTileState createState() => _ParticipantsTileState();
@@ -59,7 +60,7 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
             ),
             const Expanded(child: SizedBox()),
             Visibility(
-              visible: (widget.eventID == ""),
+              visible: (widget.deleteBtn),
               child: GestureDetector(
                   onTap: () {
                     showDialog(

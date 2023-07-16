@@ -29,7 +29,8 @@ class History extends StatelessWidget {
               stream: FirebaseFirestore.instance
                   .collection('events')
                   .where('coordinators',
-                      arrayContains: FirebaseAuth.instance.currentUser!.email)
+                      arrayContains: FirebaseAuth
+                          .instance.currentUser!.providerData[0].email)
                   .orderBy('eventName', descending: false)
                   .snapshots(),
               builder: (BuildContext context,
