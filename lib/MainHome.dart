@@ -50,7 +50,6 @@ class _HomeState extends State<Home> {
         setState(() {
           userEmail = FirebaseAuth.instance.currentUser!.providerData[0].email
               .toString();
-          print("userEmail: $userEmail");
         });
         if ((await FirebaseFirestore.instance
                 .collection("faculty")
@@ -64,7 +63,6 @@ class _HomeState extends State<Home> {
         } else {
           await AuthRepo.signOut().whenComplete(() {
             if (context.mounted) {
-              print("Signed Out");
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => Logout(userEmail: userEmail!),

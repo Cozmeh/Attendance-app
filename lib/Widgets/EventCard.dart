@@ -8,7 +8,7 @@ import '../Presentation/Scanner/scan.dart';
 // ignore: must_be_immutable
 class EventCard extends StatefulWidget {
   String imageUrl, eventName, departName, date, venue, startTime, endTime, id;
-  bool button, isOpenForall, isStarted, isEnded;
+  bool isOpenForall, isStarted, isEnded;
   EventCard({
     super.key,
     required this.imageUrl,
@@ -18,7 +18,6 @@ class EventCard extends StatefulWidget {
     required this.startTime,
     required this.endTime,
     required this.venue,
-    required this.button,
     required this.id,
     required this.isOpenForall,
     required this.isStarted,
@@ -295,7 +294,7 @@ class _EventCardState extends State<EventCard> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             ElevatedButton(
-                              onPressed: widget.button
+                              onPressed: widget.isStarted
                                   ? () {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
@@ -318,13 +317,18 @@ class _EventCardState extends State<EventCard> {
                               ),
                             ),
                             ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => Participants(
-                                      eventID: widget.id,
-                                      isOpenForall: widget.isOpenForall),
-                                ));
-                              },
+                              onPressed: !widget.isStarted &&
+                                      widget.isOpenForall &&
+                                      !widget.isEnded
+                                  ? null
+                                  : () {
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) => Participants(
+                                            eventID: widget.id,
+                                            isOpenForall: widget.isOpenForall),
+                                      ));
+                                    },
                               style: ElevatedButton.styleFrom(
                                   fixedSize: Size(220.w, 60.h),
                                   backgroundColor: primaryBlue),

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ftest/Widgets/eventCard.dart';
 import 'package:ftest/Data/constants.dart';
+import 'package:ftest/Widgets/EventCard.dart';
 import '../../Widgets/appDrawer.dart';
 
 class HomePage extends StatefulWidget {
@@ -77,9 +77,9 @@ class _HomePageState extends State<HomePage> {
                     } else if (!snapshot.hasData) {
                       return Container();
                     } else if (snapshot.hasData) {
-                      bool button, isEnded, isStarted;
+                      bool isEnded, isStarted;
                       return RefreshIndicator(
-                        triggerMode: RefreshIndicatorTriggerMode.anywhere,
+                        triggerMode: RefreshIndicatorTriggerMode.onEdge,
                         displacement: 20,
                         color: primaryBlue,
                         onRefresh: refresh,
@@ -94,11 +94,9 @@ class _HomePageState extends State<HomePage> {
                               if (startTime[0] == "pending" ||
                                   startTime[0] == "running") {
                                 if (startTime[0] == "running") {
-                                  button = true;
                                   isStarted = true; // started
                                   isEnded = false; // didn't end yet
                                 } else {
-                                  button = false;
                                   isStarted = false; // didn't start yet
                                   isEnded = false; // didn't end yet
                                 }
@@ -110,7 +108,6 @@ class _HomePageState extends State<HomePage> {
                                   venue: e['venue'],
                                   startTime: startTime[1],
                                   endTime: endTime[1],
-                                  button: button,
                                   id: e.id,
                                   isOpenForall: e['openForAll'],
                                   isStarted: isStarted,

@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ftest/Data/constants.dart';
-import 'package:ftest/Widgets/eventCard.dart';
+import 'package:ftest/Widgets/EventCard.dart';
 
 class History extends StatelessWidget {
   const History({super.key});
@@ -40,7 +40,7 @@ class History extends StatelessWidget {
                 } else if (!snapshot.hasData) {
                   return Container();
                 } else if (snapshot.hasData) {
-                  bool button, isStarted, isEnded;
+                  bool isStarted, isEnded;
                   return ListView(
                       physics: const BouncingScrollPhysics(),
                       children: snapshot.data!.docs.map((e) {
@@ -49,8 +49,6 @@ class History extends StatelessWidget {
                         List timeCheck2 =
                             checkTime(e['endTime'], e['startTime']);
                         if (timeCheck[0] == "over") {
-                          //print(l[0]);
-                          button = false;
                           isStarted = false;
                           isEnded = true;
                           return EventCard(
@@ -61,7 +59,6 @@ class History extends StatelessWidget {
                             venue: e['venue'],
                             startTime: timeCheck[1],
                             endTime: timeCheck2[1],
-                            button: button,
                             id: e.id,
                             isOpenForall: e['openForAll'],
                             isStarted: isStarted,
