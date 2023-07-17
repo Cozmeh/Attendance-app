@@ -1,15 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ftest/Data/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ParticipantsTile extends StatefulWidget {
-  String participantID, takenTime, eventID;
+  String participantID, takenTime, eventID, takenBy;
   bool isPresent, isOpenForall, deleteBtn;
   ParticipantsTile({
     super.key,
     required this.participantID,
+    this.takenBy = "",
     required this.takenTime,
     required this.isPresent,
     required this.isOpenForall,
@@ -49,7 +52,7 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
               fontSize: 25.sp, fontWeight: FontWeight.w500, color: textColor),
         ),
         trailing: Visibility(
-          visible: widget.deleteBtn,
+          visible: widget.deleteBtn && widget.takenBy == FirebaseAuth.instance.currentUser!.providerData[0].email.toString(),
           child: IconButton(
             icon: const Icon(Icons.remove_circle_outline),
             iconSize: 30.sp,

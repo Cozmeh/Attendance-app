@@ -152,6 +152,7 @@ class _ParticipantsState extends State<Participants> {
                                       eventID: widget.eventID!.toString(),
                                       deleteBtn:
                                           !widget.isOpenForall ? false : true,
+                                      takenBy: e['takenBy'],
                                     );
                                   } else if (e.id
                                       .toString()

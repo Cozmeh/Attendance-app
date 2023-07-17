@@ -242,6 +242,7 @@ class _ScannerState extends State<Scanner> {
     scrollControl.jumpTo(scrollControl.position.maxScrollExtent);
   }
 
+  //  QR Code Format Checker
   bool scannedDataFormatChecker(String? scannedData) {
     if (scannedData!.length == 8 &&
         int.tryParse(scannedData.substring(0, 2)) is int &&
