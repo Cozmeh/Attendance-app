@@ -52,7 +52,9 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
               fontSize: 25.sp, fontWeight: FontWeight.w500, color: textColor),
         ),
         trailing: Visibility(
-          visible: widget.deleteBtn && widget.takenBy == FirebaseAuth.instance.currentUser!.providerData[0].email.toString(),
+          visible: widget.takenBy ==
+              FirebaseAuth.instance.currentUser!.providerData[0].email
+                  .toString(),
           child: IconButton(
             icon: const Icon(Icons.remove_circle_outline),
             iconSize: 30.sp,
@@ -62,27 +64,45 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text("Delete Entry"),
-                    content:
-                        Text("Do you want to Delete ${widget.participantID} ?"),
+                    title: !widget.isOpenForall
+                        ? const Text("Remove Attendace")
+                        : const Text("Delete Participant"),
+                    content: !widget.isOpenForall
+                        ? Text(
+                            "Do you want to mark ${widget.participantID} Absent ?")
+                        : Text(
+                            "Do you want to Delete ${widget.participantID} ?"),
                     actions: [
                       TextButton(
+                        onPressed: !widget.isOpenForall
+                            ? () {
+                                FirebaseFirestore.instance
+                                    .collection("events")
+                                    .doc(widget.eventID)
+                                    .collection("Participants")
+                                    .doc(widget.participantID)
+                                    .update({
+                                  'isPresent': false,
+                                  'takenBy': "",
+                                  'takenTime': 0,
+                                });
+                                Navigator.of(context).pop();
+                              }
+                            : () {
+                                FirebaseFirestore.instance
+                                    .collection('events')
+                                    .doc(widget.eventID)
+                                    .collection('Participants')
+                                    .doc(widget.participantID)
+                                    .delete()
+                                    .catchError((error) =>
+                                        debugPrint('Delete failed: $error'));
+                                Navigator.of(context).pop();
+                              },
                         child: const Text(
                           "Yes",
                           style: TextStyle(color: Colors.red),
                         ),
-                        onPressed: () {
-                          FirebaseFirestore.instance
-                              .collection('events')
-                              .doc(widget.eventID)
-                              .collection('Participants')
-                              .doc(widget.participantID)
-                              .delete()
-                              .then((_) => debugPrint('Deleted'))
-                              .catchError((error) =>
-                                  debugPrint('Delete failed: $error'));
-                          Navigator.of(context).pop();
-                        },
                       ),
                       TextButton(
                         child: const Text(
@@ -102,4 +122,3 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
     );
   }
 }
-  

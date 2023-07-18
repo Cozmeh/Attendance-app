@@ -150,8 +150,7 @@ class _ParticipantsState extends State<Participants> {
                                       isPresent: e['isPresent'],
                                       isOpenForall: widget.isOpenForall,
                                       eventID: widget.eventID!.toString(),
-                                      deleteBtn:
-                                          !widget.isOpenForall ? false : true,
+                                      deleteBtn: true,
                                       takenBy: e['takenBy'],
                                     );
                                   } else if (e.id
@@ -166,8 +165,8 @@ class _ParticipantsState extends State<Participants> {
                                       isPresent: e['isPresent'],
                                       isOpenForall: widget.isOpenForall,
                                       eventID: widget.eventID!,
-                                      deleteBtn:
-                                          !widget.isOpenForall ? false : true,
+                                      deleteBtn: true,
+                                      takenBy: e['takenBy'],
                                     );
                                   } else {
                                     return Container();
