@@ -16,9 +16,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int count = 0;
   @override
   Widget build(BuildContext context) {
-    //Navigator.pop(context);
     return ScreenUtilInit(
       designSize: const Size(555, 1200),
       builder: (context, child) {
@@ -72,12 +72,22 @@ class _HomePageState extends State<HomePage> {
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                          child: Center(child: Text("Loading...")));
+                      return const Center(child: Text("Loading..."));
                     } else if (!snapshot.hasData) {
                       return Container();
                     } else if (snapshot.hasData) {
                       bool isEnded, isStarted;
+                      List count = [];
+                      for (var e in snapshot.data!.docs) {
+                        count.add(e.get('endTime'));
+                        List startTime =
+                            checkTime(e['startTime'], e['endTime']);
+                        startTime[0] == "over" ? count.removeLast() : null;
+                        print("Count : ${count.length}");
+                      }
+                      if (count.isEmpty) {
+                        return noActiveEvents();
+                      }
                       return RefreshIndicator(
                         triggerMode: RefreshIndicatorTriggerMode.onEdge,
                         displacement: 20,
@@ -85,37 +95,42 @@ class _HomePageState extends State<HomePage> {
                         onRefresh: refresh,
                         child: ListView(
                             physics: const AlwaysScrollableScrollPhysics(
-                                parent: BouncingScrollPhysics()),
-                            children: snapshot.data!.docs.map((e) {
-                              List startTime =
-                                  checkTime(e['startTime'], e['endTime']);
-                              List endTime =
-                                  checkTime(e['endTime'], e['startTime']);
-                              if (startTime[0] == "pending" ||
-                                  startTime[0] == "running") {
-                                if (startTime[0] == "running") {
-                                  isStarted = true; // started
-                                  isEnded = false; // didn't end yet
+                              parent: BouncingScrollPhysics(),
+                            ),
+                            children: snapshot.data!.docs.map(
+                              (e) {
+                                List startTime =
+                                    checkTime(e['startTime'], e['endTime']);
+                                List endTime =
+                                    checkTime(e['endTime'], e['startTime']);
+
+                                if (startTime[0] == "pending" ||
+                                    startTime[0] == "running") {
+                                  if (startTime[0] == "running") {
+                                    isStarted = true; // started
+                                    isEnded = false; // didn't end yet
+                                  } else {
+                                    isStarted = false; // didn't start yet
+                                    isEnded = false; // didn't end yet
+                                  }
+                                  return EventCard(
+                                    imageUrl: e['backDrop'],
+                                    eventName: e['eventName'],
+                                    departName: e['organizer'],
+                                    date: e['eventDate'],
+                                    venue: e['venue'],
+                                    startTime: startTime[1],
+                                    endTime: endTime[1],
+                                    id: e.id,
+                                    isOpenForall: e['openForAll'],
+                                    isStarted: isStarted,
+                                    isEnded: isEnded,
+                                  );
                                 } else {
-                                  isStarted = false; // didn't start yet
-                                  isEnded = false; // didn't end yet
+                                  return Container();
                                 }
-                                return EventCard(
-                                  imageUrl: e['backDrop'],
-                                  eventName: e['eventName'],
-                                  departName: e['organizer'],
-                                  date: e['eventDate'],
-                                  venue: e['venue'],
-                                  startTime: startTime[1],
-                                  endTime: endTime[1],
-                                  id: e.id,
-                                  isOpenForall: e['openForAll'],
-                                  isStarted: isStarted,
-                                  isEnded: isEnded,
-                                );
-                              }
-                              return const SizedBox();
-                            }).toList()),
+                              },
+                            ).toList()),
                       );
                     } else {
                       return Container();
@@ -124,7 +139,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            //)
           ),
         );
       },
@@ -153,5 +167,26 @@ class _HomePageState extends State<HomePage> {
     } else {
       return ["over", eventTime];
     }
+  }
+
+  noActiveEvents() {
+    return SizedBox(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              "assets/empty.png",
+              height: 200.h,
+              width: 200.w,
+            ),
+            Text(
+              "No Events",
+              style: TextStyle(fontSize: 25.sp, fontWeight: FontWeight.w400),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

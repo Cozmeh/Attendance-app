@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ftest/Data/constants.dart';
 import 'package:ftest/Widgets/EventCard.dart';
 
@@ -36,11 +37,21 @@ class History extends StatelessWidget {
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(child: Text("Loading..."));
                 } else if (!snapshot.hasData) {
                   return Container();
                 } else if (snapshot.hasData) {
                   bool isStarted, isEnded;
+                  List count = [];
+                  for (var e in snapshot.data!.docs) {
+                    count.add(e.get('endTime'));
+                    List startTime = checkTime(e['startTime'], e['endTime']);
+                    startTime[0] != "over" ? count.removeLast() : null;
+                    print("Count : ${count.length}");
+                  }
+                  if (count.isEmpty) {
+                    return noHistoryEvents();
+                  }
                   return ListView(
                       physics: const BouncingScrollPhysics(),
                       children: snapshot.data!.docs.map((e) {
@@ -95,5 +106,26 @@ class History extends StatelessWidget {
     } else {
       return ["over", eventTime];
     }
+  }
+
+  noHistoryEvents() {
+    return SizedBox(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              "assets/empty.png",
+              height: 200.h,
+              width: 200.w,
+            ),
+            Text(
+              "No History",
+              style: TextStyle(fontSize: 25.sp, fontWeight: FontWeight.w400),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
