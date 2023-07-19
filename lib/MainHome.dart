@@ -1,15 +1,12 @@
 import 'dart:async';
-import 'dart:developer';
-import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ftest/Presentation/Authentication/Login.dart';
+import 'package:ftest/InfraStructure/authRepo.dart';
+import 'package:ftest/Presentation/Authentication/Logout.dart';
+import 'package:ftest/Presentation/Authentication/login.dart';
 import 'package:ftest/Presentation/Home/HomePage.dart';
-import 'package:prompt_dialog/prompt_dialog.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:share/share.dart';
-import 'helper.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -20,6 +17,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   var isLogin = false;
+  String? userEmail;
   final Connectivity _connectivity = Connectivity();
 
   @override
@@ -47,11 +45,32 @@ class _HomeState extends State<Home> {
   }
 
   isLogedin() async {
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) async {
       if (user != null && mounted) {
         setState(() {
-          isLogin = true;
+          userEmail = FirebaseAuth.instance.currentUser!.providerData[0].email
+              .toString();
         });
+        if ((await FirebaseFirestore.instance
+                .collection("faculty")
+                .doc(FirebaseAuth.instance.currentUser!.providerData[0].email
+                    .toString())
+                .get())
+            .exists) {
+          setState(() {
+            isLogin = true;
+          });
+        } else {
+          await AuthRepo.signOut().whenComplete(() {
+            if (context.mounted) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => Logout(userEmail: userEmail!),
+                ),
+              );
+            }
+          });
+        }
       } else {
         setState(() {
           isLogin = false;
@@ -67,7 +86,7 @@ class _HomeState extends State<Home> {
     );
   }
 }
-
+/*
 // Existing Code - Don't make any changes in this code
 class MyHome extends StatelessWidget {
   const MyHome({Key? key}) : super(key: key);
@@ -425,3 +444,4 @@ class ScanOverlay extends StatelessWidget {
     );
   }
 }
+*/

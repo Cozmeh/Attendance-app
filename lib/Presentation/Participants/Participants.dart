@@ -1,15 +1,9 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:csv/csv.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ftest/Widgets/ParticipantsTile.dart';
+import 'package:ftest/Widgets/participantsTile.dart';
+import 'package:ftest/Data/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import '../../Widgets/AppDrawer.dart';
 
 class Participants extends StatefulWidget {
   String? eventID;
@@ -21,69 +15,94 @@ class Participants extends StatefulWidget {
 }
 
 class _ParticipantsState extends State<Participants> {
-  String number = "";
-  List<List<String>> items = [];
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+  String searchValue = "";
+  bool searchCross = false;
 
   @override
   void initState() {
-    items = [
-      <String>["participantID", "takenBy", "takenTime", "isPresent"]
-    ];
-    // TODO: implement initState
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    FocusNode focusNode = FocusNode();
     DocumentReference<Map<String, dynamic>> participants =
-        FirebaseFirestore.instance.collection('Event').doc(widget.eventID);
+        FirebaseFirestore.instance.collection('events').doc(widget.eventID);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color(0xffffffff),
-      drawer: Drawer(
-        child: AppDrawer(
-          fAuth: FirebaseAuth.instance,
-          pageTitle: "Participants",
-        ),
-      ),
+      backgroundColor: background,
       appBar: AppBar(
-          title: Text(
-            "Participants",
-            style: GoogleFonts.inter(
-                color: Color(0xff404040), fontWeight: FontWeight.w500),
-          ),
-          iconTheme: IconThemeData(color: Colors.black)),
-      // floatingActionButton: FloatingActionButton(
-      //  backgroundColor: Color(0xff1D4ED8),
-      //   onPressed: () => getCSV(),
-      //   child: const Icon(Icons.download),
-      // ),
+        centerTitle: true,
+        backgroundColor: pageHeaderBgColor,
+        title: Text(
+          "Participants",
+          style: GoogleFonts.inter(
+              color: pageHeaderTextColor, fontWeight: FontWeight.w500),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.stacked_bar_chart_rounded),
+          )
+        ],
+      ),
       body: Column(
         children: <Widget>[
           SizedBox(
-            height: 10.h,
+            height: 15.h,
           ),
           Padding(
-            padding: EdgeInsets.only(left: 25.w, right: 25.w),
+            padding: EdgeInsets.only(left: 15.w, right: 15.w),
             child: SizedBox(
-              height: 70.h,
+              height: 50,
               child: TextField(
-                style: TextStyle(fontSize: 20.sp),
-                onTap: () {
-                  focusNode.requestFocus();
-                },
-                focusNode: focusNode,
+                style: TextStyle(fontSize: 22.sp),
+                cursorColor: Colors.black,
+                focusNode: _focusNode,
+                controller: _searchController,
                 decoration: InputDecoration(
-                    hintStyle: TextStyle(fontSize: 20.sp),
-                    focusColor: const Color.fromRGBO(29, 78, 216, 1),
-                    border: const OutlineInputBorder(),
-                    prefixIcon: Icon(
-                      Icons.search,
-                      size: 35.h,
+                  hintText: 'Search Participants..',
+                  hintStyle: TextStyle(fontSize: 25.sp, color: dimGrey),
+                  contentPadding: EdgeInsets.all(10.w),
+                  focusColor: primaryBlue,
+                  focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: primaryBlue),
+                      borderRadius: BorderRadius.circular(10)),
+                  border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    size: 35.h,
+                  ),
+                  prefixIconColor: Colors.black,
+                  suffixIconColor: Colors.black,
+                  suffixIcon: Visibility(
+                    visible: searchCross,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.clear,
+                        size: 35.h,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _searchController.clear();
+                          _focusNode.unfocus();
+                          searchValue = "";
+                          searchCross = false;
+                        });
+                      },
                     ),
-                    hintText: 'Search Participants..'),
-                onChanged: (roll) => setState(() => number = roll),
+                  ),
+                ),
+                onTap: () {
+                  setState(() {
+                    _focusNode.requestFocus();
+                    searchCross = true;
+                  });
+                },
+                onChanged: (changed) => setState(() => searchValue = changed),
               ),
             ),
           ),
@@ -91,70 +110,69 @@ class _ParticipantsState extends State<Participants> {
             height: 10.h,
           ),
           Expanded(
-            child: GestureDetector(
-              onTap: () {
-                focusNode.unfocus();
-              },
-              child: SizedBox(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 25.w, right: 25.w),
-                  child: StreamBuilder(
-                    stream: participants
-                        .collection('Participants')
-                        .orderBy('takenTime', descending: false)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      return (snapshot.connectionState ==
-                              ConnectionState.waiting)
-                          ? const Center(child: CircularProgressIndicator())
-                          : snapshot.data!.docs.isEmpty
-                              ? Center(
-                                  child: widget.isOpenForall
-                                      ? Text(
-                                          'THIS EVENT IS OPEN FOR ALL',
-                                          style: GoogleFonts.inter(
-                                              color: Color(0xff404040),
-                                              fontWeight: FontWeight.w500),
-                                        )
-                                      : null,
-                                )
-                              : ListView(
-                                  physics: const BouncingScrollPhysics(),
-                                  children: snapshot.data!.docs.map((e) {
-                                    var time =
-                                        DateTime.fromMillisecondsSinceEpoch(
-                                                e["takenTime"] >= 1000000000
-                                                    ? e["takenTime"]
-                                                    : e["takenTime"] * 1000)
-                                            .toString();
-                                    items.add([
-                                      e['participantID'],
-                                      e["takenBy"],
-                                      time,
-                                      e["isPresent"].toString()
-                                    ]);
-                                    if (number == "") {
-                                      return ParticipantsTile(
-                                          participantID: e['participantID'],
-                                          takenTime: time,
-                                          isPresent: e['isPresent'],
-                                          isOpenForall: widget.isOpenForall);
-                                    } else if (e['participantID']
-                                        .toString()
-                                        .toUpperCase()
-                                        .contains(
-                                            number.toString().toUpperCase())) {
-                                      return ParticipantsTile(
-                                          participantID: e['participantID'],
-                                          takenTime: time,
-                                          isPresent: e['isPresent'],
-                                          isOpenForall: widget.isOpenForall);
-                                    } else {
-                                      return Container();
-                                    }
-                                  }).toList());
-                    },
-                  ),
+            child: SizedBox(
+              child: Padding(
+                padding: EdgeInsets.only(left: 15.w, right: 15.w),
+                child: StreamBuilder(
+                  stream: participants
+                      .collection('Participants')
+                      .orderBy('takenTime', descending: false)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    return (snapshot.connectionState == ConnectionState.waiting)
+                        ? const Center(child: Center(child: Text("Loading...")))
+                        : snapshot.data!.docs.isEmpty
+                            ? Center(
+                                child: widget.isOpenForall
+                                    ? Text(
+                                        'This event is open for all\nNo participants yet',
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.inter(
+                                            fontSize: 30.sp,
+                                            color: textColor,
+                                            fontWeight: FontWeight.w500),
+                                      )
+                                    : null,
+                              )
+                            : ListView(
+                                physics: const BouncingScrollPhysics(),
+                                children: snapshot.data!.docs.map((e) {
+                                  var time =
+                                      DateTime.fromMillisecondsSinceEpoch(
+                                              e["takenTime"] >= 1000000000
+                                                  ? e["takenTime"]
+                                                  : e["takenTime"] * 1000)
+                                          .toString();
+                                  if (searchValue == "") {
+                                    return ParticipantsTile(
+                                      participantID: e.id,
+                                      takenTime: time,
+                                      isPresent: e['isPresent'],
+                                      isOpenForall: widget.isOpenForall,
+                                      eventID: widget.eventID!.toString(),
+                                      deleteBtn: true,
+                                      takenBy: e['takenBy'],
+                                    );
+                                  } else if (e.id
+                                      .toString()
+                                      .toUpperCase()
+                                      .contains(searchValue
+                                          .toString()
+                                          .toUpperCase())) {
+                                    return ParticipantsTile(
+                                      participantID: e.id,
+                                      takenTime: time,
+                                      isPresent: e['isPresent'],
+                                      isOpenForall: widget.isOpenForall,
+                                      eventID: widget.eventID!,
+                                      deleteBtn: true,
+                                      takenBy: e['takenBy'],
+                                    );
+                                  } else {
+                                    return Container();
+                                  }
+                                }).toList());
+                  },
                 ),
               ),
             ),
@@ -164,7 +182,7 @@ class _ParticipantsState extends State<Participants> {
     );
   }
 
-  getCSV() async {
+  /*getCSV() async {
     String csvData = const ListToCsvConverter().convert(items);
     print(csvData);
     try {
@@ -186,5 +204,5 @@ class _ParticipantsState extends State<Participants> {
     } catch (e) {
       print(e);
     }
-  }
+  }*/
 }

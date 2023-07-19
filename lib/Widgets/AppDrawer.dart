@@ -1,12 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:ftest/Presentation/History/History.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:ftest/Presentation/History/history.dart';
 import 'package:ftest/Presentation/Home/HomePage.dart';
+import 'package:ftest/Data/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../InfraStructure/AuthRepo.dart';
 import '../Presentation/Authentication/Login.dart';
 
+// ignore: must_be_immutable
 class AppDrawer extends StatefulWidget {
   FirebaseAuth fAuth;
   String pageTitle;
@@ -20,76 +23,97 @@ class _AppDrawerState extends State<AppDrawer> {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-          color: const Color(0xffe6e6e6),
+          color: pageHeaderBgColor,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 width: double.infinity,
                 height: 300,
-                padding: EdgeInsets.only(top: 35, bottom: 5.0),
+                padding: const EdgeInsets.only(top: 40, bottom: 5.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     CircleAvatar(
                       backgroundImage: NetworkImage(
                           widget.fAuth.currentUser!.photoURL.toString()),
                       maxRadius: 100,
                     ),
-                    Text(
-                      FirebaseAuth.instance.currentUser!.displayName.toString(),
-                      style: GoogleFonts.inter(),
+                    SizedBox(
+                      height: 20.h,
                     ),
                     Text(
-                      FirebaseAuth.instance.currentUser!.email.toString(),
-                      style: GoogleFonts.inter(color: Color(0xff616161)),
+                      FirebaseAuth.instance.currentUser!.displayName.toString(),
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 30.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5.h,
+                    ),
+                    Text(
+                      FirebaseAuth.instance.currentUser!.providerData[0].email
+                          .toString(),
+                      style: GoogleFonts.inter(color: dimGrey, fontSize: 20.sp),
                     ),
                   ],
                 ),
               ),
-              Center(
+              const Center(
                 child: SizedBox(
-                    height: 25,
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    child: const Divider(
-                      color: Color(0xffa7a7a7),
-                      thickness: 1.0,
-                    )),
+                  height: 20,
+                ),
               ),
               Visibility(
-                visible: widget.pageTitle != "Home",
-                child: Container(
-                  padding: const EdgeInsets.all(5.0),
-                  color: const Color(0xffd9d9d9),
-                  child: ListTile(
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const  HomePage()));
-                    },
-                    leading: const Icon(Icons.home),
-                    title: Text(
-                      "Home",
-                      style: GoogleFonts.inter(
-                          fontSize: 20.0, fontWeight: FontWeight.w400),
-                    ),
-                  )
-                )
-              ),
+                  visible: widget.pageTitle != "Home",
+                  child: Container(
+                      padding: const EdgeInsets.all(5.0),
+                      color: const Color(0xffd9d9d9),
+                      child: ListTile(
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const HomePage()));
+                        },
+                        leading: const Icon(Icons.home),
+                        title: Text(
+                          "Home",
+                          style: GoogleFonts.inter(
+                              fontSize: 20.0, fontWeight: FontWeight.w400),
+                        ),
+                      ))),
               Container(
-                  padding: const EdgeInsets.all(5.0),
-                  color: const Color(0xffd9d9d9),
-                  child: ListTile(
-                    onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => const History()));
-                      },
-                    leading: const Icon(Icons.history),
-                    title: Text(
-                      "History",
-                      style: GoogleFonts.inter(
-                          fontSize: 20.0, fontWeight: FontWeight.w400),),
-                  )),
+                padding: const EdgeInsets.all(5.0),
+                color: const Color.fromARGB(255, 66, 66, 66),
+                child: ListTile(
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const History()));
+                  },
+                  leading: Icon(
+                    Icons.history_toggle_off,
+                    size: 35.h,
+                    color: Colors.white,
+                  ),
+                  title: Text(
+                    "History",
+                    style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400),
+                  ),
+                  trailing: const Icon(
+                    Icons.open_in_new_rounded,
+                    color: dimGrey,
+                  ),
+                ),
+              ),
               Expanded(
                 child: Container(
                   constraints: BoxConstraints(
@@ -101,21 +125,25 @@ class _AppDrawerState extends State<AppDrawer> {
               ), //this is the empty space between the button and the list items
               Container(
                   margin: const EdgeInsets.only(bottom: 20.0),
-                  width: 200,
+                  width: 300.h,
+                  height: 60.h,
                   decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xffb91c1c))),
+                      border: Border.all(color: Colors.red),
+                      borderRadius: BorderRadius.circular(5)),
                   child: TextButton(
                     child: Text(
-                      "Sign Out",
+                      "Log Out",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(
-                          color: const Color(0xffb91c1c),
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.normal),
+                        color: Colors.red,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     onPressed: () async {
-                      await AuthRepo.signOut()
-                          .whenComplete(() => print("completes"));
+                      await AuthRepo.signOut().whenComplete(() {
+                        debugPrint("completes");
+                      });
                       SchedulerBinding.instance.addPostFrameCallback((_) =>
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(

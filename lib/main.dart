@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:ftest/firebase_options.dart';
-// firebase
+import 'package:ftest/Data/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
-
-import 'SplashScreen.dart';
+import 'splashScreen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

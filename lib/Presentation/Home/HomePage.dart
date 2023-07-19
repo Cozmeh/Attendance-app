@@ -1,31 +1,31 @@
 // ignore_for_file: avoid_print
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ftest/Presentation/Participants/Participants.dart';
-import 'package:ftest/Presentation/Scanner/Scanner.dart';
+import 'package:ftest/Data/constants.dart';
 import 'package:ftest/Widgets/EventCard.dart';
-import '../../Widgets/AppDrawer.dart';
+import '../../Widgets/appDrawer.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int count = 0;
+  @override
   Widget build(BuildContext context) {
-    //Navigator.pop(context);
     return ScreenUtilInit(
       designSize: const Size(555, 1200),
       builder: (context, child) {
         return WillPopScope(
           onWillPop: () async {
             var exitBar = SnackBar(
-              backgroundColor: const Color.fromRGBO(29, 78, 216, 1),
+              backgroundColor: primaryBlue,
               content: const Text("Do you want to Exit ?"),
               action: SnackBarAction(
                   label: "Yes",
@@ -38,12 +38,15 @@ class HomePage extends StatelessWidget {
             return false;
           },
           child: Scaffold(
+            backgroundColor: background,
             appBar: AppBar(
+              backgroundColor: pageHeaderBgColor,
+              centerTitle: true,
               title: const Text(
-                'Home',
-                style: TextStyle(color: Colors.black),
+                'Home Page',
+                style: TextStyle(color: pageHeaderTextColor),
               ),
-              iconTheme: const IconThemeData(color: Colors.black),
+              iconTheme: const IconThemeData(color: pageHeaderTextColor),
             ),
             drawer: Drawer(
               backgroundColor: Colors.black,
@@ -57,47 +60,78 @@ class HomePage extends StatelessWidget {
               child: SizedBox(
                 height: double.infinity,
                 child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('Event')
+                  stream: FirebaseFirestore
+                      .instance // composite indexes should be created in the firestore for ordering to work
+                      .collection('events')
                       .where('coordinators',
-                          arrayContains:
-                              FirebaseAuth.instance.currentUser!.email)
+                          arrayContains: FirebaseAuth
+                              .instance.currentUser!.providerData[0].email)
+                      .orderBy('startTime', descending: false)
+                      .orderBy('eventName', descending: false)
                       .snapshots(),
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(child: Text("Loading..."));
                     } else if (!snapshot.hasData) {
                       return Container();
                     } else if (snapshot.hasData) {
-                      bool button;
-                      return ListView(
-                          physics: const BouncingScrollPhysics(),
-                          children: snapshot.data!.docs.map((e) {
-                            print(e);
-                            List l = checkTime(e['startTime'], e['endTime']);
-                            if (l[0] == "pending" || l[0] == "running") {
-                              //if (eventTense != "past"){
-                              print(l[0]);
-                              if (l[0] == "running") {
-                                button = true;
-                              } else {
-                                button = false;
-                              }
-                              return EventCard(
-                                  imageUrl: e['backDrop'],
-                                  eventName: e['eventName'],
-                                  departName: e['deptName'],
-                                  date: e['eventDate'],
-                                  venue: e['venue'],
-                                  time: l[1],
-                                  description: e['description'],
-                                  button: button,
-                                  id: e.id,
-                                  isOpenForall: e['openForAll']);
-                            }
-                            return const SizedBox();
-                          }).toList());
+                      bool isEnded, isStarted;
+                      List count = [];
+                      for (var e in snapshot.data!.docs) {
+                        count.add(e.get('endTime'));
+                        List startTime =
+                            checkTime(e['startTime'], e['endTime']);
+                        startTime[0] == "over" ? count.removeLast() : null;
+                        print("Count : ${count.length}");
+                      }
+                      if (count.isEmpty) {
+                        return noActiveEvents();
+                      }
+                      return RefreshIndicator(
+                        triggerMode: RefreshIndicatorTriggerMode.onEdge,
+                        displacement: 20,
+                        color: primaryBlue,
+                        onRefresh: refresh,
+                        child: ListView(
+                            physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics(),
+                            ),
+                            children: snapshot.data!.docs.map(
+                              (e) {
+                                List startTime =
+                                    checkTime(e['startTime'], e['endTime']);
+                                List endTime =
+                                    checkTime(e['endTime'], e['startTime']);
+
+                                if (startTime[0] == "pending" ||
+                                    startTime[0] == "running") {
+                                  if (startTime[0] == "running") {
+                                    isStarted = true; // started
+                                    isEnded = false; // didn't end yet
+                                  } else {
+                                    isStarted = false; // didn't start yet
+                                    isEnded = false; // didn't end yet
+                                  }
+                                  return EventCard(
+                                    imageUrl: e['backDrop'],
+                                    eventName: e['eventName'],
+                                    departName: e['organizer'],
+                                    date: e['eventDate'],
+                                    venue: e['venue'],
+                                    startTime: startTime[1],
+                                    endTime: endTime[1],
+                                    id: e.id,
+                                    isOpenForall: e['openForAll'],
+                                    isStarted: isStarted,
+                                    isEnded: isEnded,
+                                  );
+                                } else {
+                                  return Container();
+                                }
+                              },
+                            ).toList()),
+                      );
                     } else {
                       return Container();
                     }
@@ -105,11 +139,16 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
-            //)
           ),
         );
       },
     );
+  }
+
+  Future<void> refresh() {
+    return Future.delayed(const Duration(seconds: 1), () {
+      setState(() {});
+    });
   }
 
   List checkTime(int startTime, int endTime) {
@@ -128,5 +167,26 @@ class HomePage extends StatelessWidget {
     } else {
       return ["over", eventTime];
     }
+  }
+
+  noActiveEvents() {
+    return SizedBox(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              "assets/empty.png",
+              height: 200.h,
+              width: 200.w,
+            ),
+            Text(
+              "No Events",
+              style: TextStyle(fontSize: 25.sp, fontWeight: FontWeight.w400),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
