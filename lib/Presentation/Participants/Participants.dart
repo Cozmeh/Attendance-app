@@ -44,7 +44,7 @@ class _ParticipantsState extends State<Participants> {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.stacked_bar_chart_rounded),
+            icon: const Icon(Icons.info),
           )
         ],
       ),
@@ -69,9 +69,9 @@ class _ParticipantsState extends State<Participants> {
                   focusColor: primaryBlue,
                   focusedBorder: OutlineInputBorder(
                       borderSide: const BorderSide(color: primaryBlue),
-                      borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(borderRadius)),
                   border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                      borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
                   prefixIcon: Icon(
                     Icons.search,
                     size: 35.h,
@@ -125,12 +125,12 @@ class _ParticipantsState extends State<Participants> {
                             ? Center(
                                 child: widget.isOpenForall
                                     ? Text(
-                                        'This event is open for all\nNo participants yet',
+                                        'This Event is "open for all"\nNo participants yet',
                                         textAlign: TextAlign.center,
                                         style: GoogleFonts.inter(
-                                            fontSize: 30.sp,
-                                            color: textColor,
-                                            fontWeight: FontWeight.w500),
+                                          fontSize: 30.sp,
+                                          color: textColor,
+                                        ),
                                       )
                                     : null,
                               )

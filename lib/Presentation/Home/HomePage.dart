@@ -5,8 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ftest/Data/constants.dart';
+import 'package:ftest/Widgets/AppDrawer.dart';
 import 'package:ftest/Widgets/EventCard.dart';
-import '../../Widgets/appDrawer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -48,13 +48,7 @@ class _HomePageState extends State<HomePage> {
               ),
               iconTheme: const IconThemeData(color: pageHeaderTextColor),
             ),
-            drawer: Drawer(
-              backgroundColor: Colors.black,
-              child: AppDrawer(
-                fAuth: FirebaseAuth.instance,
-                pageTitle: "Home",
-              ),
-            ),
+            drawer: const AppDrawer(),
             body: Padding(
               padding: const EdgeInsets.all(2),
               child: SizedBox(
@@ -83,7 +77,6 @@ class _HomePageState extends State<HomePage> {
                         List startTime =
                             checkTime(e['startTime'], e['endTime']);
                         startTime[0] == "over" ? count.removeLast() : null;
-                        print("Count : ${count.length}");
                       }
                       if (count.isEmpty) {
                         return noActiveEvents();
@@ -181,7 +174,8 @@ class _HomePageState extends State<HomePage> {
               width: 200.w,
             ),
             Text(
-              "No Events",
+              "No Events to show",
+              textAlign: TextAlign.center,
               style: TextStyle(fontSize: 25.sp, fontWeight: FontWeight.w400),
             ),
           ],
@@ -189,4 +183,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  
 }
