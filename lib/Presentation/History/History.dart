@@ -47,7 +47,6 @@ class History extends StatelessWidget {
                     count.add(e.get('endTime'));
                     List startTime = checkTime(e['startTime'], e['endTime']);
                     startTime[0] != "over" ? count.removeLast() : null;
-                    print("Count : ${count.length}");
                   }
                   if (count.isEmpty) {
                     return noHistoryEvents();
@@ -120,7 +119,7 @@ class History extends StatelessWidget {
               width: 200.w,
             ),
             Text(
-              "No History",
+              "No History to show",
               style: TextStyle(fontSize: 25.sp, fontWeight: FontWeight.w400),
             ),
           ],

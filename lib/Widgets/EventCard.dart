@@ -305,6 +305,10 @@ class _EventCardState extends State<EventCard> {
                                     }
                                   : null,
                               style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(borderRadius),
+                                  ),
                                   fixedSize: Size(220.w, 60.h),
                                   backgroundColor: primaryBlue),
                               child: Text(
@@ -330,6 +334,10 @@ class _EventCardState extends State<EventCard> {
                                       ));
                                     },
                               style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(borderRadius),
+                                  ),
                                   fixedSize: Size(220.w, 60.h),
                                   backgroundColor: primaryBlue),
                               child: Text(
