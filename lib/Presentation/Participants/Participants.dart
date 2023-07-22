@@ -71,7 +71,8 @@ class _ParticipantsState extends State<Participants> {
                       borderSide: const BorderSide(color: primaryBlue),
                       borderRadius: BorderRadius.circular(borderRadius)),
                   border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
+                      borderRadius:
+                          BorderRadius.all(Radius.circular(borderRadius))),
                   prefixIcon: Icon(
                     Icons.search,
                     size: 35.h,
@@ -125,10 +126,10 @@ class _ParticipantsState extends State<Participants> {
                             ? Center(
                                 child: widget.isOpenForall
                                     ? Text(
-                                        'This Event is "open for all"\nNo participants yet',
+                                        'No participants to show..',
                                         textAlign: TextAlign.center,
                                         style: GoogleFonts.inter(
-                                          fontSize: 30.sp,
+                                          fontSize: 25.sp,
                                           color: textColor,
                                         ),
                                       )

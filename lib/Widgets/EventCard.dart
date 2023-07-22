@@ -329,8 +329,9 @@ class _EventCardState extends State<EventCard> {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
                                         builder: (context) => Participants(
-                                            eventID: widget.id,
-                                            isOpenForall: widget.isOpenForall),
+                                          eventID: widget.id,
+                                          isOpenForall: widget.isOpenForall,
+                                        ),
                                       ));
                                     },
                               style: ElevatedButton.styleFrom(

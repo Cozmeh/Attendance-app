@@ -103,6 +103,9 @@ class _AppDrawerState extends State<AppDrawer> {
         borderRadius: BorderRadius.circular(borderRadius),
       ),
       child: ListTile(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
+        ),
         onTap: onTap,
         iconColor: Colors.white,
         textColor: Colors.white,
@@ -123,30 +126,45 @@ class _AppDrawerState extends State<AppDrawer> {
   }
 
   Widget logoutBtn() {
-    return Container(
-      margin: const EdgeInsets.all(15),
-      width: 400,
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.red),
-          borderRadius: BorderRadius.circular(borderRadius)),
-      child: TextButton(
-        child: Text(
-          "Log Out",
-          textAlign: TextAlign.center,
-          style: GoogleFonts.inter(
-            color: Colors.red,
-            fontSize: 20.0,
-            fontWeight: FontWeight.w600,
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Card(
+        color: pageHeaderBgColor,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadius),
+            side: const BorderSide(
+              color: Colors.red,
+              width: 1.5,
+            )),
+        child: ListTile(
+          dense: true,
+          splashColor: Colors.red,
+          titleAlignment: ListTileTitleAlignment.center,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadius),
           ),
+          iconColor: Colors.white,
+          textColor: Colors.white,
+          title: Center(
+            child: Text(
+              "Log Out",
+              style: GoogleFonts.inter(
+                color: Colors.red,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          onTap: () async {
+            await AuthRepo.signOut().whenComplete(() {
+              debugPrint("completes");
+            });
+            SchedulerBinding.instance.addPostFrameCallback((_) =>
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => const Login())));
+          },
         ),
-        onPressed: () async {
-          await AuthRepo.signOut().whenComplete(() {
-            debugPrint("completes");
-          });
-          SchedulerBinding.instance.addPostFrameCallback((_) =>
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const Login())));
-        },
       ),
     );
   }
@@ -179,3 +197,31 @@ class _AppDrawerState extends State<AppDrawer> {
     );
   }
 }
+
+
+/*Container(
+      margin: const EdgeInsets.all(15),
+      width: 400,
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.red),
+          borderRadius: BorderRadius.circular(borderRadius)),
+      child: TextButton(
+        child: Text(
+          "Log Out",
+          textAlign: TextAlign.center,
+          style: GoogleFonts.inter(
+            color: Colors.red,
+            fontSize: 20.0,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        onPressed: () async {
+          await AuthRepo.signOut().whenComplete(() {
+            debugPrint("completes");
+          });
+          SchedulerBinding.instance.addPostFrameCallback((_) =>
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const Login())));
+        },
+      ),
+    );*/
