@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:math';
 import 'package:ftest/Data/constants.dart';
@@ -27,7 +29,7 @@ class _ScannerState extends State<Scanner> {
   bool correctScan = false;
   bool vibrate = false;
   bool isFlash = false;
-  String? result;
+  //String? result;
   Color? scanStatus;
   int totalCount = 0;
   String status = "";
@@ -137,7 +139,7 @@ class _ScannerState extends State<Scanner> {
                           .collection('events')
                           .doc(widget.eventID)
                           .collection('Participants')
-                          .orderBy('takenTime', descending: false)
+                          //.orderBy('takenTime', descending: false)
                           .snapshots(),
                       builder: (BuildContext context,
                           AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -157,27 +159,57 @@ class _ScannerState extends State<Scanner> {
                         } else if (!snapshot.hasData) {
                           return Container();
                         } else if (snapshot.hasData) {
-                          return ListView(
+                          dynamic studentData;
+                          for (var element in snapshot.data!.docs) {
+                            studentData = element["studentData"];
+                          }
+                          if (studentData == null || studentData.length == 0) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  "assets/noOne.png",
+                                  height: 200.h,
+                                  width: 200.w,
+                                ),
+                                Text(
+                                  "No one is here yet..",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
+                                    fontSize: 25.sp,
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+                          return ListView.builder(
+                              itemCount:
+                                  studentData == null ? 1 : studentData.length,
                               controller: scrollControl,
                               physics: const BouncingScrollPhysics(),
-                              children: snapshot.data!.docs.map((e) {
+                              itemBuilder: (context, index) {
                                 var itemTime =
                                     (DateTime.fromMillisecondsSinceEpoch(
-                                                e["takenTime"] >= 1000000000
-                                                    ? e["takenTime"]
-                                                    : e["takenTime"] * 1000)
+                                                studentData[index]
+                                                            ["takenTime"] >=
+                                                        1000000000
+                                                    ? studentData[index]
+                                                        ["takenTime"]
+                                                    : studentData[index]
+                                                            ["takenTime"] *
+                                                        1000)
                                             .toString())
                                         .substring(0, 16);
 
                                 return ParticipantsTile(
                                   isOpenForall: widget.isOpenForall,
-                                  isPresent: e['isPresent'],
-                                  participantID: e.id,
+                                  isPresent: studentData[index]['isPresent'],
+                                  participantID: studentData[index]["id"],
                                   takenTime: itemTime,
                                   eventID: widget.eventID.toString(),
                                   deleteBtn: false,
                                 );
-                              }).toList());
+                              });
                         } else {
                           return const Center(
                             child: Column(
@@ -246,8 +278,12 @@ class _ScannerState extends State<Scanner> {
   bool scannedDataFormatChecker(String? scannedData) {
     if (scannedData!.length == 8 &&
         int.tryParse(scannedData.substring(0, 2)) is int &&
-        int.tryParse(scannedData.substring(2, 6)) == null &&
         int.tryParse(scannedData.substring(6, 8)) is int) {
+      for (var i = 2; i < 6; i++) {
+        if (int.tryParse(scannedData[i]) is int) {
+          return false;
+        }
+      }
       return true;
     } else {
       return false;
@@ -263,7 +299,6 @@ class _ScannerState extends State<Scanner> {
         try {
           if (scanData.code != null &&
               scannedDataFormatChecker(scanData.code)) {
-            setState(() => result = scanData.code);
             // if the event is NOT OPEN FOR ALL
             if (!widget.isOpenForall) {
               var participantData = FirebaseFirestore.instance
@@ -289,7 +324,7 @@ class _ScannerState extends State<Scanner> {
                     true) {
                   setState(() {
                     scanStatus = Colors.orange;
-                    status = "$result Attendance Marked already";
+                    status = "${scanData.code} Attendance Marked already";
                   });
                   qrViewController?.resumeCamera();
                   // if the participant is registered (but not marked present)
@@ -303,7 +338,7 @@ class _ScannerState extends State<Scanner> {
                   });
                   setState(() {
                     scanStatus = Colors.green;
-                    status = "$result Attendance Marked";
+                    status = "${scanData.code} Attendance Marked";
                     correctScan = true;
                   });
                   qrViewController?.resumeCamera();
@@ -312,60 +347,116 @@ class _ScannerState extends State<Scanner> {
               } else {
                 setState(() {
                   scanStatus = Colors.red;
-                  status = "$result is not eligible for this Event";
+                  status = "${scanData.code} is not eligible for this Event";
                 });
                 qrViewController?.resumeCamera();
               }
               // if the event is OPEN FOR ALL
             } else {
-              var a = await FirebaseFirestore.instance
+              bool contains = false;
+              var aData = await FirebaseFirestore.instance
                   .collection("events")
                   .doc(widget.eventID)
                   .collection("Participants")
-                  .doc(scanData.code)
+                  .doc("Attendance")
                   .get();
-              // if the participant is already marked for the event
-              if ((await FirebaseFirestore.instance
-                      .collection("events")
-                      .doc(widget.eventID)
-                      .collection("Participants")
-                      .doc(scanData.code)
-                      .get())
-                  .exists) {
-                setState(() {
-                  scanStatus = Colors.orange;
-                  status = "$result Attendance Marked already";
-                });
-                qrViewController?.resumeCamera();
-              } else {
-                setState(() {
-                  status = "Some problem occured";
-                  scanStatus = Colors.red;
-                });
-              }
-              // if the participant is not marked for the event
-              if (scanData.code != null && !a.exists) {
-                var participantref = FirebaseFirestore.instance
+              aData.data()?["studentData"].forEach((participant) {
+                if (scanData.code != null) {
+                  if (participant["id"] == scanData.code) {
+                    setState(() {
+                      scanStatus = Colors.orange;
+                      status = "${scanData.code} Attendance already Marked ";
+                    });
+                    //print("eid ${participant["id"]}");
+                    contains = true;
+                    qrViewController?.resumeCamera();
+                  } else {
+                    qrViewController?.resumeCamera();
+                  }
+                } else {
+                  setState(() {
+                    status = "Unknown error has occured";
+                    scanStatus = Colors.red;
+                  });
+                  qrViewController?.resumeCamera();
+                }
+              });
+              if (scanData.code != null && contains != true) {
+                FirebaseFirestore.instance
                     .collection("events")
                     .doc(widget.eventID)
                     .collection("Participants")
-                    .doc(scanData.code);
-                participantref.set(
+                    .doc("Attendance")
+                    .set(
                   {
-                    'takenTime': DateTime.now().millisecondsSinceEpoch,
-                    'isPresent': true,
-                    'takenBy': FirebaseAuth
-                        .instance.currentUser!.providerData[0].email,
-                    'participantID': scanData.code
+                    'studentData': FieldValue.arrayUnion([
+                      {
+                        'takenTime': DateTime.now().millisecondsSinceEpoch,
+                        'isPresent': true,
+                        'takenBy': FirebaseAuth
+                            .instance.currentUser!.providerData[0].email,
+                        'id': scanData.code
+                      },
+                    ]),
                   },
+                  SetOptions(merge: true),
                 );
                 setState(() {
                   scanStatus = Colors.green;
-                  status = "$result Attendance Marked";
+                  status = "${scanData.code} Attendance Marked!";
                   correctScan = true;
                 });
                 qrViewController?.resumeCamera();
               }
+              //print("attendance data : ${a.data()?["studentData"][0]["id"]}");
+              // if the participant is already marked for the event
+              // if ((await FirebaseFirestore.instance
+              //         .collection("events")
+              //         .doc(widget.eventID)
+              //         .collection("Participants")
+              //         .doc(scanData.code)
+              //         .get())
+              //     .exists) {
+              //   setState(() {
+              //     scanStatus = Colors.orange;
+              //     status = "$result Attendance Marked already";
+              //   });
+              //   qrViewController?.resumeCamera();
+              // } else {
+              //   setState(() {
+              //     status = "Some problem occured";
+              //     scanStatus = Colors.red;
+              //   });
+              //   qrViewController?.resumeCamera();
+              // }
+              // if the participant is not marked for the event
+              // if (scanData.code != null /*&& !a.exists*/) {
+              //   FirebaseFirestore.instance
+              //       .collection("events")
+              //       .doc(widget.eventID)
+              //       .collection("Participants")
+              //       .doc("Attendance")
+              //       .set(
+              //     {
+              //       'studentData': FieldValue.arrayUnion([
+              //         {
+              //           'takenTime': DateTime.now().millisecondsSinceEpoch,
+              //           'isPresent': true,
+              //           'takenBy': FirebaseAuth
+              //               .instance.currentUser!.providerData[0].email,
+              //           'id': scanData.code
+              //         },
+              //       ]),
+              //     },
+              //     SetOptions(merge: true),
+              //   );
+              //   setState(() {
+              //     scanStatus = Colors.green;
+              //     status = "$result Attendance Marked";
+              //     correctScan = true;
+              //   });
+              //   qrViewController?.resumeCamera();
+              // }
             }
           } else {
             setState(() {
@@ -386,3 +477,49 @@ class _ScannerState extends State<Scanner> {
     );
   }
 }
+
+
+/* 'takenTime': DateTime.now().millisecondsSinceEpoch,
+                    'isPresent': true,
+                    'takenBy': FirebaseAuth
+                        .instance.currentUser!.providerData[0].email,
+                    'participantID': scanData.code */
+
+
+
+
+
+/* ListView(
+                              controller: scrollControl,
+                              physics: const BouncingScrollPhysics(),
+                              children: snapshot.data!.docs.map((e) {
+                                var studentData = e["studentData"];
+                                // for (var i = 0;
+                                //     i < e["studentData"].length;
+                                //     i++) {
+                                //   if (e["studentData"][i]["isPresent"] ==
+                                //       true) {
+                                //     totalCount++;
+                                //   }
+                                // }
+                                for (var i = 0; i < studentData.length; i++) {
+                                  print("streamData : ${studentData[i]["id"]}");
+                                }
+                                print("streamData : ${studentData.length}");
+                                var itemTime =
+                                    (DateTime.fromMillisecondsSinceEpoch(
+                                                e["takenTime"] >= 1000000000
+                                                    ? e["takenTime"]
+                                                    : e["takenTime"] * 1000)
+                                            .toString())
+                                        .substring(0, 16);
+
+                                return ParticipantsTile(
+                                  isOpenForall: widget.isOpenForall,
+                                  isPresent: e['isPresent'],
+                                  participantID: e.id,
+                                  takenTime: itemTime,
+                                  eventID: widget.eventID.toString(),
+                                  deleteBtn: false,
+                                );
+                              }).toList()); */

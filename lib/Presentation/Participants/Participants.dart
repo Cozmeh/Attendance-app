@@ -19,6 +19,7 @@ class _ParticipantsState extends State<Participants> {
   final FocusNode _focusNode = FocusNode();
   String searchValue = "";
   bool searchCross = false;
+  bool searchEnabled = true;
 
   @override
   void initState() {
@@ -58,6 +59,7 @@ class _ParticipantsState extends State<Participants> {
             child: SizedBox(
               height: 50,
               child: TextField(
+                enabled: searchEnabled,
                 style: TextStyle(fontSize: 22.sp),
                 cursorColor: Colors.black,
                 focusNode: _focusNode,
@@ -115,6 +117,119 @@ class _ParticipantsState extends State<Participants> {
               child: Padding(
                 padding: EdgeInsets.only(left: 15.w, right: 15.w),
                 child: StreamBuilder(
+                  stream: participants
+                      .collection('Participants')
+                      //.orderBy('takenTime', descending: false)
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: Text("Loading..."));
+                    } else if (!snapshot.hasData) {
+                      return Container();
+                    } else if (snapshot.hasData) {
+                      dynamic studentData;
+                      for (var element in snapshot.data!.docs) {
+                        studentData = element["studentData"];
+                      }
+                      if (studentData == null || studentData.length == 0) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              "assets/noOne.png",
+                              height: 250.h,
+                              width: 250.w,
+                            ),
+                            Text(
+                              "Uh..oh! No participants..",
+                              style: TextStyle(
+                                fontFamily: "Inter",
+                                fontSize: 25.sp,
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                      return ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: studentData == null ? 1 : studentData.length,
+                        itemBuilder: (context, index) {
+                          var time = DateTime.fromMillisecondsSinceEpoch(
+                                  studentData[index]["takenTime"] >= 1000000000
+                                      ? studentData[index]["takenTime"]
+                                      : studentData[index]["takenTime"] * 1000)
+                              .toString();
+                          if (searchValue == "") {
+                            return ParticipantsTile(
+                              participantID: studentData[index]["id"],
+                              takenTime: time,
+                              isPresent: studentData[index]['isPresent'],
+                              isOpenForall: widget.isOpenForall,
+                              eventID: widget.eventID!.toString(),
+                              deleteBtn: true,
+                              takenBy: studentData[index]['takenBy'],
+                            );
+                          } else if (studentData[index]["id"]
+                              .toString()
+                              .toUpperCase()
+                              .contains(searchValue.toString().toUpperCase())) {
+                            return ParticipantsTile(
+                              participantID: studentData[index]["id"],
+                              takenTime: time,
+                              isPresent: studentData[index]['isPresent'],
+                              isOpenForall: widget.isOpenForall,
+                              eventID: widget.eventID!,
+                              deleteBtn: true,
+                              takenBy: studentData[index]['takenBy'],
+                            );
+                          } else {
+                            return Container();
+                          }
+                        },
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  
+  /*getCSV() async {
+    String csvData = const ListToCsvConverter().convert(items);
+    print(csvData);
+    try {
+      var status = await Permission.storage.status;
+      if (!status.isGranted) {
+        await Permission.storage.request();
+      }
+      final String directory = (await getApplicationDocumentsDirectory()).path;
+      final String path = "$directory/ams${widget.eventID}.csv";
+      final File file = File(path);
+      dynamic data = await file.writeAsString(csvData);
+      print(data);
+      print(path);
+      try {
+        await OpenFilex.open(file.path);
+      } catch (e) {
+        print(e);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }*/
+}
+
+
+/*
+StreamBuilder(
                   stream: participants
                       .collection('Participants')
                       .orderBy('takenTime', descending: false)
@@ -175,35 +290,4 @@ class _ParticipantsState extends State<Participants> {
                                 }).toList());
                   },
                 ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /*getCSV() async {
-    String csvData = const ListToCsvConverter().convert(items);
-    print(csvData);
-    try {
-      var status = await Permission.storage.status;
-      if (!status.isGranted) {
-        await Permission.storage.request();
-      }
-      final String directory = (await getApplicationDocumentsDirectory()).path;
-      final String path = "$directory/ams${widget.eventID}.csv";
-      final File file = File(path);
-      dynamic data = await file.writeAsString(csvData);
-      print(data);
-      print(path);
-      try {
-        await OpenFilex.open(file.path);
-      } catch (e) {
-        print(e);
-      }
-    } catch (e) {
-      print(e);
-    }
-  }*/
-}
+ */
