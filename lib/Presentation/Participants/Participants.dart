@@ -8,7 +8,12 @@ import 'package:google_fonts/google_fonts.dart';
 class Participants extends StatefulWidget {
   String? eventID;
   bool isOpenForall;
-  Participants({super.key, required this.eventID, required this.isOpenForall});
+  bool isEnded;
+  Participants(
+      {super.key,
+      required this.eventID,
+      required this.isOpenForall,
+      required this.isEnded});
 
   @override
   State<Participants> createState() => _ParticipantsState();
@@ -167,7 +172,7 @@ class _ParticipantsState extends State<Participants> {
                               isPresent: studentData[index]['isPresent'],
                               isOpenForall: widget.isOpenForall,
                               eventID: widget.eventID!.toString(),
-                              deleteBtn: true,
+                              deleteBtn: widget.isEnded ? false : true,
                               takenBy: studentData[index]['takenBy'],
                             );
                           } else if (studentData[index]["id"]
@@ -180,7 +185,7 @@ class _ParticipantsState extends State<Participants> {
                               isPresent: studentData[index]['isPresent'],
                               isOpenForall: widget.isOpenForall,
                               eventID: widget.eventID!,
-                              deleteBtn: true,
+                              deleteBtn: widget.isEnded ? false : true,
                               takenBy: studentData[index]['takenBy'],
                             );
                           } else {
@@ -201,7 +206,6 @@ class _ParticipantsState extends State<Participants> {
     );
   }
 
-  
   /*getCSV() async {
     String csvData = const ListToCsvConverter().convert(items);
     print(csvData);

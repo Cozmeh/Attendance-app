@@ -331,6 +331,7 @@ class _EventCardState extends State<EventCard> {
                                         builder: (context) => Participants(
                                           eventID: widget.id,
                                           isOpenForall: widget.isOpenForall,
+                                          isEnded: widget.isEnded,
                                         ),
                                       ));
                                     },

@@ -53,8 +53,9 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
         ),
         trailing: Visibility(
           visible: widget.takenBy ==
-              FirebaseAuth.instance.currentUser!.providerData[0].email
-                  .toString(),
+                  FirebaseAuth.instance.currentUser!.providerData[0].email
+                      .toString() &&
+              widget.deleteBtn,
           child: IconButton(
             icon: const Icon(Icons.remove_circle_outline),
             iconSize: 30.sp,
@@ -75,7 +76,8 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
                     actions: [
                       TextButton(
                         onPressed: !widget.isOpenForall
-                            ? () { // if the event is not open for all
+                            ? () {
+                                // if the event is not open for all
                                 FirebaseFirestore.instance
                                     .collection("events")
                                     .doc(widget.eventID)
@@ -88,7 +90,8 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
                                 });
                                 Navigator.of(context).pop();
                               }
-                            : () { // if the event is open for all
+                            : () {
+                                // if the event is open for all
                                 List studentData = [];
                                 FirebaseFirestore.instance
                                     .collection('events')
