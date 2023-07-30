@@ -78,15 +78,38 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
                         onPressed: !widget.isOpenForall
                             ? () {
                                 // if the event is not open for all
+                                List studentData = [];
                                 FirebaseFirestore.instance
-                                    .collection("events")
+                                    .collection('events')
                                     .doc(widget.eventID)
-                                    .collection("Participants")
-                                    .doc(widget.participantID)
-                                    .update({
-                                  'isPresent': false,
-                                  'takenBy': "",
-                                  'takenTime': 0,
+                                    .collection('Participants')
+                                    .doc("Attendance")
+                                    .get()
+                                    .then((value) {
+                                  studentData = value["studentData"];
+                                  for (int i = 0; i < studentData.length; i++) {
+                                    if (studentData[i]["id"] ==
+                                        widget.participantID) {
+                                      studentData[i] = {
+                                        'takenTime': 0,
+                                        'isPresent': false,
+                                        'takenBy': "",
+                                        'id': studentData[i]["id"]
+                                      };
+                                      break;
+                                    }
+                                  }
+                                  FirebaseFirestore.instance
+                                      .collection("events")
+                                      .doc(widget.eventID)
+                                      .collection("Participants")
+                                      .doc("Attendance")
+                                      .set(
+                                    {
+                                      'studentData':
+                                          FieldValue.arrayUnion(studentData),
+                                    },
+                                  );
                                 });
                                 Navigator.of(context).pop();
                               }

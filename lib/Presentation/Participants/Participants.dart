@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ftest/Widgets/participantsTile.dart';
@@ -165,29 +166,32 @@ class _ParticipantsState extends State<Participants> {
                                       ? studentData[index]["takenTime"]
                                       : studentData[index]["takenTime"] * 1000)
                               .toString();
+                          var participantsTile = ParticipantsTile(
+                            participantID: studentData[index]["id"],
+                            takenTime: time,
+                            isPresent: studentData[index]['isPresent'],
+                            isOpenForall: widget.isOpenForall,
+                            eventID: widget.eventID!.toString(),
+                            deleteBtn: widget.isEnded ? false : true,
+                            takenBy: studentData[index]['takenBy'],
+                          );
+                          // search results ...
                           if (searchValue == "") {
-                            return ParticipantsTile(
-                              participantID: studentData[index]["id"],
-                              takenTime: time,
-                              isPresent: studentData[index]['isPresent'],
-                              isOpenForall: widget.isOpenForall,
-                              eventID: widget.eventID!.toString(),
-                              deleteBtn: widget.isEnded ? false : true,
-                              takenBy: studentData[index]['takenBy'],
-                            );
+                            return participantsTile;
                           } else if (studentData[index]["id"]
                               .toString()
                               .toUpperCase()
                               .contains(searchValue.toString().toUpperCase())) {
-                            return ParticipantsTile(
-                              participantID: studentData[index]["id"],
-                              takenTime: time,
-                              isPresent: studentData[index]['isPresent'],
-                              isOpenForall: widget.isOpenForall,
-                              eventID: widget.eventID!,
-                              deleteBtn: widget.isEnded ? false : true,
-                              takenBy: studentData[index]['takenBy'],
-                            );
+                            return participantsTile;
+                          } else if (searchValue == "self" &&
+                              studentData[index]["takenBy"]
+                                  .toString()
+                                  .toUpperCase()
+                                  .contains(FirebaseAuth.instance.currentUser!
+                                      .providerData[0].email
+                                      .toString()
+                                      .toUpperCase())) {
+                            return participantsTile;
                           } else {
                             return Container();
                           }

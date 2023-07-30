@@ -66,6 +66,12 @@ class _ScannerState extends State<Scanner> {
             actions: [
               IconButton(
                 onPressed: () {
+                  // manual entry page route goes here
+                },
+                icon: const Icon(Icons.edit_square),
+              ),
+              IconButton(
+                onPressed: () {
                   //nfc page route goes here
                 },
                 icon: const Icon(Icons.nfc),
@@ -271,7 +277,9 @@ class _ScannerState extends State<Scanner> {
 
   // Scroll to the latest scanned QR
   void scrollLatest() {
-    scrollControl.jumpTo(scrollControl.position.maxScrollExtent);
+    if (widget.isOpenForall) {
+      scrollControl.jumpTo(scrollControl.position.maxScrollExtent);
+    }
   }
 
   //  QR Code Format Checker
@@ -301,56 +309,62 @@ class _ScannerState extends State<Scanner> {
               scannedDataFormatChecker(scanData.code)) {
             // if the event is NOT OPEN FOR ALL
             if (!widget.isOpenForall) {
-              var participantData = FirebaseFirestore.instance
-                  .collection("events")
+              List studentData = [];
+              FirebaseFirestore.instance
+                  .collection('events')
                   .doc(widget.eventID)
-                  .collection("Participants")
-                  .doc(scanData.code);
-              // if the participant is registered for the event
-              if ((await FirebaseFirestore.instance
-                      .collection("events")
-                      .doc(widget.eventID)
-                      .collection("Participants")
-                      .doc(scanData.code)
-                      .get())
-                  .exists) {
-                // if the participant is (already marked present)
-                if ((await FirebaseFirestore.instance
-                        .collection("events")
-                        .doc(widget.eventID)
-                        .collection("Participants")
-                        .doc(scanData.code)
-                        .get())['isPresent'] ==
-                    true) {
-                  setState(() {
-                    scanStatus = Colors.orange;
-                    status = "${scanData.code} Attendance Marked already";
-                  });
-                  qrViewController?.resumeCamera();
-                  // if the participant is registered (but not marked present)
-                } else {
-                  participantData.update({
-                    'takenTime': DateTime.now().millisecondsSinceEpoch,
-                    'isPresent': true,
-                    'takenBy': FirebaseAuth
-                        .instance.currentUser!.providerData[0].email,
-                    'participantID': scanData.code
-                  });
-                  setState(() {
-                    scanStatus = Colors.green;
-                    status = "${scanData.code} Attendance Marked";
-                    correctScan = true;
-                  });
-                  qrViewController?.resumeCamera();
+                  .collection('Participants')
+                  .doc("Attendance")
+                  .get()
+                  .then((value) {
+                studentData = value["studentData"];
+                for (int i = 0; i < studentData.length; i++) {
+                  // if the student exists
+                  if (studentData[i]["id"] == scanData.code) {
+                    // if the student is already marked present
+                    if (studentData[i]["isPresent"] == true) {
+                      setState(() {
+                        scanStatus = Colors.orange;
+                        status = "${scanData.code} Attendance already Marked ";
+                      });
+                      qrViewController?.resumeCamera();
+                      break;
+                    } else {
+                      studentData[i] = {
+                        'takenTime': DateTime.now().millisecondsSinceEpoch,
+                        'isPresent': true,
+                        'takenBy': FirebaseAuth
+                            .instance.currentUser!.providerData[0].email,
+                        'id': scanData.code
+                      };
+                      FirebaseFirestore.instance
+                          .collection("events")
+                          .doc(widget.eventID)
+                          .collection("Participants")
+                          .doc("Attendance")
+                          .set(
+                        {
+                          'studentData': FieldValue.arrayUnion(studentData),
+                        },
+                      );
+                      setState(() {
+                        scanStatus = Colors.green;
+                        status = "${scanData.code} Attendance Marked!";
+                        correctScan = true;
+                      });
+                      qrViewController?.resumeCamera();
+                      break;
+                    }
+                  } else {
+                    setState(() {
+                      scanStatus = Colors.red;
+                      status =
+                          "${scanData.code} is not eligible for this Event";
+                    });
+                    qrViewController?.resumeCamera();
+                  }
                 }
-                // if the participant is not registered for the event
-              } else {
-                setState(() {
-                  scanStatus = Colors.red;
-                  status = "${scanData.code} is not eligible for this Event";
-                });
-                qrViewController?.resumeCamera();
-              }
+              });
               // if the event is OPEN FOR ALL
             } else {
               bool contains = false;
@@ -408,55 +422,6 @@ class _ScannerState extends State<Scanner> {
                 });
                 qrViewController?.resumeCamera();
               }
-              //print("attendance data : ${a.data()?["studentData"][0]["id"]}");
-              // if the participant is already marked for the event
-              // if ((await FirebaseFirestore.instance
-              //         .collection("events")
-              //         .doc(widget.eventID)
-              //         .collection("Participants")
-              //         .doc(scanData.code)
-              //         .get())
-              //     .exists) {
-              //   setState(() {
-              //     scanStatus = Colors.orange;
-              //     status = "$result Attendance Marked already";
-              //   });
-              //   qrViewController?.resumeCamera();
-              // } else {
-              //   setState(() {
-              //     status = "Some problem occured";
-              //     scanStatus = Colors.red;
-              //   });
-              //   qrViewController?.resumeCamera();
-              // }
-              // if the participant is not marked for the event
-              // if (scanData.code != null /*&& !a.exists*/) {
-              //   FirebaseFirestore.instance
-              //       .collection("events")
-              //       .doc(widget.eventID)
-              //       .collection("Participants")
-              //       .doc("Attendance")
-              //       .set(
-              //     {
-              //       'studentData': FieldValue.arrayUnion([
-              //         {
-              //           'takenTime': DateTime.now().millisecondsSinceEpoch,
-              //           'isPresent': true,
-              //           'takenBy': FirebaseAuth
-              //               .instance.currentUser!.providerData[0].email,
-              //           'id': scanData.code
-              //         },
-              //       ]),
-              //     },
-              //     SetOptions(merge: true),
-              //   );
-              //   setState(() {
-              //     scanStatus = Colors.green;
-              //     status = "$result Attendance Marked";
-              //     correctScan = true;
-              //   });
-              //   qrViewController?.resumeCamera();
-              // }
             }
           } else {
             setState(() {
@@ -477,49 +442,3 @@ class _ScannerState extends State<Scanner> {
     );
   }
 }
-
-
-/* 'takenTime': DateTime.now().millisecondsSinceEpoch,
-                    'isPresent': true,
-                    'takenBy': FirebaseAuth
-                        .instance.currentUser!.providerData[0].email,
-                    'participantID': scanData.code */
-
-
-
-
-
-/* ListView(
-                              controller: scrollControl,
-                              physics: const BouncingScrollPhysics(),
-                              children: snapshot.data!.docs.map((e) {
-                                var studentData = e["studentData"];
-                                // for (var i = 0;
-                                //     i < e["studentData"].length;
-                                //     i++) {
-                                //   if (e["studentData"][i]["isPresent"] ==
-                                //       true) {
-                                //     totalCount++;
-                                //   }
-                                // }
-                                for (var i = 0; i < studentData.length; i++) {
-                                  print("streamData : ${studentData[i]["id"]}");
-                                }
-                                print("streamData : ${studentData.length}");
-                                var itemTime =
-                                    (DateTime.fromMillisecondsSinceEpoch(
-                                                e["takenTime"] >= 1000000000
-                                                    ? e["takenTime"]
-                                                    : e["takenTime"] * 1000)
-                                            .toString())
-                                        .substring(0, 16);
-
-                                return ParticipantsTile(
-                                  isOpenForall: widget.isOpenForall,
-                                  isPresent: e['isPresent'],
-                                  participantID: e.id,
-                                  takenTime: itemTime,
-                                  eventID: widget.eventID.toString(),
-                                  deleteBtn: false,
-                                );
-                              }).toList()); */

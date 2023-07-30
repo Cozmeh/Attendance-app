@@ -13,12 +13,12 @@ class _LogoutState extends State<Logout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color.fromARGB(255, 240, 239, 239),
+        backgroundColor: Colors.white,
         body: SafeArea(
           child: Column(
             children: [
               SizedBox(
-                height: MediaQuery.of(context).size.height * .1,
+                height: MediaQuery.of(context).size.height * .05,
               ),
               PhysicalModel(
                 color: Colors.transparent,
@@ -27,12 +27,12 @@ class _LogoutState extends State<Logout> {
                 shadowColor: Colors.black.withOpacity(.3),
                 child: SizedBox(
                   child: Image.asset(
-                    'assets/403.png',
+                    'assets/notAllowed.png',
                   ),
                 ),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * .15,
+                height: MediaQuery.of(context).size.height * .1,
               ),
               const Text(
                 "Ohh..Snap! :(",
