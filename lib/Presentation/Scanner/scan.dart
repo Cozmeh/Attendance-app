@@ -166,9 +166,13 @@ class _ScannerState extends State<Scanner> {
                           return Container();
                         } else if (snapshot.hasData) {
                           dynamic studentData;
+                          List sdKey = [];
                           for (var element in snapshot.data!.docs) {
-                            studentData = element["studentData"];
+                            studentData = element.data();
                           }
+                          studentData.forEach((key, value) {
+                            sdKey.add(key);
+                          });
                           if (studentData == null || studentData.length == 0) {
                             return Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -196,12 +200,12 @@ class _ScannerState extends State<Scanner> {
                               itemBuilder: (context, index) {
                                 var itemTime =
                                     (DateTime.fromMillisecondsSinceEpoch(
-                                                studentData[index]
+                                                studentData?[sdKey[index]]
                                                             ["takenTime"] >=
                                                         1000000000
-                                                    ? studentData[index]
+                                                    ? studentData[sdKey[index]]
                                                         ["takenTime"]
-                                                    : studentData[index]
+                                                    : studentData[sdKey[index]]
                                                             ["takenTime"] *
                                                         1000)
                                             .toString())
@@ -209,8 +213,9 @@ class _ScannerState extends State<Scanner> {
 
                                 return ParticipantsTile(
                                   isOpenForall: widget.isOpenForall,
-                                  isPresent: studentData[index]['isPresent'],
-                                  participantID: studentData[index]["id"],
+                                  isPresent: studentData[sdKey[index]]
+                                      ['isPresent'],
+                                  participantID: sdKey[index],
                                   takenTime: itemTime,
                                   eventID: widget.eventID.toString(),
                                   deleteBtn: false,
@@ -309,131 +314,109 @@ class _ScannerState extends State<Scanner> {
               scannedDataFormatChecker(scanData.code)) {
             // if the event is NOT OPEN FOR ALL
             if (!widget.isOpenForall) {
-              List studentData = [];
-              FirebaseFirestore.instance
-                  .collection('events')
-                  .doc(widget.eventID)
-                  .collection('Participants')
-                  .doc("Attendance")
-                  .get()
-                  .then((value) {
-                studentData = value["studentData"];
-                for (int i = 0; i < studentData.length; i++) {
-                  // if the student exists
-                  if (studentData[i]["id"] == scanData.code) {
-                    // if the student is already marked present
-                    if (studentData[i]["isPresent"] == true) {
-                      setState(() {
-                        scanStatus = Colors.orange;
-                        status = "${scanData.code} Attendance already Marked ";
-                      });
-                      qrViewController?.resumeCamera();
-                      break;
-                    } else {
-                      studentData[i] = {
-                        'takenTime': DateTime.now().millisecondsSinceEpoch,
-                        'isPresent': true,
-                        'takenBy': FirebaseAuth
-                            .instance.currentUser!.providerData[0].email,
-                        'id': scanData.code
-                      };
-                      FirebaseFirestore.instance
-                          .collection("events")
-                          .doc(widget.eventID)
-                          .collection("Participants")
-                          .doc("Attendance")
-                          .set(
-                        {
-                          'studentData': FieldValue.arrayUnion(studentData),
-                        },
-                      );
-                      setState(() {
-                        scanStatus = Colors.green;
-                        status = "${scanData.code} Attendance Marked!";
-                        correctScan = true;
-                      });
-                      qrViewController?.resumeCamera();
-                      break;
-                    }
-                  } else {
-                    setState(() {
-                      scanStatus = Colors.red;
-                      status =
-                          "${scanData.code} is not eligible for this Event";
-                    });
-                    qrViewController?.resumeCamera();
-                  }
-                }
-              });
-              // if the event is OPEN FOR ALL
-            } else {
-              bool contains = false;
-              var aData = await FirebaseFirestore.instance
+              var studentData = await FirebaseFirestore.instance
                   .collection("events")
                   .doc(widget.eventID)
                   .collection("Participants")
                   .doc("Attendance")
                   .get();
-              aData.data()?["studentData"].forEach((participant) {
-                if (scanData.code != null) {
-                  if (participant["id"] == scanData.code) {
+              print("broo ${studentData.data()?[scanData.code]}");
+              if (scanData.code != null) {
+                if (studentData.data()?[scanData.code] != null) {
+                  if (studentData.data()?[scanData.code]["isPresent"] == true) {
                     setState(() {
                       scanStatus = Colors.orange;
                       status = "${scanData.code} Attendance already Marked ";
                     });
-                    //print("eid ${participant["id"]}");
-                    contains = true;
                     qrViewController?.resumeCamera();
                   } else {
+                    FirebaseFirestore.instance
+                        .collection("events")
+                        .doc(widget.eventID)
+                        .collection("Participants")
+                        .doc("Attendance")
+                        .update({
+                      scanData.code!: {
+                        "isPresent": true,
+                        "takenTime": DateTime.now().millisecondsSinceEpoch,
+                        "takenBy": FirebaseAuth
+                            .instance.currentUser!.providerData[0].email
+                      }
+                    });
+                    setState(() {
+                      scanStatus = Colors.green;
+                      status = "${scanData.code} Attendance Marked ";
+                      correctScan = true;
+                    });
                     qrViewController?.resumeCamera();
                   }
                 } else {
                   setState(() {
-                    status = "Unknown error has occured";
                     scanStatus = Colors.red;
+                    status = "${scanData.code} is not eligible for this Event";
                   });
                   qrViewController?.resumeCamera();
                 }
-              });
-              if (scanData.code != null && contains != true) {
-                FirebaseFirestore.instance
-                    .collection("events")
-                    .doc(widget.eventID)
-                    .collection("Participants")
-                    .doc("Attendance")
-                    .set(
-                  {
-                    'studentData': FieldValue.arrayUnion([
-                      {
+              }
+              // if the event is OPEN FOR ALL
+            } else {
+              var studentData = await FirebaseFirestore.instance
+                  .collection("events")
+                  .doc(widget.eventID)
+                  .collection("Participants")
+                  .doc("Attendance")
+                  .get();
+              print("datadb ${studentData.data()?["21bcac47"]}");
+              if (scanData.code != null) {
+                if (studentData.data()?[scanData.code] != null) {
+                  setState(() {
+                    scanStatus = Colors.orange;
+                    status = "${scanData.code} Attendance already Marked ";
+                  });
+                  qrViewController?.resumeCamera();
+                } else {
+                  FirebaseFirestore.instance
+                      .collection("events")
+                      .doc(widget.eventID)
+                      .collection("Participants")
+                      .doc("Attendance")
+                      .set(
+                    {
+                      scanData.code!: {
                         'takenTime': DateTime.now().millisecondsSinceEpoch,
                         'isPresent': true,
                         'takenBy': FirebaseAuth
                             .instance.currentUser!.providerData[0].email,
-                        'id': scanData.code
                       },
-                    ]),
-                  },
-                  SetOptions(merge: true),
-                );
+                    },
+                    SetOptions(merge: true),
+                  );
+                  setState(() {
+                    scanStatus = Colors.green;
+                    status = "${scanData.code} Attendance Marked!";
+                    correctScan = true;
+                  });
+                  qrViewController?.resumeCamera();
+                }
+              } else {
                 setState(() {
-                  scanStatus = Colors.green;
-                  status = "${scanData.code} Attendance Marked!";
-                  correctScan = true;
+                  status = "Unknown error has occured";
+                  scanStatus = Colors.red;
                 });
                 qrViewController?.resumeCamera();
               }
             }
           } else {
             setState(() {
-              status = "Invalid QR format";
+              status = "Invalid QR format!";
               scanStatus = Colors.red;
             });
             qrViewController?.resumeCamera();
           }
         } catch (e) {
-          //print("### Exception occured ###$e");
+          print("Exception occured $e");
           setState(() {
-            status = "Invalid QR format";
+            status = "Something went wrong!";
             scanStatus = Colors.red;
           });
           qrViewController?.resumeCamera();
@@ -442,3 +425,4 @@ class _ScannerState extends State<Scanner> {
     );
   }
 }
+

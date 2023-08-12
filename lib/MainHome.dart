@@ -7,6 +7,7 @@ import 'package:ftest/InfraStructure/authRepo.dart';
 import 'package:ftest/Presentation/Authentication/Logout.dart';
 import 'package:ftest/Presentation/Authentication/login.dart';
 import 'package:ftest/Presentation/Home/HomePage.dart';
+import 'package:ftest/Widgets/offline.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -17,6 +18,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   var isLogin = false;
+  bool isOnline = true;
   String? userEmail;
   final Connectivity _connectivity = Connectivity();
 
@@ -29,17 +31,23 @@ class _HomeState extends State<Home> {
 
   void connectionChecker(ConnectivityResult connectivityResult) {
     if (connectivityResult == ConnectivityResult.none) {
-      var snackBar = const SnackBar(
-        duration: Duration(days: 1),
-        content: Center(
-          child: Text("No Internet Connection"),
-        ),
-        backgroundColor: Colors.red,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      // var snackBar = const SnackBar(
+      //   duration: Duration(days: 1),
+      //   content: Center(
+      //     child: Text("No Internet Connection"),
+      //   ),
+      //   backgroundColor: Colors.red,
+      // );
+      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      setState(() {
+        isOnline = false;
+      });
     } else {
       Timer(const Duration(seconds: 1), () {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        // ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        setState(() {
+          isOnline = true;
+        }); 
       });
     }
   }
@@ -82,7 +90,11 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: isLogin == false ? const Login() : const HomePage(),
+      body: isOnline == true
+          ? isLogin == false
+              ? const Login()
+              : const HomePage()
+          : const Offline(),
     );
   }
 }

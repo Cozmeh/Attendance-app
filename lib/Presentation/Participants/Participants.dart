@@ -135,9 +135,13 @@ class _ParticipantsState extends State<Participants> {
                       return Container();
                     } else if (snapshot.hasData) {
                       dynamic studentData;
+                      List sdKey = [];
                       for (var element in snapshot.data!.docs) {
-                        studentData = element["studentData"];
+                        studentData = element.data();
                       }
+                      studentData.forEach((key, value) {
+                        sdKey.add(key);
+                      });
                       if (studentData == null || studentData.length == 0) {
                         return Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -162,29 +166,31 @@ class _ParticipantsState extends State<Participants> {
                         itemCount: studentData == null ? 1 : studentData.length,
                         itemBuilder: (context, index) {
                           var time = DateTime.fromMillisecondsSinceEpoch(
-                                  studentData[index]["takenTime"] >= 1000000000
-                                      ? studentData[index]["takenTime"]
-                                      : studentData[index]["takenTime"] * 1000)
+                                  studentData[sdKey[index]]["takenTime"] >=
+                                          1000000000
+                                      ? studentData[sdKey[index]]["takenTime"]
+                                      : studentData[sdKey[index]]["takenTime"] *
+                                          1000)
                               .toString();
                           var participantsTile = ParticipantsTile(
-                            participantID: studentData[index]["id"],
+                            participantID: sdKey[index],
                             takenTime: time,
-                            isPresent: studentData[index]['isPresent'],
+                            isPresent: studentData[sdKey[index]]['isPresent'],
                             isOpenForall: widget.isOpenForall,
                             eventID: widget.eventID!.toString(),
                             deleteBtn: widget.isEnded ? false : true,
-                            takenBy: studentData[index]['takenBy'],
+                            takenBy: studentData[sdKey[index]]['takenBy'],
                           );
                           // search results ...
                           if (searchValue == "") {
                             return participantsTile;
-                          } else if (studentData[index]["id"]
+                          } else if (sdKey[index]
                               .toString()
                               .toUpperCase()
                               .contains(searchValue.toString().toUpperCase())) {
                             return participantsTile;
                           } else if (searchValue == "self" &&
-                              studentData[index]["takenBy"]
+                              studentData[sdKey[index]]["takenBy"]
                                   .toString()
                                   .toUpperCase()
                                   .contains(FirebaseAuth.instance.currentUser!
