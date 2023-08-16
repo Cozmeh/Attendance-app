@@ -298,9 +298,7 @@ class _EventCardState extends State<EventCard> {
                                   ? () {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
-                                        builder: (context) => Scanner(
-                                            eventID: widget.id,
-                                            isOpenForall: widget.isOpenForall),
+                                        builder: (context) => NfcScanner(),
                                       ));
                                     }
                                   : null,

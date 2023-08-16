@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ftest/Presentation/Home/HomePage.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import '../Scanner/nfc.dart';
 
 // ignore: must_be_immutable
 class Scanner extends StatefulWidget {
@@ -73,6 +74,11 @@ class _ScannerState extends State<Scanner> {
               IconButton(
                 onPressed: () {
                   //nfc page route goes here
+                  Navigator.of(context)
+                    .push(MaterialPageRoute(
+                  builder: (context) =>
+                      const NfcScanner(),
+                        ));
                 },
                 icon: const Icon(Icons.nfc),
               ),
