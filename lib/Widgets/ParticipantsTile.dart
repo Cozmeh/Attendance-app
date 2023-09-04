@@ -31,7 +31,7 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
       shadowColor: Colors.transparent,
       child: ListTile(
         visualDensity: const VisualDensity(horizontal: 0, vertical: -1),
-        tileColor: const Color.fromARGB(255, 233, 233, 233),
+        tileColor: tileColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
         leading: !widget.isOpenForall
             ? widget.isPresent
@@ -65,6 +65,9 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                     title: !widget.isOpenForall
                         ? const Text("Remove Attendace")
                         : const Text("Delete Participant"),

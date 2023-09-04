@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, unnecessary_null_comparison
 
 import 'dart:async';
 import 'dart:math';
@@ -24,6 +24,7 @@ class Scanner extends StatefulWidget {
 }
 
 class _ScannerState extends State<Scanner> {
+  final TextEditingController _attendanceController = TextEditingController();
   final ScrollController scrollControl = ScrollController();
   final GlobalKey globalKey = GlobalKey();
   QRViewController? qrViewController;
@@ -68,17 +69,74 @@ class _ScannerState extends State<Scanner> {
               IconButton(
                 onPressed: () {
                   // manual entry page route goes here
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          content: TextField(
+                            controller: _attendanceController,
+                            cursorColor: Colors.black,
+                            decoration: const InputDecoration(
+                              fillColor: tileColor,
+                              filled: true,
+                              focusColor: Colors.black,
+                              hintText: "Participant ID - Ex : 21BCAC46",
+                              hintStyle: TextStyle(color: Colors.grey),
+                              border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(borderRadius),
+                                  )),
+                            ),
+                          ),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          elevation: 0,
+                          title: Text(
+                            widget.isOpenForall
+                                ? "Add Attendance"
+                                : "Mark Attendance",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 25.sp,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  processData(
+                                      _attendanceController.text.toUpperCase(),
+                                      false);
+                                  Navigator.of(context).pop();
+                                  _attendanceController.clear();
+                                },
+                                child: widget.isOpenForall
+                                    ? const Text(
+                                        "Add",
+                                        style: TextStyle(color: primaryBlue),
+                                      )
+                                    : const Text("Mark")),
+                            TextButton(
+                                onPressed: () {
+                                  _attendanceController.clear();
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text(
+                                  "Cancel",
+                                  style: TextStyle(color: Colors.black),
+                                )),
+                          ],
+                        );
+                      });
                 },
                 icon: const Icon(Icons.edit_square),
               ),
               IconButton(
                 onPressed: () {
                   //nfc page route goes here
-                  Navigator.of(context)
-                    .push(MaterialPageRoute(
-                  builder: (context) =>
-                      const NfcScanner(),
-                        ));
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const NfcScanner(),
+                  ));
                 },
                 icon: const Icon(Icons.nfc),
               ),
@@ -293,12 +351,14 @@ class _ScannerState extends State<Scanner> {
     }
   }
 
+  // 01234567
+  // 21bcac46
   //  QR Code Format Checker
   bool scannedDataFormatChecker(String? scannedData) {
     if (scannedData!.length == 8 &&
         int.tryParse(scannedData.substring(0, 2)) is int &&
         int.tryParse(scannedData.substring(6, 8)) is int) {
-      for (var i = 2; i < 6; i++) {
+      for (var i = 2; i < 5; i++) {
         if (int.tryParse(scannedData[i]) is int) {
           return false;
         }
@@ -309,126 +369,133 @@ class _ScannerState extends State<Scanner> {
     }
   }
 
-  //  QR Code Scanner
+  //  QR Code Listener
   void _onQRViewCreated(QRViewController controller) {
     setState(() => qrViewController = controller);
-    controller.scannedDataStream.listen(
-      (scanData) async {
-        qrViewController?.stopCamera();
-        try {
-          if (scanData.code != null &&
-              scannedDataFormatChecker(scanData.code)) {
-            // if the event is NOT OPEN FOR ALL
-            if (!widget.isOpenForall) {
-              var studentData = await FirebaseFirestore.instance
-                  .collection("events")
-                  .doc(widget.eventID)
-                  .collection("Participants")
-                  .doc("Attendance")
-                  .get();
-              print("broo ${studentData.data()?[scanData.code]}");
-              if (scanData.code != null) {
-                if (studentData.data()?[scanData.code] != null) {
-                  if (studentData.data()?[scanData.code]["isPresent"] == true) {
-                    setState(() {
-                      scanStatus = Colors.orange;
-                      status = "${scanData.code} Attendance already Marked ";
-                    });
-                    qrViewController?.resumeCamera();
-                  } else {
-                    FirebaseFirestore.instance
-                        .collection("events")
-                        .doc(widget.eventID)
-                        .collection("Participants")
-                        .doc("Attendance")
-                        .update({
-                      scanData.code!: {
-                        "isPresent": true,
-                        "takenTime": DateTime.now().millisecondsSinceEpoch,
-                        "takenBy": FirebaseAuth
-                            .instance.currentUser!.providerData[0].email
-                      }
-                    });
-                    setState(() {
-                      scanStatus = Colors.green;
-                      status = "${scanData.code} Attendance Marked ";
-                      correctScan = true;
-                    });
-                    qrViewController?.resumeCamera();
-                  }
-                } else {
-                  setState(() {
-                    scanStatus = Colors.red;
-                    status = "${scanData.code} is not eligible for this Event";
-                  });
-                  qrViewController?.resumeCamera();
-                }
-              }
-              // if the event is OPEN FOR ALL
-            } else {
-              var studentData = await FirebaseFirestore.instance
-                  .collection("events")
-                  .doc(widget.eventID)
-                  .collection("Participants")
-                  .doc("Attendance")
-                  .get();
-              print("datadb ${studentData.data()?["21bcac47"]}");
-              if (scanData.code != null) {
-                if (studentData.data()?[scanData.code] != null) {
-                  setState(() {
-                    scanStatus = Colors.orange;
-                    status = "${scanData.code} Attendance already Marked ";
-                  });
-                  qrViewController?.resumeCamera();
-                } else {
-                  FirebaseFirestore.instance
-                      .collection("events")
-                      .doc(widget.eventID)
-                      .collection("Participants")
-                      .doc("Attendance")
-                      .set(
-                    {
-                      scanData.code!: {
-                        'takenTime': DateTime.now().millisecondsSinceEpoch,
-                        'isPresent': true,
-                        'takenBy': FirebaseAuth
-                            .instance.currentUser!.providerData[0].email,
-                      },
-                    },
-                    SetOptions(merge: true),
-                  );
-                  setState(() {
-                    scanStatus = Colors.green;
-                    status = "${scanData.code} Attendance Marked!";
-                    correctScan = true;
-                  });
-                  qrViewController?.resumeCamera();
-                }
-              } else {
+    controller.scannedDataStream.listen((scanData) async {
+      processData(scanData, true);
+    });
+  }
+
+  //  QR Code Data Processing
+  void processData(scanData, bool isScanned) async {
+    dynamic result;
+    if (isScanned) {
+      result = scanData.code;
+    } else {
+      result = scanData;
+    }
+    qrViewController?.stopCamera();
+    try {
+      if (result != null && scannedDataFormatChecker(result)) {
+        // if the event is NOT OPEN FOR ALL
+        if (!widget.isOpenForall) {
+          var studentData = await FirebaseFirestore.instance
+              .collection("events")
+              .doc(widget.eventID)
+              .collection("Participants")
+              .doc("Attendance")
+              .get();
+          //print("broo ${studentData.data()?[result]}");
+          if (result != null) {
+            if (studentData.data()?[result] != null) {
+              if (studentData.data()?[result]["isPresent"] == true) {
                 setState(() {
-                  status = "Unknown error has occured";
-                  scanStatus = Colors.red;
+                  scanStatus = Colors.orange;
+                  status = "$result Attendance already Marked ";
+                });
+                qrViewController?.resumeCamera();
+              } else {
+                FirebaseFirestore.instance
+                    .collection("events")
+                    .doc(widget.eventID)
+                    .collection("Participants")
+                    .doc("Attendance")
+                    .update({
+                  result!: {
+                    "isPresent": true,
+                    "takenTime": DateTime.now().millisecondsSinceEpoch,
+                    "takenBy":
+                        FirebaseAuth.instance.currentUser!.providerData[0].email
+                  }
+                });
+                setState(() {
+                  scanStatus = Colors.green;
+                  status = "$result Attendance Marked ";
+                  correctScan = true;
                 });
                 qrViewController?.resumeCamera();
               }
+            } else {
+              setState(() {
+                scanStatus = Colors.red;
+                status = "$result is not eligible for this Event";
+              });
+              qrViewController?.resumeCamera();
+            }
+          }
+          // if the event is OPEN FOR ALL
+        } else {
+          var studentData = await FirebaseFirestore.instance
+              .collection("events")
+              .doc(widget.eventID)
+              .collection("Participants")
+              .doc("Attendance")
+              .get();
+          print("datadb ${studentData.data()?["21bcac47"]}");
+          if (result != null) {
+            if (studentData.data()?[result] != null) {
+              setState(() {
+                scanStatus = Colors.orange;
+                status = "$result Attendance already Marked ";
+              });
+              qrViewController?.resumeCamera();
+            } else {
+              FirebaseFirestore.instance
+                  .collection("events")
+                  .doc(widget.eventID)
+                  .collection("Participants")
+                  .doc("Attendance")
+                  .set(
+                {
+                  result!: {
+                    'takenTime': DateTime.now().millisecondsSinceEpoch,
+                    'isPresent': true,
+                    'takenBy': FirebaseAuth
+                        .instance.currentUser!.providerData[0].email,
+                  },
+                },
+                SetOptions(merge: true),
+              );
+              setState(() {
+                scanStatus = Colors.green;
+                status = "$result Attendance Marked!";
+                correctScan = true;
+              });
+              qrViewController?.resumeCamera();
             }
           } else {
             setState(() {
-              status = "Invalid QR format!";
+              status = "Unknown error has occured";
               scanStatus = Colors.red;
             });
             qrViewController?.resumeCamera();
           }
-        } catch (e) {
-          print("Exception occured $e");
-          setState(() {
-            status = "Something went wrong!";
-            scanStatus = Colors.red;
-          });
-          qrViewController?.resumeCamera();
         }
-      },
-    );
+      } else {
+        setState(() {
+          status = "Invalid QR format!";
+          scanStatus = Colors.red;
+        });
+        qrViewController?.resumeCamera();
+      }
+    } catch (e) {
+      print("Exception occured $e");
+      setState(() {
+        status = "Something went wrong!";
+        scanStatus = Colors.red;
+      });
+      qrViewController?.resumeCamera();
+    }
   }
 }
-
