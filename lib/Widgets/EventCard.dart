@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ftest/Presentation/Scanner/Nfc.dart';
 import 'package:ftest/Data/constants.dart';
 import '../Presentation/Participants/Participants.dart';
 import '../Presentation/Scanner/scan.dart';
@@ -9,6 +8,7 @@ import '../Presentation/Scanner/scan.dart';
 class EventCard extends StatefulWidget {
   String imageUrl, eventName, departName, date, venue, startTime, endTime, id;
   bool isOpenForall, isStarted, isEnded;
+  var faculty;
   EventCard({
     super.key,
     required this.imageUrl,
@@ -22,6 +22,7 @@ class EventCard extends StatefulWidget {
     required this.isOpenForall,
     required this.isStarted,
     required this.isEnded,
+    required this.faculty,
   });
   @override
   State<EventCard> createState() => _EventCardState();
@@ -133,13 +134,13 @@ class _EventCardState extends State<EventCard> {
                             ),
                             widget.isOpenForall
                                 ? Icon(
-                                    Icons.public,
-                                    size: 30.sp,
-                                  )
+                              Icons.public,
+                              size: 30.sp,
+                            )
                                 : Icon(
-                                    Icons.public_off,
-                                    size: 30.sp,
-                                  ),
+                              Icons.public_off,
+                              size: 30.sp,
+                            ),
                           ],
                         ),
                         const Divider(
@@ -296,18 +297,18 @@ class _EventCardState extends State<EventCard> {
                             ElevatedButton(
                               onPressed: widget.isStarted
                                   ? () {
-                                      Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                        builder: (context) => Scanner(
-                                            eventID: widget.id,
-                                            isOpenForall: widget.isOpenForall),
-                                      ));
-                                    }
+                                Navigator.of(context)
+                                    .push(MaterialPageRoute(
+                                  builder: (context) => Scanner(
+                                      eventID: widget.id,
+                                      isOpenForall: widget.isOpenForall),
+                                ));
+                              }
                                   : null,
                               style: ElevatedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
                                     borderRadius:
-                                        BorderRadius.circular(borderRadius),
+                                    BorderRadius.circular(borderRadius),
                                   ),
                                   fixedSize: Size(220.w, 60.h),
                                   backgroundColor: primaryBlue),
@@ -322,23 +323,25 @@ class _EventCardState extends State<EventCard> {
                             ),
                             ElevatedButton(
                               onPressed: !widget.isStarted &&
-                                      widget.isOpenForall &&
-                                      !widget.isEnded
+                                  widget.isOpenForall &&
+                                  !widget.isEnded
                                   ? null
                                   : () {
-                                      Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                        builder: (context) => Participants(
-                                          eventID: widget.id,
-                                          isOpenForall: widget.isOpenForall,
-                                          isEnded: widget.isEnded,
-                                        ),
-                                      ));
-                                    },
+                                Navigator.of(context)
+                                    .push(MaterialPageRoute(
+                                  builder: (context) => Participants(
+                                    faculty: widget.faculty,
+                                    eventName: widget.eventName,
+                                    eventID: widget.id,
+                                    isOpenForall: widget.isOpenForall,
+                                    isEnded: widget.isEnded,
+                                  ),
+                                ));
+                              },
                               style: ElevatedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
                                     borderRadius:
-                                        BorderRadius.circular(borderRadius),
+                                    BorderRadius.circular(borderRadius),
                                   ),
                                   fixedSize: Size(220.w, 60.h),
                                   backgroundColor: primaryBlue),

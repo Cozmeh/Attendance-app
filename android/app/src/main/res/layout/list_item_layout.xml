@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#E3E3E3"
+        android:padding="16dp">
+
+            <!-- Tick Icon (You can replace this with your tick icon) -->
+            <ImageView
+                android:id="@+id/tickIcon"
+                android:layout_width="24dp"
+                android:layout_marginStart="20dp"
+                android:layout_height="24dp"
+                android:visibility="visible"
+                android:src="@drawable/ic_tick"
+            android:contentDescription="Tick Icon" />
+
+            <!-- Cross Icon (You can replace this with your cross icon) -->
+            <ImageView
+                android:id="@+id/crossIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/ic_cross"
+                android:visibility="gone"
+                android:contentDescription="Cross Icon" />
+
+        <TextView
+            android:id="@+id/rollNumberTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Participant ID"
+            android:textSize="18sp"
+            android:layout_marginStart="35dp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

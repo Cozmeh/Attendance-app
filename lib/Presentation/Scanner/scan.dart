@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/services.dart';
 import 'package:ftest/Data/constants.dart';
 import 'package:ftest/Widgets/participantsTile.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ftest/Presentation/Home/HomePage.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import '../Scanner/nfc.dart';
+
 
 // ignore: must_be_immutable
 class Scanner extends StatefulWidget {
@@ -24,6 +25,7 @@ class Scanner extends StatefulWidget {
 }
 
 class _ScannerState extends State<Scanner> {
+  final  nfcMethodChannel = const MethodChannel('ams.nfc');
   final TextEditingController _attendanceController = TextEditingController();
   final ScrollController scrollControl = ScrollController();
   final GlobalKey globalKey = GlobalKey();
@@ -48,6 +50,14 @@ class _ScannerState extends State<Scanner> {
     qrViewController?.dispose();
     super.dispose();
   }
+
+  Future<void> onNFCScan()  async {
+    // Start listening for NFC events when the button is pressed
+    nfcMethodChannel.invokeMethod('startNFCScan',
+      {'eventID': widget.eventID, 'user': FirebaseAuth.instance.currentUser!.providerData[0].email , 'openForAll' : widget.isOpenForall} ,
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -112,10 +122,13 @@ class _ScannerState extends State<Scanner> {
                                 },
                                 child: widget.isOpenForall
                                     ? const Text(
-                                        "Add",
-                                        style: TextStyle(color: primaryBlue),
-                                      )
-                                    : const Text("Mark")),
+                                  "Add",
+                                  style: TextStyle(color: primaryBlue),
+                                )
+                                    : const Text(
+                                  "Mark",
+                                  style: TextStyle(color: primaryBlue),
+                                )),
                             TextButton(
                                 onPressed: () {
                                   _attendanceController.clear();
@@ -132,12 +145,7 @@ class _ScannerState extends State<Scanner> {
                 icon: const Icon(Icons.edit_square),
               ),
               IconButton(
-                onPressed: () {
-                  //nfc page route goes here
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const NfcScanner(),
-                  ));
-                },
+                onPressed: onNFCScan,
                 icon: const Icon(Icons.nfc),
               ),
             ],
@@ -169,18 +177,18 @@ class _ScannerState extends State<Scanner> {
                     right: 8.w,
                     child: SizedBox(
                         child: IconButton(
-                      icon: isFlash
-                          ? Icon(Icons.flash_on_rounded,
+                          icon: isFlash
+                              ? Icon(Icons.flash_on_rounded,
                               color: Colors.white, size: 35.w)
-                          : Icon(Icons.flash_off_rounded,
+                              : Icon(Icons.flash_off_rounded,
                               color: Colors.white, size: 35.w),
-                      onPressed: () {
-                        setState(() {
-                          qrViewController?.toggleFlash();
-                          isFlash = !isFlash;
-                        });
-                      },
-                    )),
+                          onPressed: () {
+                            setState(() {
+                              qrViewController?.toggleFlash();
+                              isFlash = !isFlash;
+                            });
+                          },
+                        )),
                   )
                 ],
               ),
@@ -209,7 +217,7 @@ class _ScannerState extends State<Scanner> {
                           .collection('events')
                           .doc(widget.eventID)
                           .collection('Participants')
-                          //.orderBy('takenTime', descending: false)
+                      //.orderBy('takenTime', descending: false)
                           .snapshots(),
                       builder: (BuildContext context,
                           AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -258,27 +266,27 @@ class _ScannerState extends State<Scanner> {
                           }
                           return ListView.builder(
                               itemCount:
-                                  studentData == null ? 1 : studentData.length,
+                              studentData == null ? 1 : studentData.length,
                               controller: scrollControl,
                               physics: const BouncingScrollPhysics(),
                               itemBuilder: (context, index) {
                                 var itemTime =
-                                    (DateTime.fromMillisecondsSinceEpoch(
-                                                studentData?[sdKey[index]]
-                                                            ["takenTime"] >=
-                                                        1000000000
-                                                    ? studentData[sdKey[index]]
-                                                        ["takenTime"]
-                                                    : studentData[sdKey[index]]
-                                                            ["takenTime"] *
-                                                        1000)
-                                            .toString())
-                                        .substring(0, 16);
+                                (DateTime.fromMillisecondsSinceEpoch(
+                                    studentData?[sdKey[index]]
+                                    ["takenTime"] >=
+                                        1000000000
+                                        ? studentData[sdKey[index]]
+                                    ["takenTime"]
+                                        : studentData[sdKey[index]]
+                                    ["takenTime"] *
+                                        1000)
+                                    .toString())
+                                    .substring(0, 16);
 
                                 return ParticipantsTile(
                                   isOpenForall: widget.isOpenForall,
                                   isPresent: studentData[sdKey[index]]
-                                      ['isPresent'],
+                                  ['isPresent'],
                                   participantID: sdKey[index],
                                   takenTime: itemTime,
                                   eventID: widget.eventID.toString(),
@@ -351,8 +359,6 @@ class _ScannerState extends State<Scanner> {
     }
   }
 
-  // 01234567
-  // 21bcac46
   //  QR Code Format Checker
   bool scannedDataFormatChecker(String? scannedData) {
     if (scannedData!.length == 8 &&
@@ -416,7 +422,7 @@ class _ScannerState extends State<Scanner> {
                     "isPresent": true,
                     "takenTime": DateTime.now().millisecondsSinceEpoch,
                     "takenBy":
-                        FirebaseAuth.instance.currentUser!.providerData[0].email
+                    FirebaseAuth.instance.currentUser!.providerData[0].email
                   }
                 });
                 setState(() {

@@ -8,13 +8,17 @@ import 'package:google_fonts/google_fonts.dart';
 
 class Participants extends StatefulWidget {
   String? eventID;
+  String eventName;
   bool isOpenForall;
   bool isEnded;
+  var faculty;
   Participants(
       {super.key,
-      required this.eventID,
-      required this.isOpenForall,
-      required this.isEnded});
+        required this.eventName,
+        required this.eventID,
+        required this.isOpenForall,
+        required this.isEnded,
+        required this.faculty});
 
   @override
   State<Participants> createState() => _ParticipantsState();
@@ -26,7 +30,8 @@ class _ParticipantsState extends State<Participants> {
   String searchValue = "";
   bool searchCross = false;
   bool searchEnabled = true;
-
+  dynamic participantsData;
+  List studentKey = [];
   @override
   void initState() {
     super.initState();
@@ -35,7 +40,7 @@ class _ParticipantsState extends State<Participants> {
   @override
   Widget build(BuildContext context) {
     DocumentReference<Map<String, dynamic>> participants =
-        FirebaseFirestore.instance.collection('events').doc(widget.eventID);
+    FirebaseFirestore.instance.collection('events').doc(widget.eventID);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: background,
@@ -50,7 +55,9 @@ class _ParticipantsState extends State<Participants> {
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              participantsInfo();
+            },
             icon: const Icon(Icons.info),
           )
         ],
@@ -80,7 +87,7 @@ class _ParticipantsState extends State<Participants> {
                       borderRadius: BorderRadius.circular(borderRadius)),
                   border: const OutlineInputBorder(
                       borderRadius:
-                          BorderRadius.all(Radius.circular(borderRadius))),
+                      BorderRadius.all(Radius.circular(borderRadius))),
                   prefixIcon: Icon(
                     Icons.search,
                     size: 35.h,
@@ -125,7 +132,7 @@ class _ParticipantsState extends State<Participants> {
                 child: StreamBuilder(
                   stream: participants
                       .collection('Participants')
-                      //.orderBy('takenTime', descending: false)
+                  //.orderBy('takenTime', descending: false)
                       .snapshots(),
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -138,9 +145,11 @@ class _ParticipantsState extends State<Participants> {
                       List sdKey = [];
                       for (var element in snapshot.data!.docs) {
                         studentData = element.data();
+                        participantsData = element.data();
                       }
                       studentData.forEach((key, value) {
                         sdKey.add(key);
+                        studentKey.add(key);
                       });
                       if (studentData == null || studentData.length == 0) {
                         return Column(
@@ -166,11 +175,11 @@ class _ParticipantsState extends State<Participants> {
                         itemCount: studentData == null ? 1 : studentData.length,
                         itemBuilder: (context, index) {
                           var time = DateTime.fromMillisecondsSinceEpoch(
-                                  studentData[sdKey[index]]["takenTime"] >=
-                                          1000000000
-                                      ? studentData[sdKey[index]]["takenTime"]
-                                      : studentData[sdKey[index]]["takenTime"] *
-                                          1000)
+                              studentData[sdKey[index]]["takenTime"] >=
+                                  1000000000
+                                  ? studentData[sdKey[index]]["takenTime"]
+                                  : studentData[sdKey[index]]["takenTime"] *
+                                  1000)
                               .toString();
                           var participantsTile = ParticipantsTile(
                             participantID: sdKey[index],
@@ -194,9 +203,9 @@ class _ParticipantsState extends State<Participants> {
                                   .toString()
                                   .toUpperCase()
                                   .contains(FirebaseAuth.instance.currentUser!
-                                      .providerData[0].email
-                                      .toString()
-                                      .toUpperCase())) {
+                                  .providerData[0].email
+                                  .toString()
+                                  .toUpperCase())) {
                             return participantsTile;
                           } else {
                             return Container();
@@ -216,92 +225,156 @@ class _ParticipantsState extends State<Participants> {
     );
   }
 
-  /*getCSV() async {
-    String csvData = const ListToCsvConverter().convert(items);
-    print(csvData);
-    try {
-      var status = await Permission.storage.status;
-      if (!status.isGranted) {
-        await Permission.storage.request();
+  void participantsInfo() {
+    int selfCount = 0;
+    int presentCount = 0;
+    int absentCount = 0;
+    for (var i = 0; i < participantsData.length; i++) {
+      if (participantsData[studentKey[i]]["takenBy"]
+          .toString()
+          .toUpperCase()
+          .contains(FirebaseAuth.instance.currentUser!.providerData[0].email
+          .toString()
+          .toUpperCase())) {
+        selfCount += 1;
       }
-      final String directory = (await getApplicationDocumentsDirectory()).path;
-      final String path = "$directory/ams${widget.eventID}.csv";
-      final File file = File(path);
-      dynamic data = await file.writeAsString(csvData);
-      print(data);
-      print(path);
-      try {
-        await OpenFilex.open(file.path);
-      } catch (e) {
-        print(e);
+      if (participantsData[studentKey[i]]["isPresent"] == true) {
+        presentCount += 1;
+      } else {
+        absentCount += 1;
       }
-    } catch (e) {
-      print(e);
     }
-  }*/
-}
-
-
-/*
-StreamBuilder(
-                  stream: participants
-                      .collection('Participants')
-                      .orderBy('takenTime', descending: false)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    return (snapshot.connectionState == ConnectionState.waiting)
-                        ? const Center(child: Center(child: Text("Loading...")))
-                        : snapshot.data!.docs.isEmpty
-                            ? Center(
-                                child: widget.isOpenForall
-                                    ? Text(
-                                        'No participants to show..',
-                                        textAlign: TextAlign.center,
-                                        style: GoogleFonts.inter(
-                                          fontSize: 25.sp,
-                                          color: textColor,
-                                        ),
-                                      )
-                                    : null,
-                              )
-                            : ListView(
-                                physics: const BouncingScrollPhysics(),
-                                children: snapshot.data!.docs.map((e) {
-                                  var time =
-                                      DateTime.fromMillisecondsSinceEpoch(
-                                              e["takenTime"] >= 1000000000
-                                                  ? e["takenTime"]
-                                                  : e["takenTime"] * 1000)
-                                          .toString();
-                                  if (searchValue == "") {
-                                    return ParticipantsTile(
-                                      participantID: e.id,
-                                      takenTime: time,
-                                      isPresent: e['isPresent'],
-                                      isOpenForall: widget.isOpenForall,
-                                      eventID: widget.eventID!.toString(),
-                                      deleteBtn: true,
-                                      takenBy: e['takenBy'],
-                                    );
-                                  } else if (e.id
-                                      .toString()
-                                      .toUpperCase()
-                                      .contains(searchValue
-                                          .toString()
-                                          .toUpperCase())) {
-                                    return ParticipantsTile(
-                                      participantID: e.id,
-                                      takenTime: time,
-                                      isPresent: e['isPresent'],
-                                      isOpenForall: widget.isOpenForall,
-                                      eventID: widget.eventID!,
-                                      deleteBtn: true,
-                                      takenBy: e['takenBy'],
-                                    );
-                                  } else {
-                                    return Container();
-                                  }
-                                }).toList());
-                  },
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          elevation: 0,
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Participants Info"),
+              widget.isOpenForall
+                  ? const Icon(Icons.public)
+                  : const Icon(Icons.public_off)
+            ],
+          ),
+          content: SizedBox(
+            height: 200,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Event Name",
+                  style: TextStyle(
+                    fontFamily: "Inter",
+                    fontSize: 22.sp,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
- */
+                Text(
+                  widget.eventName,
+                  style: TextStyle(
+                    fontFamily: "Inter",
+                    fontSize: 22.sp,
+                    color: Colors.black,
+                  ),
+                ),
+                const Text(""),
+                Text(
+                  "Stats",
+                  style: TextStyle(
+                    fontFamily: "Inter",
+                    fontSize: 22.sp,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  "Total Participants : ${participantsData.length.toString()}",
+                  style: TextStyle(
+                    fontFamily: "Inter",
+                    fontSize: 22.sp,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(
+                  "My Count : $selfCount",
+                  style: TextStyle(
+                    fontFamily: "Inter",
+                    fontSize: 22.sp,
+                    color: Colors.black,
+                  ),
+                ),
+                Visibility(
+                  visible: !widget.isOpenForall,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Present : $presentCount",
+                        style: TextStyle(
+                          fontFamily: "Inter",
+                          fontSize: 22.sp,
+                          color: Colors.green,
+                        ),
+                      ),
+                      Text(
+                        "Absent : $absentCount",
+                        style: TextStyle(
+                          fontFamily: "Inter",
+                          fontSize: 22.sp,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Text(""),
+                Text(
+                  "Faculty Assigned",
+                  style: TextStyle(
+                    fontFamily: "Inter",
+                    fontSize: 22.sp,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Text(
+                      widget.faculty
+                          .toString()
+                          .replaceAll(",", "")
+                          .replaceAll("[", "")
+                          .replaceAll("]", ""),
+                      style: TextStyle(
+                        fontFamily: "Inter",
+                        fontSize: 22.sp,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                "Okay",
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}

@@ -58,8 +58,8 @@ class _HomePageState extends State<HomePage> {
                       .instance // composite indexes should be created in the firestore for ordering to work
                       .collection('events')
                       .where('coordinators',
-                          arrayContains: FirebaseAuth
-                              .instance.currentUser!.providerData[0].email)
+                      arrayContains: FirebaseAuth
+                          .instance.currentUser!.providerData[0].email)
                       .orderBy('startTime', descending: false)
                       .orderBy('eventName', descending: false)
                       .snapshots(),
@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
                       for (var e in snapshot.data!.docs) {
                         count.add(e.get('endTime'));
                         List startTime =
-                            checkTime(e['startTime'], e['endTime']);
+                        checkTime(e['startTime'], e['endTime']);
                         startTime[0] == "over" ? count.removeLast() : null;
                       }
                       if (count.isEmpty) {
@@ -91,11 +91,11 @@ class _HomePageState extends State<HomePage> {
                               parent: BouncingScrollPhysics(),
                             ),
                             children: snapshot.data!.docs.map(
-                              (e) {
+                                  (e) {
                                 List startTime =
-                                    checkTime(e['startTime'], e['endTime']);
+                                checkTime(e['startTime'], e['endTime']);
                                 List endTime =
-                                    checkTime(e['endTime'], e['startTime']);
+                                checkTime(e['endTime'], e['startTime']);
 
                                 if (startTime[0] == "pending" ||
                                     startTime[0] == "running") {
@@ -118,6 +118,7 @@ class _HomePageState extends State<HomePage> {
                                     isOpenForall: e['openForAll'],
                                     isStarted: isStarted,
                                     isEnded: isEnded,
+                                    faculty: e['coordinators'],
                                   );
                                 } else {
                                   return Container();
@@ -184,5 +185,5 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  
+
 }

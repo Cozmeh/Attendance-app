@@ -15,23 +15,23 @@ class Login extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(
-                height: MediaQuery.of(context).size.height * .15,
+                height: MediaQuery.of(context).size.height * .1,
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * .35,
-                child: Image.asset('assets/kjcLogo.png'),
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height * .1),
               const Center(
                 child: Text(
-                  "Kristu Jayanti\n Attendance\n Management System",
+                  "Kristu Jayanti\n Attendance Management System",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       color: Colors.black,
                       fontFamily: 'Inter',
-                      fontSize: 30,
+                      fontSize: 25,
                       fontWeight: FontWeight.bold),
                 ),
+              ),
+              SizedBox(height: MediaQuery.of(context).size.height * .1),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * .35,
+                child: Image.asset('assets/kjcLogo.png'),
               ),
               SizedBox(height: MediaQuery.of(context).size.height * .1),
               ElevatedButton(
@@ -50,14 +50,15 @@ class Login extends StatelessWidget {
                   } else {}*/
                 },
                 child: SizedBox(
+                  height: MediaQuery.of(context).size.height * .06,
                   width: MediaQuery.of(context).size.width * .7,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Image.network(
-                        height: 50,
-                        width: 50,
-                        'http://pngimg.com/uploads/google/google_PNG19635.png',
+                        height: 40,
+                        width: 40,
+                        'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1200px-Google_%22G%22_Logo.svg.png',
                         fit: BoxFit.cover,
                       ),
                       const SizedBox(
@@ -76,6 +77,12 @@ class Login extends StatelessWidget {
                   ),
                 ),
               ),
+              const Expanded(child: SizedBox()),
+              const Text(
+                  "Note - Please login in with @kristujayanti.com domain only"),
+              const SizedBox(
+                height: 5,
+              )
             ],
           ),
         ));
