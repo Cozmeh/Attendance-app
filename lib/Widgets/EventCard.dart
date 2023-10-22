@@ -7,7 +7,7 @@ import '../Presentation/Scanner/scan.dart';
 // ignore: must_be_immutable
 class EventCard extends StatefulWidget {
   String imageUrl, eventName, departName, date, venue, startTime, endTime, id;
-  bool isOpenForall, isStarted, isEnded;
+  bool isOpenForall, isStarted, isEnded, active;
   var faculty;
   EventCard({
     super.key,
@@ -23,6 +23,7 @@ class EventCard extends StatefulWidget {
     required this.isStarted,
     required this.isEnded,
     required this.faculty,
+    required this.active,
   });
   @override
   State<EventCard> createState() => _EventCardState();
@@ -122,7 +123,6 @@ class _EventCardState extends State<EventCard> {
                           ],
                         ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               "Organizer : ${widget.departName}",
@@ -132,15 +132,27 @@ class _EventCardState extends State<EventCard> {
                                   fontSize: 20.sp,
                                   fontWeight: FontWeight.w100),
                             ),
+                            const Expanded(child: SizedBox()),
                             widget.isOpenForall
                                 ? Icon(
-                              Icons.public,
-                              size: 30.sp,
-                            )
+                                    Icons.public,
+                                    size: 30.sp,
+                                  )
                                 : Icon(
-                              Icons.public_off,
-                              size: 30.sp,
-                            ),
+                                    Icons.public_off,
+                                    size: 30.sp,
+                                  ),
+                            widget.active
+                                ? Icon(
+                                    Icons.trip_origin_outlined,
+                                    size: 30.sp,
+                                    color: Colors.green,
+                                  )
+                                : Icon(
+                                    Icons.trip_origin_outlined,
+                                    size: 30.sp,
+                                    color: Colors.grey,
+                                  )
                           ],
                         ),
                         const Divider(
@@ -295,20 +307,20 @@ class _EventCardState extends State<EventCard> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             ElevatedButton(
-                              onPressed: widget.isStarted
+                              onPressed: widget.isStarted && widget.active
                                   ? () {
-                                Navigator.of(context)
-                                    .push(MaterialPageRoute(
-                                  builder: (context) => Scanner(
-                                      eventID: widget.id,
-                                      isOpenForall: widget.isOpenForall),
-                                ));
-                              }
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) => Scanner(
+                                            eventID: widget.id,
+                                            isOpenForall: widget.isOpenForall),
+                                      ));
+                                    }
                                   : null,
                               style: ElevatedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
                                     borderRadius:
-                                    BorderRadius.circular(borderRadius),
+                                        BorderRadius.circular(borderRadius),
                                   ),
                                   fixedSize: Size(220.w, 60.h),
                                   backgroundColor: primaryBlue),
@@ -323,25 +335,25 @@ class _EventCardState extends State<EventCard> {
                             ),
                             ElevatedButton(
                               onPressed: !widget.isStarted &&
-                                  widget.isOpenForall &&
-                                  !widget.isEnded
+                                      widget.isOpenForall &&
+                                      !widget.isEnded
                                   ? null
                                   : () {
-                                Navigator.of(context)
-                                    .push(MaterialPageRoute(
-                                  builder: (context) => Participants(
-                                    faculty: widget.faculty,
-                                    eventName: widget.eventName,
-                                    eventID: widget.id,
-                                    isOpenForall: widget.isOpenForall,
-                                    isEnded: widget.isEnded,
-                                  ),
-                                ));
-                              },
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) => Participants(
+                                          faculty: widget.faculty,
+                                          eventName: widget.eventName,
+                                          eventID: widget.id,
+                                          isOpenForall: widget.isOpenForall,
+                                          isEnded: widget.isEnded,
+                                        ),
+                                      ));
+                                    },
                               style: ElevatedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
                                     borderRadius:
-                                    BorderRadius.circular(borderRadius),
+                                        BorderRadius.circular(borderRadius),
                                   ),
                                   fixedSize: Size(220.w, 60.h),
                                   backgroundColor: primaryBlue),

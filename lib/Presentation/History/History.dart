@@ -30,8 +30,8 @@ class History extends StatelessWidget {
               stream: FirebaseFirestore.instance
                   .collection('events')
                   .where('coordinators',
-                  arrayContains: FirebaseAuth
-                      .instance.currentUser!.providerData[0].email)
+                      arrayContains: FirebaseAuth
+                          .instance.currentUser!.providerData[0].email)
                   .orderBy('eventName', descending: false)
                   .snapshots(),
               builder: (BuildContext context,
@@ -55,13 +55,14 @@ class History extends StatelessWidget {
                       physics: const BouncingScrollPhysics(),
                       children: snapshot.data!.docs.map((e) {
                         List timeCheck =
-                        checkTime(e['startTime'], e['endTime']);
+                            checkTime(e['startTime'], e['endTime']);
                         List timeCheck2 =
-                        checkTime(e['endTime'], e['startTime']);
+                            checkTime(e['endTime'], e['startTime']);
                         if (timeCheck[0] == "over") {
                           isStarted = false;
                           isEnded = true;
                           return EventCard(
+                            active: e['active'],
                             faculty: e['coordinators'],
                             imageUrl: e['backDrop'],
                             eventName: e['eventName'],
