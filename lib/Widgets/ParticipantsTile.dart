@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ftest/Data/constants.dart';
@@ -30,6 +29,53 @@ class _ParticipantsTileState extends State<ParticipantsTile> {
     return Card(
       shadowColor: Colors.transparent,
       child: ListTile(
+        onTap: () {
+          widget.isPresent
+              ? showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      title: const Text("Participant Info"),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "ID - ${widget.participantID}",
+                            style: GoogleFonts.inter(
+                                fontSize: 22.sp, color: textColor),
+                          ),
+                          const Text(""),
+                          Text(
+                            "Date - ${widget.takenTime.substring(0, 11)} Time - ${widget.takenTime.substring(11, 16)}",
+                            style: GoogleFonts.inter(
+                                fontSize: 22.sp, color: textColor),
+                          ),
+                          const Text(""),
+                          Text(
+                            "By - ${widget.takenBy}",
+                            style: GoogleFonts.inter(
+                                fontSize: 22.sp, color: textColor),
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text(
+                            "Ok",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                )
+              : null;
+        },
         visualDensity: const VisualDensity(horizontal: 0, vertical: -1),
         tileColor: tileColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
